@@ -1,0 +1,53 @@
+# ============================================================
+#        SISTEMA DE GESTIÓN DE CITAS MÉDICAS
+#                    .gitignore
+# ============================================================
+
+# Maven
+target/
+
+# Java
+*.class
+*.jar
+*.war
+*.ear
+
+# Visual Studio Code
+.vscode/
+*.code-workspace
+
+# IntelliJ IDEA
+.idea/
+*.iml
+
+# Eclipse
+.classpath
+.project
+.settings/
+
+# Sistema operativo
+.DS_Store
+Thumbs.db
+desktop.ini
+
+# Logs
+*.log
+
+# Archivos temporales
+*.tmp
+*.temp
+
+# Variables de entorno y credenciales
+.env
+.env.*
+application.properties
+database.properties
+config.properties
+
+# Copias de seguridad
+*.bak
+*.backup
+
+# Archivos sensibles
+credentials/
+secrets/

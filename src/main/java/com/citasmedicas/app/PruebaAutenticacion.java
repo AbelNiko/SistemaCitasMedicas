@@ -69,7 +69,7 @@ public class PruebaAutenticacion {
             Usuario usuario =
                     servicio.autenticar(
                             "ana.torres@prueba.local",
-                            "Prueba123*"
+                            "ATorres123"
                     );
 
             if (usuario != null) {
@@ -135,7 +135,7 @@ public class PruebaAutenticacion {
             Usuario usuario =
                     servicio.autenticar(
                             "ana.torres@prueba.local",
-                            "PasswordIncorrecto"
+                            "PasswordIncorrecto123"
                     );
 
             if (usuario == null) {

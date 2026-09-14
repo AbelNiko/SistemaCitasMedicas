@@ -1,0 +1,66 @@
+<?xml version="1.0" encoding="UTF-8"?>
+
+<?import javafx.geometry.Insets?>
+<?import javafx.scene.control.Button?>
+<?import javafx.scene.control.Label?>
+<?import javafx.scene.control.PasswordField?>
+<?import javafx.scene.control.TextField?>
+<?import javafx.scene.layout.VBox?>
+
+<VBox
+        xmlns="http://javafx.com/javafx"
+        xmlns:fx="http://javafx.com/fxml"
+        fx:controller="com.citasmedicas.controller.LoginController"
+        alignment="CENTER"
+        spacing="16"
+        prefWidth="420"
+        prefHeight="520"
+        stylesheets="@../css/login.css"
+        styleClass="login-container">
+
+    <padding>
+        <Insets
+                top="40"
+                right="45"
+                bottom="40"
+                left="45"
+        />
+    </padding>
+
+    <Label
+            text="Sistema de Citas Médicas"
+            styleClass="titulo"
+    />
+
+    <Label
+            text="Inicio de sesión"
+            styleClass="subtitulo"
+    />
+
+    <TextField
+            fx:id="txtCorreo"
+            promptText="Correo electrónico"
+            styleClass="campo"
+    />
+
+    <PasswordField
+            fx:id="txtPassword"
+            promptText="Contraseña"
+            styleClass="campo"
+            onAction="#iniciarSesion"
+    />
+
+    <Button
+            text="Iniciar sesión"
+            onAction="#iniciarSesion"
+            maxWidth="Infinity"
+            styleClass="boton-principal"
+    />
+
+    <Label
+            fx:id="lblMensaje"
+            wrapText="true"
+            styleClass="mensaje"
+    />
+
+</VBox>

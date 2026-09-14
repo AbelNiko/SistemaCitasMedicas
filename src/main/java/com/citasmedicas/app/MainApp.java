@@ -1,103 +1,57 @@
 package com.citasmedicas.app;
 
 import javafx.application.Application;
-import javafx.geometry.Pos;
+import javafx.fxml.FXMLLoader;
 import javafx.scene.Scene;
-import javafx.scene.control.Label;
-import javafx.scene.layout.VBox;
 import javafx.stage.Stage;
+
+import java.io.IOException;
 
 /**
  * ================================================================
  *             SISTEMA DE GESTIÓN DE CITAS MÉDICAS
  * ================================================================
  *
- * Clase principal de la aplicación.
+ * Clase principal de la aplicación JavaFX.
  *
- * Su responsabilidad es iniciar JavaFX y mostrar
- * la ventana principal del sistema.
- *
- * En futuras etapas esta clase cargará las vistas
- * desarrolladas mediante archivos FXML.
+ * Su responsabilidad es iniciar la aplicación y cargar
+ * la pantalla inicial de autenticación.
  *
  * @author Equipo de Ingeniería de Software II
  * @version 1.0
  */
 public class MainApp extends Application {
 
-    /**
-     * Ancho inicial de la ventana.
-     */
-    private static final double ANCHO_VENTANA = 1000;
-
-    /**
-     * Alto inicial de la ventana.
-     */
-    private static final double ALTO_VENTANA = 650;
-
-    /**
-     * Método ejecutado automáticamente por JavaFX
-     * cuando inicia la aplicación.
-     *
-     * @param stage ventana principal del sistema.
-     */
     @Override
-    public void start(Stage stage) {
+    public void start(Stage stage)
+            throws IOException {
 
-        // ========================================================
-        // TÍTULO PRINCIPAL
-        // ========================================================
+        FXMLLoader loader =
+                new FXMLLoader(
+                        MainApp.class.getResource(
+                                "/fxml/login.fxml"
+                        )
+                );
 
-        Label lblTitulo = new Label(
-                "Sistema de Gestión y Agendamiento de Citas Médicas"
-        );
-
-        // ========================================================
-        // CONTENEDOR PRINCIPAL
-        // ========================================================
-
-        VBox contenedorPrincipal = new VBox();
-
-        contenedorPrincipal.setAlignment(Pos.CENTER);
-        contenedorPrincipal.setSpacing(20);
-
-        contenedorPrincipal.getChildren().add(lblTitulo);
-
-        // ========================================================
-        // ESCENA PRINCIPAL
-        // ========================================================
-
-        Scene escenaPrincipal = new Scene(
-                contenedorPrincipal,
-                ANCHO_VENTANA,
-                ALTO_VENTANA
-        );
-
-        // ========================================================
-        // CONFIGURACIÓN DE LA VENTANA
-        // ========================================================
+        Scene scene =
+                new Scene(
+                        loader.load()
+                );
 
         stage.setTitle(
-                "Sistema de Citas Médicas"
+                "Sistema de Gestión de Citas Médicas"
         );
 
-        stage.setScene(
-                escenaPrincipal
-        );
+        stage.setScene(scene);
 
-        stage.setMinWidth(800);
-        stage.setMinHeight(500);
+        stage.setResizable(false);
+
+        stage.centerOnScreen();
 
         stage.show();
     }
 
-    /**
-     * Punto de entrada tradicional de la aplicación.
-     *
-     * @param args argumentos recibidos por línea de comandos.
-     */
     public static void main(String[] args) {
-
         launch(args);
     }
 }

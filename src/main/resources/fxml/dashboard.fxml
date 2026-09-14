@@ -1,0 +1,73 @@
+<?xml version="1.0" encoding="UTF-8"?>
+
+<?import javafx.geometry.Insets?>
+<?import javafx.scene.control.Label?>
+<?import javafx.scene.layout.BorderPane?>
+<?import javafx.scene.layout.VBox?>
+
+<BorderPane
+        xmlns="http://javafx.com/javafx"
+        xmlns:fx="http://javafx.com/fxml"
+        fx:controller="com.citasmedicas.controller.DashboardController"
+        prefWidth="1100"
+        prefHeight="700"
+        stylesheets="@../css/dashboard.css"
+        styleClass="dashboard">
+
+    <top>
+
+        <VBox
+                spacing="5"
+                styleClass="barra-superior">
+
+            <padding>
+                <Insets
+                        top="20"
+                        right="30"
+                        bottom="20"
+                        left="30"
+                />
+            </padding>
+
+            <Label
+                    text="Sistema de Gestión de Citas Médicas"
+                    styleClass="titulo"
+            />
+
+            <Label
+                    fx:id="lblNombreUsuario"
+                    text="Usuario"
+                    styleClass="usuario"
+            />
+
+            <Label
+                    fx:id="lblRolUsuario"
+                    text="ROL"
+                    styleClass="rol"
+            />
+
+        </VBox>
+
+    </top>
+
+    <center>
+
+        <VBox
+                alignment="CENTER"
+                spacing="12">
+
+            <Label
+                    text="Bienvenido al sistema"
+                    styleClass="bienvenida"
+            />
+
+            <Label
+                    text="Seleccione una opción para continuar."
+                    styleClass="descripcion"
+            />
+
+        </VBox>
+
+    </center>
+
+</BorderPane>

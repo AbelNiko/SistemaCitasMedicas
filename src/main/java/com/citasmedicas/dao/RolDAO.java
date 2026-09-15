@@ -161,4 +161,82 @@ public class RolDAO {
 
         return null;
     }
+    /**
+ * Busca un rol mediante su nombre.
+ *
+ * Este método permite asignar roles sin depender de
+ * identificadores numéricos escritos directamente en el código.
+ *
+ * Por ejemplo, el registro público utilizará el rol PACIENTE.
+ *
+ * @param nombre nombre del rol.
+ * @return rol encontrado o null si no existe.
+ * @throws SQLException si ocurre un error de acceso a datos.
+ */
+public Rol buscarPorNombre(String nombre)
+        throws SQLException {
+
+    String sql = """
+            SELECT
+                id_rol,
+                nombre,
+                descripcion,
+                estado,
+                fecha_creacion
+            FROM roles
+            WHERE nombre = ?
+            LIMIT 1
+            """;
+
+    try (
+            Connection conexion =
+                    ConexionBD.obtenerConexion();
+
+            PreparedStatement sentencia =
+                    conexion.prepareStatement(sql)
+    ) {
+
+        sentencia.setString(
+                1,
+                nombre
+        );
+
+        try (
+                ResultSet resultado =
+                        sentencia.executeQuery()
+        ) {
+
+            if (resultado.next()) {
+
+                Rol rol = new Rol();
+
+                rol.setIdRol(
+                        resultado.getInt("id_rol")
+                );
+
+                rol.setNombre(
+                        resultado.getString("nombre")
+                );
+
+                rol.setDescripcion(
+                        resultado.getString("descripcion")
+                );
+
+                rol.setEstado(
+                        resultado.getBoolean("estado")
+                );
+
+                rol.setFechaCreacion(
+                        resultado
+                                .getTimestamp("fecha_creacion")
+                                .toLocalDateTime()
+                );
+
+                return rol;
+            }
+        }
+    }
+
+    return null;
+}
 }

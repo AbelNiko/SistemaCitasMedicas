@@ -173,4 +173,57 @@ public class LoginController {
 
         stage.centerOnScreen();
     }
+    /**
+ * Abre la pantalla de registro de pacientes.
+ */
+@FXML
+private void abrirRegistro() {
+
+    try {
+
+        FXMLLoader loader =
+                new FXMLLoader(
+                        getClass().getResource(
+                                "/fxml/registro.fxml"
+                        )
+                );
+
+        Scene scene =
+                new Scene(
+                        loader.load()
+                );
+
+        Stage stage =
+                (Stage) txtCorreo
+                        .getScene()
+                        .getWindow();
+
+        stage.setScene(scene);
+
+        stage.setTitle(
+                "MediAppoint - Registro de paciente"
+        );
+
+        stage.setWidth(600);
+        stage.setHeight(720);
+
+        stage.setMinWidth(550);
+        stage.setMinHeight(650);
+
+        stage.centerOnScreen();
+
+    } catch (IOException e) {
+
+        lblMensaje.setText(
+                "No fue posible abrir el registro."
+        );
+
+        System.err.println(
+                "Error al cargar registro.fxml: "
+                + e.getMessage()
+        );
+
+        e.printStackTrace();
+    }
+}
 }

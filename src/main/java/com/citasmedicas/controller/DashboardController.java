@@ -19,7 +19,9 @@ import javafx.scene.control.Label;
  * @version 1.0
  */
 public class DashboardController {
-
+    @FXML
+    private Label lblBienvenida;
+    
     @FXML
     private Label lblNombreUsuario;
 
@@ -38,6 +40,10 @@ public class DashboardController {
         this.usuarioActual = usuario;
 
         actualizarInformacionUsuario();
+
+        lblBienvenida.setText(
+        "Bienvenido, " + usuario.getNombres()
+);
     }
 
     /**

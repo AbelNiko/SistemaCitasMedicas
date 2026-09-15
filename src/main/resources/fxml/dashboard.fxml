@@ -1,70 +1,316 @@
 <?xml version="1.0" encoding="UTF-8"?>
 
 <?import javafx.geometry.Insets?>
+<?import javafx.scene.control.Button?>
 <?import javafx.scene.control.Label?>
+<?import javafx.scene.control.Separator?>
 <?import javafx.scene.layout.BorderPane?>
+<?import javafx.scene.layout.HBox?>
+<?import javafx.scene.layout.Priority?>
+<?import javafx.scene.layout.Region?>
 <?import javafx.scene.layout.VBox?>
 
 <BorderPane
-        xmlns="http://javafx.com/javafx"
-        xmlns:fx="http://javafx.com/fxml"
+        xmlns="http://javafx.com/javafx/21"
+        xmlns:fx="http://javafx.com/fxml/1"
         fx:controller="com.citasmedicas.controller.DashboardController"
-        prefWidth="1100"
-        prefHeight="700"
-        stylesheets="@../css/dashboard.css"
-        styleClass="dashboard">
+        stylesheets="@../css/mediappoint.css"
+        styleClass="dashboard-root"
+        prefWidth="1050"
+        prefHeight="680">
 
-    <top>
+    <!-- =========================================================
+                         MENÚ LATERAL
+         ========================================================= -->
+
+    <left>
 
         <VBox
-                spacing="5"
-                styleClass="barra-superior">
+                prefWidth="220"
+                spacing="8"
+                styleClass="sidebar">
 
             <padding>
                 <Insets
-                        top="20"
-                        right="30"
-                        bottom="20"
-                        left="30"
-                />
+                        top="28"
+                        right="18"
+                        bottom="22"
+                        left="18"/>
             </padding>
 
             <Label
-                    text="Sistema de Gestión de Citas Médicas"
-                    styleClass="titulo"
-            />
+                    text="MediAppoint"
+                    styleClass="sidebar-brand"/>
 
             <Label
-                    fx:id="lblNombreUsuario"
-                    text="Usuario"
-                    styleClass="usuario"
-            />
+                    text="GESTIÓN DE CITAS MÉDICAS"
+                    styleClass="sidebar-subtitle"/>
 
-            <Label
-                    fx:id="lblRolUsuario"
-                    text="ROL"
-                    styleClass="rol"
-            />
+            <Region prefHeight="25"/>
+
+            <Button
+                    text="Inicio"
+                    maxWidth="Infinity"
+                    prefHeight="42"
+                    styleClass="sidebar-button-active"/>
+
+            <Button
+                    text="Agendar cita"
+                    maxWidth="Infinity"
+                    prefHeight="42"
+                    styleClass="sidebar-button"/>
+
+            <Button
+                    text="Mis citas"
+                    maxWidth="Infinity"
+                    prefHeight="42"
+                    styleClass="sidebar-button"/>
+
+            <Button
+                    text="Mi perfil"
+                    maxWidth="Infinity"
+                    prefHeight="42"
+                    styleClass="sidebar-button"/>
+
+            <Region VBox.vgrow="ALWAYS"/>
+
+            <Separator/>
+
+            <Button
+                    text="Cerrar sesión"
+                    maxWidth="Infinity"
+                    prefHeight="42"
+                    styleClass="logout-button"/>
 
         </VBox>
 
+    </left>
+
+    <!-- =========================================================
+                            CABECERA
+         ========================================================= -->
+
+    <top>
+
+        <HBox
+                alignment="CENTER_LEFT"
+                prefHeight="82"
+                spacing="15"
+                styleClass="dashboard-header">
+
+            <padding>
+                <Insets
+                        top="15"
+                        right="28"
+                        bottom="15"
+                        left="28"/>
+            </padding>
+
+            <Label
+                    text="Panel principal"
+                    styleClass="dashboard-page-title"/>
+
+            <Region HBox.hgrow="ALWAYS"/>
+
+            <VBox
+                    alignment="CENTER_RIGHT"
+                    spacing="3">
+
+                <Label
+                        fx:id="lblNombreUsuario"
+                        text="Usuario"
+                        styleClass="dashboard-user-name"/>
+
+                <Label
+                        fx:id="lblRolUsuario"
+                        text="PACIENTE"
+                        styleClass="dashboard-user-role"/>
+
+            </VBox>
+
+        </HBox>
+
     </top>
+
+    <!-- =========================================================
+                           CONTENIDO
+         ========================================================= -->
 
     <center>
 
         <VBox
-                alignment="CENTER"
-                spacing="12">
+                spacing="25"
+                styleClass="dashboard-content">
 
-            <Label
-                    text="Bienvenido al sistema"
-                    styleClass="bienvenida"
-            />
+            <padding>
+                <Insets
+                        top="35"
+                        right="35"
+                        bottom="35"
+                        left="35"/>
+            </padding>
 
-            <Label
-                    text="Seleccione una opción para continuar."
-                    styleClass="descripcion"
-            />
+            <!-- Bienvenida -->
+
+            <VBox spacing="5">
+
+                <Label
+                        fx:id="lblBienvenida"
+                        text="Bienvenido"
+                        styleClass="welcome-title"/>
+
+                <Label
+                        text="Gestiona tus citas médicas de manera rápida y sencilla."
+                        styleClass="welcome-subtitle"/>
+
+            </VBox>
+
+            <!-- Tarjetas -->
+
+            <HBox spacing="18">
+
+                <VBox
+                        spacing="8"
+                        prefWidth="235"
+                        prefHeight="135"
+                        styleClass="dashboard-card">
+
+                    <padding>
+                        <Insets
+                                top="20"
+                                right="20"
+                                bottom="20"
+                                left="20"/>
+                    </padding>
+
+                    <Label
+                            text="PRÓXIMA CITA"
+                            styleClass="card-title"/>
+
+                    <Label
+                            text="Sin citas próximas"
+                            styleClass="card-value"/>
+
+                    <Label
+                            text="Agenda una nueva cita médica"
+                            styleClass="card-description"/>
+
+                </VBox>
+
+                <VBox
+                        spacing="8"
+                        prefWidth="210"
+                        prefHeight="135"
+                        styleClass="dashboard-card">
+
+                    <padding>
+                        <Insets
+                                top="20"
+                                right="20"
+                                bottom="20"
+                                left="20"/>
+                    </padding>
+
+                    <Label
+                            text="MIS CITAS"
+                            styleClass="card-title"/>
+
+                    <Label
+                            text="0"
+                            styleClass="card-value"/>
+
+                    <Label
+                            text="Citas programadas"
+                            styleClass="card-description"/>
+
+                </VBox>
+
+                <VBox
+                        spacing="8"
+                        prefWidth="210"
+                        prefHeight="135"
+                        styleClass="dashboard-card">
+
+                    <padding>
+                        <Insets
+                                top="20"
+                                right="20"
+                                bottom="20"
+                                left="20"/>
+                    </padding>
+
+                    <Label
+                            text="ESTADO"
+                            styleClass="card-title"/>
+
+                    <Label
+                            text="Activo"
+                            styleClass="card-accent"/>
+
+                    <Label
+                            text="Cuenta habilitada"
+                            styleClass="card-description"/>
+
+                </VBox>
+
+            </HBox>
+
+            <!-- Acciones rápidas -->
+
+            <VBox spacing="14">
+
+                <Label
+                        text="Acciones rápidas"
+                        styleClass="dashboard-section-title"/>
+
+                <HBox spacing="15">
+
+                    <Button
+                            text="Agendar nueva cita"
+                            prefWidth="190"
+                            prefHeight="55"
+                            styleClass="primary-button"/>
+
+                    <Button
+                            text="Consultar mis citas"
+                            prefWidth="190"
+                            prefHeight="55"
+                            styleClass="quick-action"/>
+
+                    <Button
+                            text="Ver mi perfil"
+                            prefWidth="190"
+                            prefHeight="55"
+                            styleClass="quick-action"/>
+
+                </HBox>
+
+            </VBox>
+
+            <!-- Información -->
+
+            <VBox
+                    spacing="8"
+                    styleClass="dashboard-card">
+
+                <padding>
+                    <Insets
+                            top="20"
+                            right="22"
+                            bottom="20"
+                            left="22"/>
+                </padding>
+
+                <Label
+                        text="Tu salud, mejor organizada"
+                        styleClass="dashboard-section-title"/>
+
+                <Label
+                        text="Desde MediAppoint podrás consultar disponibilidad médica, programar citas y administrar tus próximas atenciones."
+                        wrapText="true"
+                        styleClass="welcome-subtitle"/>
+
+            </VBox>
 
         </VBox>
 

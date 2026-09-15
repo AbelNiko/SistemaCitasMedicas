@@ -3,7 +3,7 @@ package com.citasmedicas.dao;
 import com.citasmedicas.model.Rol;
 import com.citasmedicas.model.Usuario;
 import com.citasmedicas.util.ConexionBD;
-
+import java.sql.Statement;
 import java.sql.Connection;
 import java.sql.PreparedStatement;
 import java.sql.ResultSet;
@@ -149,6 +149,118 @@ public class UsuarioDAO {
 
         return null;
     }
+
+    /**
+ * Inserta un nuevo usuario utilizando una conexión existente.
+ *
+ * La conexión se recibe como parámetro para permitir que el
+ * registro del usuario y del paciente se realice dentro de
+ * una misma transacción.
+ *
+ * @param conexion conexión activa con MySQL.
+ * @param usuario usuario que será registrado.
+ * @return identificador generado para el usuario.
+ * @throws SQLException si ocurre un error de acceso a datos.
+ */
+public int insertar(
+        Connection conexion,
+        Usuario usuario
+) throws SQLException {
+
+    String sql = """
+            INSERT INTO usuarios (
+                id_rol,
+                nombres,
+                apellidos,
+                cedula,
+                correo,
+                password_hash,
+                telefono,
+                estado
+            )
+            VALUES (?, ?, ?, ?, ?, ?, ?, ?)
+            """;
+
+    try (
+            PreparedStatement sentencia =
+                    conexion.prepareStatement(
+                            sql,
+                            Statement.RETURN_GENERATED_KEYS
+                    )
+    ) {
+
+        sentencia.setInt(
+                1,
+                usuario.getRol().getIdRol()
+        );
+
+        sentencia.setString(
+                2,
+                usuario.getNombres()
+        );
+
+        sentencia.setString(
+                3,
+                usuario.getApellidos()
+        );
+
+        sentencia.setString(
+                4,
+                usuario.getCedula()
+        );
+
+        sentencia.setString(
+                5,
+                usuario.getCorreo()
+        );
+
+        sentencia.setString(
+                6,
+                usuario.getPasswordHash()
+        );
+
+        sentencia.setString(
+                7,
+                usuario.getTelefono()
+        );
+
+        sentencia.setBoolean(
+                8,
+                usuario.isEstado()
+        );
+
+        int filasAfectadas =
+                sentencia.executeUpdate();
+
+        if (filasAfectadas == 0) {
+            throw new SQLException(
+                    "No fue posible registrar el usuario."
+            );
+        }
+
+        try (
+                ResultSet claves =
+                        sentencia.getGeneratedKeys()
+        ) {
+
+            if (claves.next()) {
+
+                int idUsuario =
+                        claves.getInt(1);
+
+                usuario.setIdUsuario(
+                        idUsuario
+                );
+
+                return idUsuario;
+            }
+        }
+
+        throw new SQLException(
+                "No fue posible obtener el identificador del usuario."
+        );
+    }
+}
 
     /**
      * Construye un objeto Usuario a partir de un resultado SQL.

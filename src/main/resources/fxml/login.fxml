@@ -58,6 +58,36 @@
     />
 
     <Label
+        text="¿Aún no tienes una cuenta?"
+        style="
+            -fx-font-size: 13px;
+            -fx-text-fill: #6b7280;
+        "/>
+
+<Button
+        text="Registrarse"
+        onAction="#abrirRegistro"
+        maxWidth="Infinity"
+        prefHeight="38"
+        style="
+            -fx-background-color: transparent;
+            -fx-border-color: #087df5;
+            -fx-border-radius: 5;
+            -fx-text-fill: #087df5;
+            -fx-font-weight: bold;
+            -fx-cursor: hand;
+        "/>
+
+<Label
+        text="¿Eres parte del personal médico o administrativo? Solicita la creación de tu cuenta al administrador del sistema."
+        wrapText="true"
+        maxWidth="Infinity"
+        style="
+            -fx-font-size: 11px;
+            -fx-text-fill: #7b8794;
+        "/>
+
+    <Label
             fx:id="lblMensaje"
             wrapText="true"
             styleClass="mensaje"

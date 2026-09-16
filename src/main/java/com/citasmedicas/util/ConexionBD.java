@@ -52,15 +52,17 @@ public final class ConexionBD {
     // ============================================================
 
     private static final String URL =
-            "jdbc:mysql://"
-            + HOST
-            + ":"
-            + PUERTO
-            + "/"
-            + BASE_DATOS
-            + "?useSSL=false"
-            + "&allowPublicKeyRetrieval=true"
-            + "&serverTimezone=America/Guayaquil";
+        "jdbc:mysql://"
+        + HOST
+        + ":"
+        + PUERTO
+        + "/"
+        + BASE_DATOS
+        + "?useSSL=false"
+        + "&allowPublicKeyRetrieval=true"
+        + "&serverTimezone=America/Guayaquil"
+        + "&useUnicode=true"
+        + "&characterEncoding=UTF-8";
 
     /**
      * Constructor privado.

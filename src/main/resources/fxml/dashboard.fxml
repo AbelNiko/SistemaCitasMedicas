@@ -55,16 +55,18 @@
                     styleClass="sidebar-button-active"/>
 
             <Button
-                    text="Agendar cita"
-                    maxWidth="Infinity"
-                    prefHeight="42"
-                    styleClass="sidebar-button"/>
+        text="Agendar cita"
+        maxWidth="Infinity"
+        prefHeight="42"
+        styleClass="sidebar-button"
+        onAction="#abrirAgendarCita"/>
 
             <Button
-                    text="Mis citas"
-                    maxWidth="Infinity"
-                    prefHeight="42"
-                    styleClass="sidebar-button"/>
+        text="Mis citas"
+        maxWidth="Infinity"
+        prefHeight="42"
+        styleClass="sidebar-button"
+        onAction="#abrirMisCitas"/>
 
             <Button
                     text="Mi perfil"
@@ -188,12 +190,16 @@
                             styleClass="card-title"/>
 
                     <Label
-                            text="Sin citas próximas"
-                            styleClass="card-value"/>
+        fx:id="lblProximaCita"
+        text="Sin citas próximas"
+        wrapText="true"
+        styleClass="card-value"/>
 
                     <Label
-                            text="Agenda una nueva cita médica"
-                            styleClass="card-description"/>
+        fx:id="lblDetalleProximaCita"
+        text="Agenda una nueva cita médica"
+        wrapText="true"
+        styleClass="card-description"/>
 
                 </VBox>
 
@@ -216,8 +222,9 @@
                             styleClass="card-title"/>
 
                     <Label
-                            text="0"
-                            styleClass="card-value"/>
+        fx:id="lblCantidadCitas"
+        text="0"
+        styleClass="card-value"/>
 
                     <Label
                             text="Citas programadas"
@@ -266,16 +273,18 @@
                 <HBox spacing="15">
 
                     <Button
-                            text="Agendar nueva cita"
-                            prefWidth="190"
-                            prefHeight="55"
-                            styleClass="primary-button"/>
+        text="Agendar nueva cita"
+        prefWidth="190"
+        prefHeight="55"
+        styleClass="primary-button"
+        onAction="#abrirAgendarCita"/>
 
                     <Button
-                            text="Consultar mis citas"
-                            prefWidth="190"
-                            prefHeight="55"
-                            styleClass="quick-action"/>
+        text="Consultar mis citas"
+        prefWidth="190"
+        prefHeight="55"
+        styleClass="quick-action"
+        onAction="#abrirMisCitas"/>
 
                     <Button
                             text="Ver mi perfil"

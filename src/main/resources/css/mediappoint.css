@@ -476,3 +476,26 @@
     -fx-font-size: 17px;
     -fx-font-weight: bold;
 }
+
+/* ============================================================
+                   CANCELACIÓN DE CITAS
+   ============================================================ */
+
+.cancel-appointment-button {
+    -fx-background-color: transparent;
+    -fx-border-color: #FF6B6B;
+    -fx-border-radius: 6px;
+    -fx-background-radius: 6px;
+
+    -fx-text-fill: #FF7B7B;
+    -fx-font-weight: bold;
+
+    -fx-padding: 8px 16px;
+    -fx-cursor: hand;
+}
+
+.cancel-appointment-button:hover {
+    -fx-background-color: rgba(255, 107, 107, 0.12);
+    -fx-border-color: #FF8585;
+    -fx-text-fill: #FF9999;
+}

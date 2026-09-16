@@ -785,4 +785,67 @@ public class MisCitasController {
 
         stage.centerOnScreen();
     }
+    /**
+ * Abre la pantalla Mi perfil conservando
+ * el usuario actualmente autenticado.
+ */
+@FXML
+private void abrirPerfil() {
+
+    if (usuarioActual == null) {
+        return;
+    }
+
+    try {
+
+        FXMLLoader loader =
+                new FXMLLoader(
+                        getClass().getResource(
+                                "/fxml/perfil.fxml"
+                        )
+                );
+
+        Scene scene =
+                new Scene(
+                        loader.load()
+                );
+
+        PerfilController controller =
+                loader.getController();
+
+        /*
+         * Conservamos el usuario autenticado
+         * al cambiar de pantalla.
+         */
+        controller.setUsuario(
+                usuarioActual
+        );
+
+        Stage stage =
+                (Stage) lblNombreUsuario
+                        .getScene()
+                        .getWindow();
+
+        stage.setScene(
+                scene
+        );
+
+        stage.setTitle(
+                "MediAppoint - Mi perfil"
+        );
+
+        stage.setMinWidth(950);
+        stage.setMinHeight(620);
+        stage.centerOnScreen();
+
+    } catch (IOException e) {
+
+        System.err.println(
+                "Error al abrir Mi perfil: "
+                + e.getMessage()
+        );
+
+        e.printStackTrace();
+    }
+}
 }

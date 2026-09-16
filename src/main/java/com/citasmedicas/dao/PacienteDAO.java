@@ -3,6 +3,7 @@ package com.citasmedicas.dao;
 import com.citasmedicas.model.Paciente;
 import com.citasmedicas.util.ConexionBD;
 
+
 import java.sql.Connection;
 import java.sql.PreparedStatement;
 import java.sql.ResultSet;
@@ -231,4 +232,56 @@ public class PacienteDAO {
             }
         }
     }
+    /**
+ * Actualiza la dirección del paciente.
+ *
+ * @param idPaciente identificador del paciente.
+ * @param direccion nueva dirección.
+ * @return true si la actualización fue realizada.
+ */
+public boolean actualizarDireccion(
+        int idPaciente,
+        String direccion
+) throws SQLException {
+
+    String sql = """
+            UPDATE pacientes
+            SET direccion = ?
+            WHERE id_paciente = ?
+            """;
+
+    try (
+            Connection conexion =
+                    ConexionBD.obtenerConexion();
+
+            PreparedStatement sentencia =
+                    conexion.prepareStatement(sql)
+    ) {
+
+        if (
+                direccion == null
+                || direccion.isBlank()
+        ) {
+
+            sentencia.setNull(
+                    1,
+                    java.sql.Types.VARCHAR
+            );
+
+        } else {
+
+            sentencia.setString(
+                    1,
+                    direccion.trim()
+            );
+        }
+
+        sentencia.setInt(
+                2,
+                idPaciente
+        );
+
+        return sentencia.executeUpdate() > 0;
+    }
+}
 }

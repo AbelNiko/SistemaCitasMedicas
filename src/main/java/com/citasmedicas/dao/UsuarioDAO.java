@@ -1,5 +1,6 @@
 package com.citasmedicas.dao;
 
+
 import com.citasmedicas.model.Rol;
 import com.citasmedicas.model.Usuario;
 import com.citasmedicas.util.ConexionBD;
@@ -347,4 +348,79 @@ public int insertar(
 
         return usuario;
     }
+    /**
+ * Actualiza los datos personales editables
+ * de un usuario.
+ *
+ * No modifica cédula, contraseña, rol ni estado.
+ *
+ * @return true si el usuario fue actualizado.
+ */
+public boolean actualizarPerfil(
+        int idUsuario,
+        String nombres,
+        String apellidos,
+        String correo,
+        String telefono
+) throws SQLException {
+
+    String sql = """
+            UPDATE usuarios
+            SET
+                nombres = ?,
+                apellidos = ?,
+                correo = ?,
+                telefono = ?
+            WHERE id_usuario = ?
+            """;
+
+    try (
+            Connection conexion =
+                    ConexionBD.obtenerConexion();
+
+            PreparedStatement sentencia =
+                    conexion.prepareStatement(sql)
+    ) {
+
+        sentencia.setString(
+                1,
+                nombres
+        );
+
+        sentencia.setString(
+                2,
+                apellidos
+        );
+
+        sentencia.setString(
+                3,
+                correo
+        );
+
+        if (
+                telefono == null
+                || telefono.isBlank()
+        ) {
+
+            sentencia.setNull(
+                    4,
+                    java.sql.Types.VARCHAR
+            );
+
+        } else {
+
+            sentencia.setString(
+                    4,
+                    telefono
+            );
+        }
+
+        sentencia.setInt(
+                5,
+                idUsuario
+        );
+
+        return sentencia.executeUpdate() > 0;
+    }
+}
 }

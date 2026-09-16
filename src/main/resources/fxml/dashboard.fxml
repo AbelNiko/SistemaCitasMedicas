@@ -69,10 +69,11 @@
         onAction="#abrirMisCitas"/>
 
             <Button
-                    text="Mi perfil"
-                    maxWidth="Infinity"
-                    prefHeight="42"
-                    styleClass="sidebar-button"/>
+        text="Mi perfil"
+        maxWidth="Infinity"
+        prefHeight="42"
+        styleClass="sidebar-button"
+        onAction="#abrirPerfil"/>
 
             <Region VBox.vgrow="ALWAYS"/>
 
@@ -287,10 +288,11 @@
         onAction="#abrirMisCitas"/>
 
                     <Button
-                            text="Ver mi perfil"
-                            prefWidth="190"
-                            prefHeight="55"
-                            styleClass="quick-action"/>
+        text="Ver mi perfil"
+        prefWidth="190"
+        prefHeight="55"
+        styleClass="quick-action"
+        onAction="#abrirPerfil"/>
 
                 </HBox>
 

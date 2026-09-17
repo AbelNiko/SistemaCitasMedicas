@@ -70,21 +70,22 @@
                     styleClass="sidebar-button-active"/>
 
             <Button
-                    text="Mi perfil"
-                    maxWidth="Infinity"
-                    prefHeight="42"
-                    styleClass="sidebar-button"/>
-                    onAction="#abrirPerfil"
+        text="Mi perfil"
+        maxWidth="Infinity"
+        prefHeight="42"
+        styleClass="sidebar-button"
+        onAction="#abrirPerfil"/>
 
             <Region VBox.vgrow="ALWAYS"/>
 
             <Separator/>
 
             <Button
-                    text="Cerrar sesión"
-                    maxWidth="Infinity"
-                    prefHeight="42"
-                    styleClass="logout-button"/>
+        text="Cerrar sesión"
+        maxWidth="Infinity"
+        prefHeight="42"
+        styleClass="logout-button"
+        onAction="#cerrarSesion"/>
 
         </VBox>
 

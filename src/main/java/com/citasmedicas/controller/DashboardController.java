@@ -1,5 +1,5 @@
 package com.citasmedicas.controller;
-
+import com.citasmedicas.util.SesionUtil;
 import com.citasmedicas.dao.PacienteDAO;
 import com.citasmedicas.model.Cita;
 import com.citasmedicas.model.Paciente;
@@ -388,6 +388,45 @@ private void abrirPerfil() {
 
         System.err.println(
                 "Error al abrir Mi perfil: "
+                + e.getMessage()
+        );
+
+        e.printStackTrace();
+    }
+}
+/**
+ * Cierra la sesión del usuario autenticado
+ * y regresa a la pantalla de inicio de sesión.
+ */
+@FXML
+private void cerrarSesion() {
+
+    try {
+
+        /*
+         * Obtenemos la ventana antes de eliminar
+         * la referencia al usuario.
+         */
+        Stage stage =
+                (Stage) lblNombreUsuario
+                        .getScene()
+                        .getWindow();
+
+        /*
+         * Eliminamos la referencia mantenida
+         * por este controlador.
+         */
+        usuarioActual = null;
+
+        /*
+         * Regresamos a la pantalla Login.
+         */
+        SesionUtil.cerrarSesion(stage);
+
+    } catch (IOException e) {
+
+        System.err.println(
+                "Error al cerrar sesión: "
                 + e.getMessage()
         );
 

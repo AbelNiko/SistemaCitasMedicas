@@ -468,4 +468,134 @@ public boolean cancelarCita(
         return sentencia.executeUpdate() > 0;
     }
 }
+/**
+ * Reprograma la fecha y el horario de una cita
+ * perteneciente a un paciente.
+ *
+ * Solamente permite modificar citas que se encuentren
+ * en estado PROGRAMADA o CONFIRMADA.
+ *
+ * @return true si la cita fue actualizada correctamente.
+ */
+public boolean reprogramarCita(
+        Connection conexion,
+        int idCita,
+        int idPaciente,
+        LocalDate nuevaFecha,
+        LocalTime nuevaHoraInicio,
+        LocalTime nuevaHoraFin
+) throws SQLException {
+
+    String sql = """
+            UPDATE citas
+            SET
+                fecha_cita = ?,
+                hora_inicio = ?,
+                hora_fin = ?
+            WHERE id_cita = ?
+              AND id_paciente = ?
+              AND estado IN ('PROGRAMADA', 'CONFIRMADA')
+            """;
+
+    try (PreparedStatement sentencia =
+                 conexion.prepareStatement(sql)) {
+
+        sentencia.setDate(
+                1,
+                java.sql.Date.valueOf(nuevaFecha)
+        );
+
+        sentencia.setTime(
+                2,
+                java.sql.Time.valueOf(nuevaHoraInicio)
+        );
+
+        sentencia.setTime(
+                3,
+                java.sql.Time.valueOf(nuevaHoraFin)
+        );
+
+        sentencia.setInt(
+                4,
+                idCita
+        );
+
+        sentencia.setInt(
+                5,
+                idPaciente
+        );
+
+        return sentencia.executeUpdate() > 0;
+    }
+}
+/**
+ * Comprueba si existe un solapamiento excluyendo
+ * una cita específica.
+ *
+ * Se utiliza durante la reprogramación para evitar
+ * que la cita se detecte a sí misma como ocupada.
+ */
+public boolean existeSolapamientoExcluyendoCita(
+        Connection conexion,
+        int idCitaExcluir,
+        int idMedico,
+        int idEstablecimiento,
+        LocalDate fecha,
+        LocalTime horaInicio,
+        LocalTime horaFin
+) throws SQLException {
+
+    String sql = """
+            SELECT COUNT(*) AS total
+            FROM citas
+            WHERE id_medico = ?
+              AND id_establecimiento = ?
+              AND fecha_cita = ?
+              AND estado IN ('PROGRAMADA', 'CONFIRMADA')
+              AND id_cita <> ?
+              AND hora_inicio < ?
+              AND hora_fin > ?
+            """;
+
+    try (PreparedStatement sentencia =
+                 conexion.prepareStatement(sql)) {
+
+        sentencia.setInt(
+                1,
+                idMedico
+        );
+
+        sentencia.setInt(
+                2,
+                idEstablecimiento
+        );
+
+        sentencia.setDate(
+                3,
+                java.sql.Date.valueOf(fecha)
+        );
+
+        sentencia.setInt(
+                4,
+                idCitaExcluir
+        );
+
+        sentencia.setTime(
+                5,
+                java.sql.Time.valueOf(horaFin)
+        );
+
+        sentencia.setTime(
+                6,
+                java.sql.Time.valueOf(horaInicio)
+        );
+
+        try (ResultSet resultado =
+                     sentencia.executeQuery()) {
+
+            return resultado.next()
+                    && resultado.getInt("total") > 0;
+        }
+    }
+}
 }

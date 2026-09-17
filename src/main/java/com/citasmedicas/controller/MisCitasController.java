@@ -5,6 +5,7 @@ import com.citasmedicas.model.Cita;
 import com.citasmedicas.model.Paciente;
 import com.citasmedicas.model.Usuario;
 import com.citasmedicas.service.CitaService;
+import com.citasmedicas.util.SesionUtil;
 
 import javafx.fxml.FXML;
 import javafx.fxml.FXMLLoader;
@@ -21,7 +22,6 @@ import javafx.scene.layout.Region;
 import javafx.scene.layout.VBox;
 import javafx.stage.Stage;
 
-import com.citasmedicas.util.SesionUtil;
 import java.io.IOException;
 import java.time.format.DateTimeFormatter;
 import java.util.List;
@@ -32,14 +32,11 @@ import java.util.Optional;
  *                CONTROLLER - MIS CITAS
  * ================================================================
  *
- * Gestiona la consulta y cancelación de las citas médicas
- * pertenecientes al paciente autenticado.
- *
- * Permite visualizar la información de cada cita y cancelar
- * aquellas que se encuentren en estado PROGRAMADA o CONFIRMADA.
+ * Gestiona la consulta, navegación, reprogramación y cancelación
+ * de las citas médicas pertenecientes al paciente autenticado.
  *
  * @author Equipo de Ingeniería de Software II
- * @version 1.0
+ * @version 1.1
  */
 public class MisCitasController {
 
@@ -122,10 +119,6 @@ public class MisCitasController {
 
         try {
 
-            /*
-             * Obtenemos el perfil de paciente relacionado
-             * con el usuario que inició sesión.
-             */
             Paciente paciente =
                     pacienteDAO.buscarPorIdUsuario(
                             usuarioActual.getIdUsuario()
@@ -142,9 +135,6 @@ public class MisCitasController {
                 return;
             }
 
-            /*
-             * Consultamos todas las citas del paciente.
-             */
             List<Cita> citas =
                     citaService.listarPorPaciente(
                             paciente.getIdPaciente()
@@ -163,9 +153,6 @@ public class MisCitasController {
                 return;
             }
 
-            /*
-             * Construimos una tarjeta por cada cita.
-             */
             for (Cita cita : citas) {
 
                 contenedorCitas
@@ -183,7 +170,7 @@ public class MisCitasController {
 
             System.err.println(
                     "Error al consultar citas: "
-                    + e.getMessage()
+                            + e.getMessage()
             );
 
             e.printStackTrace();
@@ -228,11 +215,11 @@ public class MisCitasController {
                 new Label(
                         cita.getFechaCita()
                                 .format(formatoFecha)
-                        + " · "
-                        + cita.getHoraInicio()
+                                + " · "
+                                + cita.getHoraInicio()
                                 .format(formatoHora)
-                        + " - "
-                        + cita.getHoraFin()
+                                + " - "
+                                + cita.getHoraFin()
                                 .format(formatoHora)
                 );
 
@@ -287,7 +274,7 @@ public class MisCitasController {
         Label medico =
                 new Label(
                         "Médico: "
-                        + cita.getNombreMedico()
+                                + cita.getNombreMedico()
                 );
 
         medico.getStyleClass().add(
@@ -303,7 +290,7 @@ public class MisCitasController {
         Label establecimiento =
                 new Label(
                         "Establecimiento: "
-                        + cita.getNombreEstablecimiento()
+                                + cita.getNombreEstablecimiento()
                 );
 
         establecimiento.setWrapText(true);
@@ -320,14 +307,14 @@ public class MisCitasController {
 
         String motivoTexto =
                 cita.getMotivoConsulta() == null
-                || cita.getMotivoConsulta().isBlank()
+                        || cita.getMotivoConsulta().isBlank()
                         ? "Sin motivo especificado"
                         : cita.getMotivoConsulta();
 
         Label motivo =
                 new Label(
                         "Motivo: "
-                        + motivoTexto
+                                + motivoTexto
                 );
 
         motivo.setWrapText(true);
@@ -336,10 +323,6 @@ public class MisCitasController {
                 "card-description"
         );
 
-        /*
-         * Añadimos inicialmente la información
-         * principal de la cita.
-         */
         tarjeta.getChildren().addAll(
                 encabezado,
                 especialidad,
@@ -352,23 +335,20 @@ public class MisCitasController {
          * ========================================================
          * MOTIVO DE CANCELACIÓN
          * ========================================================
-         *
-         * Si la cita ya fue cancelada mostramos también
-         * el motivo registrado.
          */
 
         if (
                 "CANCELADA".equalsIgnoreCase(
                         cita.getEstado()
                 )
-                && cita.getMotivoCancelacion() != null
-                && !cita.getMotivoCancelacion().isBlank()
+                        && cita.getMotivoCancelacion() != null
+                        && !cita.getMotivoCancelacion().isBlank()
         ) {
 
             Label motivoCancelacion =
                     new Label(
                             "Motivo de cancelación: "
-                            + cita.getMotivoCancelacion()
+                                    + cita.getMotivoCancelacion()
                     );
 
             motivoCancelacion.setWrapText(true);
@@ -384,22 +364,46 @@ public class MisCitasController {
 
         /*
          * ========================================================
-         * BOTÓN CANCELAR
+         * ACCIONES DE LA CITA
          * ========================================================
          *
-         * Solamente las citas PROGRAMADAS o CONFIRMADAS
-         * pueden ser canceladas.
+         * Únicamente las citas PROGRAMADAS o CONFIRMADAS
+         * pueden reprogramarse o cancelarse.
          */
 
-        boolean puedeCancelar =
+        boolean puedeGestionar =
                 "PROGRAMADA".equalsIgnoreCase(
                         cita.getEstado()
                 )
-                || "CONFIRMADA".equalsIgnoreCase(
+                        || "CONFIRMADA".equalsIgnoreCase(
                         cita.getEstado()
                 );
 
-        if (puedeCancelar) {
+        if (puedeGestionar) {
+
+            HBox acciones =
+                    new HBox(12);
+
+            /*
+             * BOTÓN REPROGRAMAR
+             */
+
+            Button btnReprogramar =
+                    new Button(
+                            "Reprogramar"
+                    );
+
+            btnReprogramar.getStyleClass().add(
+                    "primary-button"
+            );
+
+            btnReprogramar.setOnAction(
+                    event -> abrirReprogramacion(cita)
+            );
+
+            /*
+             * BOTÓN CANCELAR
+             */
 
             Button btnCancelar =
                     new Button(
@@ -414,12 +418,73 @@ public class MisCitasController {
                     event -> cancelarCita(cita)
             );
 
-            tarjeta.getChildren().add(
+            acciones.getChildren().addAll(
+                    btnReprogramar,
                     btnCancelar
+            );
+
+            tarjeta.getChildren().add(
+                    acciones
             );
         }
 
         return tarjeta;
+    }
+
+    /**
+     * Abre la pantalla de reprogramación enviando
+     * el usuario autenticado y la cita seleccionada.
+     *
+     * @param cita cita que se desea reprogramar.
+     */
+    private void abrirReprogramacion(
+            Cita cita
+    ) {
+
+        if (usuarioActual == null || cita == null) {
+            return;
+        }
+
+        try {
+
+            FXMLLoader loader =
+                    new FXMLLoader(
+                            getClass().getResource(
+                                    "/fxml/reprogramar-cita.fxml"
+                            )
+                    );
+
+            Scene scene =
+                    new Scene(
+                            loader.load()
+                    );
+
+            ReprogramarCitaController controller =
+                    loader.getController();
+
+            controller.configurar(
+                    usuarioActual,
+                    cita
+            );
+
+            cambiarEscena(
+                    scene,
+                    "MediAppoint - Reprogramar cita"
+            );
+
+        } catch (IOException e) {
+
+            mostrarError(
+                    "No fue posible abrir la reprogramación de la cita."
+            );
+
+            System.err.println(
+                    "Error al abrir Reprogramar cita: "
+                            + e.getMessage()
+            );
+
+            e.printStackTrace();
+        }
     }
 
     /**
@@ -456,25 +521,21 @@ public class MisCitasController {
         confirmacion.setContentText(
                 cita.getFechaCita()
                         .format(formatoFecha)
-                + " a las "
-                + cita.getHoraInicio()
+                        + " a las "
+                        + cita.getHoraInicio()
                         .format(formatoHora)
-                + "\n"
-                + cita.getNombreEspecialidad()
-                + " - "
-                + cita.getNombreMedico()
+                        + "\n"
+                        + cita.getNombreEspecialidad()
+                        + " - "
+                        + cita.getNombreMedico()
         );
 
         Optional<ButtonType> respuesta =
                 confirmacion.showAndWait();
 
-        /*
-         * Si el paciente cierra la ventana o selecciona
-         * Cancelar, no realizamos ninguna modificación.
-         */
         if (
                 respuesta.isEmpty()
-                || respuesta.get() != ButtonType.OK
+                        || respuesta.get() != ButtonType.OK
         ) {
 
             return;
@@ -504,10 +565,6 @@ public class MisCitasController {
         Optional<String> resultado =
                 dialogoMotivo.showAndWait();
 
-        /*
-         * Si el usuario cierra el diálogo,
-         * se cancela la operación.
-         */
         if (resultado.isEmpty()) {
             return;
         }
@@ -530,7 +587,7 @@ public class MisCitasController {
 
             mostrarError(
                     "El motivo de cancelación no puede "
-                    + "superar los 255 caracteres."
+                            + "superar los 255 caracteres."
             );
 
             return;
@@ -558,29 +615,14 @@ public class MisCitasController {
                 return;
             }
 
-            /*
-             * El Service valida que:
-             *
-             * - La cita sea válida.
-             * - Pertenezca al paciente.
-             * - Su estado permita cancelación.
-             */
             citaService.cancelarCita(
                     cita.getIdCita(),
                     paciente.getIdPaciente(),
                     motivo
             );
 
-            /*
-             * Volvemos a consultar MySQL para actualizar
-             * inmediatamente todas las tarjetas.
-             */
             cargarCitas();
 
-            /*
-             * Este mensaje se coloca después de cargarCitas()
-             * para evitar que limpiarMensaje() lo elimine.
-             */
             mostrarExito(
                     "La cita fue cancelada correctamente."
             );
@@ -599,7 +641,7 @@ public class MisCitasController {
 
             System.err.println(
                     "Error al cancelar cita: "
-                    + e.getMessage()
+                            + e.getMessage()
             );
 
             e.printStackTrace();
@@ -757,6 +799,98 @@ public class MisCitasController {
     }
 
     /**
+     * Recarga la pantalla actual de Mis citas.
+     */
+    @FXML
+    private void abrirMisCitas() {
+
+        cargarCitas();
+    }
+
+    /**
+     * Abre la pantalla Mi perfil conservando
+     * el usuario actualmente autenticado.
+     */
+    @FXML
+    private void abrirPerfil() {
+
+        if (usuarioActual == null) {
+            return;
+        }
+
+        try {
+
+            FXMLLoader loader =
+                    new FXMLLoader(
+                            getClass().getResource(
+                                    "/fxml/perfil.fxml"
+                            )
+                    );
+
+            Scene scene =
+                    new Scene(
+                            loader.load()
+                    );
+
+            PerfilController controller =
+                    loader.getController();
+
+            controller.setUsuario(
+                    usuarioActual
+            );
+
+            cambiarEscena(
+                    scene,
+                    "MediAppoint - Mi perfil"
+            );
+
+        } catch (IOException e) {
+
+            mostrarError(
+                    "No fue posible abrir Mi perfil."
+            );
+
+            System.err.println(
+                    "Error al abrir Mi perfil: "
+                            + e.getMessage()
+            );
+
+            e.printStackTrace();
+        }
+    }
+
+    /**
+     * Cierra la sesión del usuario autenticado
+     * y regresa a la pantalla de inicio de sesión.
+     */
+    @FXML
+    private void cerrarSesion() {
+
+        try {
+
+            Stage stage =
+                    (Stage) lblNombreUsuario
+                            .getScene()
+                            .getWindow();
+
+            usuarioActual = null;
+
+            SesionUtil.cerrarSesion(
+                    stage
+            );
+
+        } catch (IOException e) {
+
+            System.err.println(
+                    "Error al cerrar sesión desde Mis citas: "
+                            + e.getMessage()
+            );
+
+            e.printStackTrace();
+        }
+    }
+
+    /**
      * Cambia de pantalla conservando
      * la ventana principal.
      *
@@ -783,109 +917,6 @@ public class MisCitasController {
 
         stage.setMinWidth(950);
         stage.setMinHeight(620);
-
         stage.centerOnScreen();
     }
-    /**
- * Abre la pantalla Mi perfil conservando
- * el usuario actualmente autenticado.
- */
-@FXML
-private void abrirPerfil() {
-
-    if (usuarioActual == null) {
-        return;
-    }
-
-    try {
-
-        FXMLLoader loader =
-                new FXMLLoader(
-                        getClass().getResource(
-                                "/fxml/perfil.fxml"
-                        )
-                );
-
-        Scene scene =
-                new Scene(
-                        loader.load()
-                );
-
-        PerfilController controller =
-                loader.getController();
-
-        /*
-         * Conservamos el usuario autenticado
-         * al cambiar de pantalla.
-         */
-        controller.setUsuario(
-                usuarioActual
-        );
-
-        Stage stage =
-                (Stage) lblNombreUsuario
-                        .getScene()
-                        .getWindow();
-
-        stage.setScene(
-                scene
-        );
-
-        stage.setTitle(
-                "MediAppoint - Mi perfil"
-        );
-
-        stage.setMinWidth(950);
-        stage.setMinHeight(620);
-        stage.centerOnScreen();
-
-    } catch (IOException e) {
-
-        System.err.println(
-                "Error al abrir Mi perfil: "
-                + e.getMessage()
-        );
-
-        e.printStackTrace();
-    }
-}
-/**
- * Cierra la sesión del usuario autenticado
- * y regresa a la pantalla de inicio de sesión.
- */
-@FXML
-private void cerrarSesion() {
-
-    try {
-
-        /*
-         * Obtenemos la ventana actual antes
-         * de eliminar la referencia al usuario.
-         */
-        Stage stage =
-                (Stage) lblNombreUsuario
-                        .getScene()
-                        .getWindow();
-
-        /*
-         * Eliminamos la referencia mantenida
-         * por este controlador.
-         */
-        usuarioActual = null;
-
-        /*
-         * Regresamos al Login.
-         */
-        SesionUtil.cerrarSesion(stage);
-
-    } catch (IOException e) {
-
-        System.err.println(
-                "Error al cerrar sesión desde Mis citas: "
-                + e.getMessage()
-        );
-
-        e.printStackTrace();
-    }
-}
 }

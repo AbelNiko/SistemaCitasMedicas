@@ -65,6 +65,8 @@ public class HorarioMedicoService {
             LocalDate fecha
     ) throws SQLException {
 
+        
+
         validarParametros(
                 idMedico,
                 idEstablecimiento,
@@ -235,6 +237,92 @@ public class HorarioMedicoService {
 
         return disponibles;
     }
+
+    /**
+ * Obtiene los bloques disponibles para reprogramar una cita.
+ *
+ * Funciona de forma similar a obtenerBloquesDisponibles(),
+ * pero excluye la cita que actualmente está siendo modificada.
+ *
+ * De esta manera, la cita no se detecta a sí misma como
+ * un horario ocupado.
+ */
+public List<LocalTime> obtenerBloquesDisponiblesParaReprogramacion(
+        int idCitaExcluir,
+        int idMedico,
+        int idEstablecimiento,
+        LocalDate fecha
+) throws SQLException {
+
+    validarParametros(
+            idMedico,
+            idEstablecimiento,
+            fecha
+    );
+
+    if (idCitaExcluir <= 0) {
+
+        throw new IllegalArgumentException(
+                "La cita seleccionada no es válida."
+        );
+    }
+
+    List<HorarioMedico> horarios =
+            obtenerHorarios(
+                    idMedico,
+                    idEstablecimiento,
+                    fecha
+            );
+
+    List<LocalTime> disponibles =
+            new ArrayList<>();
+
+    for (HorarioMedico horario : horarios) {
+
+        LocalTime horaActual =
+                horario.getHoraInicio();
+
+        int duracion =
+                horario.getDuracionCitaMinutos();
+
+        while (
+                !horaActual
+                        .plusMinutes(duracion)
+                        .isAfter(
+                                horario.getHoraFin()
+                        )
+        ) {
+
+            LocalTime horaFinBloque =
+                    horaActual.plusMinutes(
+                            duracion
+                    );
+
+            boolean disponible =
+                    citaService
+                            .estaDisponibleParaReprogramacion(
+                                    idCitaExcluir,
+                                    idMedico,
+                                    idEstablecimiento,
+                                    fecha,
+                                    horaActual,
+                                    horaFinBloque
+                            );
+
+            if (disponible) {
+
+                disponibles.add(
+                        horaActual
+                );
+            }
+
+            horaActual =
+                    horaFinBloque;
+        }
+    }
+
+    return disponibles;
+}
 
     /**
      * Valida los parámetros necesarios para consultar

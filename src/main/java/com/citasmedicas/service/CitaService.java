@@ -391,4 +391,198 @@ public void cancelarCita(
         );
     }
 }
+/**
+ * Reprograma una cita médica del paciente.
+ *
+ * Mantiene el médico, especialidad y establecimiento
+ * originales de la cita, modificando únicamente
+ * la fecha y el horario.
+ *
+ * Antes de actualizar se comprueba nuevamente que
+ * el nuevo horario continúe disponible.
+ */
+public void reprogramarCita(
+        int idCita,
+        int idPaciente,
+        int idMedico,
+        int idEstablecimiento,
+        LocalDate nuevaFecha,
+        LocalTime nuevaHoraInicio,
+        LocalTime nuevaHoraFin
+) throws SQLException {
+
+    /*
+     * ========================================================
+     * VALIDACIONES BÁSICAS
+     * ========================================================
+     */
+
+    if (idCita <= 0) {
+
+        throw new IllegalArgumentException(
+                "La cita seleccionada no es válida."
+        );
+    }
+
+    if (idPaciente <= 0) {
+
+        throw new IllegalArgumentException(
+                "El paciente no es válido."
+        );
+    }
+
+    /*
+     * Reutilizamos las mismas validaciones empleadas
+     * durante el agendamiento.
+     */
+    validarHorario(
+            idMedico,
+            idEstablecimiento,
+            nuevaFecha,
+            nuevaHoraInicio,
+            nuevaHoraFin
+    );
+
+    /*
+     * ========================================================
+     * TRANSACCIÓN
+     * ========================================================
+     */
+
+    try (Connection conexion =
+                 ConexionBD.obtenerConexion()) {
+
+        boolean autoCommitOriginal =
+                conexion.getAutoCommit();
+
+        try {
+
+            conexion.setAutoCommit(false);
+
+            /*
+             * Comprobamos que otra cita activa no ocupe
+             * el nuevo intervalo seleccionado.
+             *
+             * La cita que estamos modificando se excluye
+             * de esta comprobación.
+             */
+            boolean ocupado =
+                    citaDAO.existeSolapamientoExcluyendoCita(
+                            conexion,
+                            idCita,
+                            idMedico,
+                            idEstablecimiento,
+                            nuevaFecha,
+                            nuevaHoraInicio,
+                            nuevaHoraFin
+                    );
+
+            if (ocupado) {
+
+                conexion.rollback();
+
+                throw new IllegalArgumentException(
+                        "El horario seleccionado ya no se encuentra disponible."
+                );
+            }
+
+            /*
+             * Actualizamos solamente fecha y horario.
+             */
+            boolean actualizada =
+                    citaDAO.reprogramarCita(
+                            conexion,
+                            idCita,
+                            idPaciente,
+                            nuevaFecha,
+                            nuevaHoraInicio,
+                            nuevaHoraFin
+                    );
+
+            if (!actualizada) {
+
+                conexion.rollback();
+
+                throw new IllegalArgumentException(
+                        "La cita no pudo ser reprogramada. "
+                        + "Es posible que su estado haya cambiado."
+                );
+            }
+
+            conexion.commit();
+
+        } catch (SQLException
+                 | IllegalArgumentException e) {
+
+            try {
+
+                conexion.rollback();
+
+            } catch (SQLException rollbackError) {
+
+                e.addSuppressed(
+                        rollbackError
+                );
+            }
+
+            throw e;
+
+        } finally {
+
+            try {
+
+                conexion.setAutoCommit(
+                        autoCommitOriginal
+                );
+
+            } catch (SQLException e) {
+
+                System.err.println(
+                        "No fue posible restaurar AutoCommit: "
+                        + e.getMessage()
+                );
+            }
+        }
+    }
+}
+/**
+ * Comprueba si un horario se encuentra disponible durante
+ * la reprogramación de una cita.
+ *
+ * La cita que está siendo modificada se excluye de la
+ * comprobación para evitar que se detecte a sí misma
+ * como un solapamiento.
+ */
+public boolean estaDisponibleParaReprogramacion(
+        int idCitaExcluir,
+        int idMedico,
+        int idEstablecimiento,
+        LocalDate fecha,
+        LocalTime horaInicio,
+        LocalTime horaFin
+) throws SQLException {
+
+    validarHorario(
+            idMedico,
+            idEstablecimiento,
+            fecha,
+            horaInicio,
+            horaFin
+    );
+
+    try (Connection conexion =
+                 ConexionBD.obtenerConexion()) {
+
+        return !citaDAO
+                .existeSolapamientoExcluyendoCita(
+                        conexion,
+                        idCitaExcluir,
+                        idMedico,
+                        idEstablecimiento,
+                        fecha,
+                        horaInicio,
+                        horaFin
+                );
+    }
+}
 }

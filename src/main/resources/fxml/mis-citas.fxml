@@ -64,11 +64,11 @@
                     onAction="#abrirAgendarCita"/>
 
             <Button
-                    text="Mis citas"
-                    maxWidth="Infinity"
-                    prefHeight="42"
-                    styleClass="sidebar-button-active"/>
-
+        text="Mis citas"
+        maxWidth="Infinity"
+        styleClass="sidebar-button-active"
+        onAction="#abrirMisCitas"/>
+        
             <Button
         text="Mi perfil"
         maxWidth="Infinity"

@@ -80,10 +80,11 @@
             <Separator/>
 
             <Button
-                    text="Cerrar sesión"
-                    maxWidth="Infinity"
-                    prefHeight="42"
-                    styleClass="logout-button"/>
+        text="Cerrar sesión"
+        maxWidth="Infinity"
+        prefHeight="42"
+        styleClass="logout-button"
+        onAction="#cerrarSesion"/>
 
         </VBox>
 

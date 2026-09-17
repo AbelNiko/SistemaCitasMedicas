@@ -12,6 +12,7 @@ import com.citasmedicas.service.EspecialidadService;
 import com.citasmedicas.service.EstablecimientoService;
 import com.citasmedicas.service.HorarioMedicoService;
 import com.citasmedicas.service.MedicoService;
+import com.citasmedicas.util.SesionUtil;
 
 import javafx.fxml.FXML;
 import javafx.fxml.FXMLLoader;
@@ -794,4 +795,47 @@ actualizarEstadoConfirmacion();
             e.printStackTrace();
         }
     }
+    /**
+ * Cierra la sesión del usuario autenticado
+ * y regresa a la pantalla de inicio de sesión.
+ */
+@FXML
+private void cerrarSesion() {
+
+    try {
+
+        /*
+         * Obtenemos la ventana actual antes
+         * de eliminar la referencia al usuario.
+         */
+        Stage stage =
+                (Stage) lblNombreUsuario
+                        .getScene()
+                        .getWindow();
+
+        /*
+         * Eliminamos la referencia mantenida
+         * por este controlador.
+         */
+        usuario = null;
+
+        /*
+         * Regresamos al Login.
+         */
+        SesionUtil.cerrarSesion(stage);
+
+    } catch (IOException e) {
+
+        mostrarError(
+                "No fue posible cerrar la sesión."
+        );
+
+        System.err.println(
+                "Error al cerrar sesión desde Agendar cita: "
+                + e.getMessage()
+        );
+
+        e.printStackTrace();
+    }
+}
 }

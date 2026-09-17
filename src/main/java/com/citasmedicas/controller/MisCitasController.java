@@ -21,6 +21,7 @@ import javafx.scene.layout.Region;
 import javafx.scene.layout.VBox;
 import javafx.stage.Stage;
 
+import com.citasmedicas.util.SesionUtil;
 import java.io.IOException;
 import java.time.format.DateTimeFormatter;
 import java.util.List;
@@ -785,4 +786,106 @@ public class MisCitasController {
 
         stage.centerOnScreen();
     }
+    /**
+ * Abre la pantalla Mi perfil conservando
+ * el usuario actualmente autenticado.
+ */
+@FXML
+private void abrirPerfil() {
+
+    if (usuarioActual == null) {
+        return;
+    }
+
+    try {
+
+        FXMLLoader loader =
+                new FXMLLoader(
+                        getClass().getResource(
+                                "/fxml/perfil.fxml"
+                        )
+                );
+
+        Scene scene =
+                new Scene(
+                        loader.load()
+                );
+
+        PerfilController controller =
+                loader.getController();
+
+        /*
+         * Conservamos el usuario autenticado
+         * al cambiar de pantalla.
+         */
+        controller.setUsuario(
+                usuarioActual
+        );
+
+        Stage stage =
+                (Stage) lblNombreUsuario
+                        .getScene()
+                        .getWindow();
+
+        stage.setScene(
+                scene
+        );
+
+        stage.setTitle(
+                "MediAppoint - Mi perfil"
+        );
+
+        stage.setMinWidth(950);
+        stage.setMinHeight(620);
+        stage.centerOnScreen();
+
+    } catch (IOException e) {
+
+        System.err.println(
+                "Error al abrir Mi perfil: "
+                + e.getMessage()
+        );
+
+        e.printStackTrace();
+    }
+}
+/**
+ * Cierra la sesión del usuario autenticado
+ * y regresa a la pantalla de inicio de sesión.
+ */
+@FXML
+private void cerrarSesion() {
+
+    try {
+
+        /*
+         * Obtenemos la ventana actual antes
+         * de eliminar la referencia al usuario.
+         */
+        Stage stage =
+                (Stage) lblNombreUsuario
+                        .getScene()
+                        .getWindow();
+
+        /*
+         * Eliminamos la referencia mantenida
+         * por este controlador.
+         */
+        usuarioActual = null;
+
+        /*
+         * Regresamos al Login.
+         */
+        SesionUtil.cerrarSesion(stage);
+
+    } catch (IOException e) {
+
+        System.err.println(
+                "Error al cerrar sesión desde Mis citas: "
+                + e.getMessage()
+        );
+
+        e.printStackTrace();
+    }
+}
 }

@@ -1,5 +1,6 @@
 package com.citasmedicas.controller;
 
+import com.citasmedicas.util.SesionUtil;
 import com.citasmedicas.model.Paciente;
 import com.citasmedicas.model.Usuario;
 import com.citasmedicas.service.PerfilService;
@@ -446,4 +447,40 @@ public class PerfilController {
                 ? ""
                 : valor;
     }
+    /**
+ * Cierra la sesión del usuario autenticado
+ * y regresa a la pantalla de inicio de sesión.
+ */
+@FXML
+private void cerrarSesion() {
+
+    try {
+
+        Stage stage =
+                (Stage) lblNombreUsuario
+                        .getScene()
+                        .getWindow();
+
+        /*
+         * Eliminamos las referencias mantenidas
+         * por este controlador.
+         */
+        usuarioActual = null;
+        pacienteActual = null;
+
+        /*
+         * Regresamos a la pantalla de inicio de sesión.
+         */
+        SesionUtil.cerrarSesion(stage);
+
+    } catch (IOException e) {
+
+        System.err.println(
+                "Error al cerrar sesión desde Mi perfil: "
+                + e.getMessage()
+        );
+
+        e.printStackTrace();
+    }
+}
 }

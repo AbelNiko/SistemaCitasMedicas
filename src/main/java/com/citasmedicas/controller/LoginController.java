@@ -92,7 +92,9 @@ public class LoginController {
                     + usuario.getRol().getNombre()
             );
 
-            abrirPantallaPrincipal(usuario);
+            abrirPantallaSegunRol(usuario);
+
+        
 
         } catch (IllegalArgumentException e) {
 
@@ -123,6 +125,120 @@ public class LoginController {
             );
         }
     }
+
+    /**
+ * Determina la pantalla principal correspondiente
+ * según el rol del usuario autenticado.
+ *
+ * @param usuario usuario autenticado.
+ * @throws IOException si ocurre un error al cargar el FXML.
+ */
+private void abrirPantallaSegunRol(
+        Usuario usuario
+) throws IOException {
+
+    if (
+            usuario.getRol() == null
+            || usuario.getRol().getNombre() == null
+    ) {
+
+        throw new IllegalArgumentException(
+                "El usuario no tiene un rol válido."
+        );
+    }
+
+    String nombreRol =
+            usuario.getRol()
+                    .getNombre()
+                    .trim();
+
+    if (
+            "MEDICO".equalsIgnoreCase(
+                    nombreRol
+            )
+    ) {
+
+        abrirDashboardMedico(
+                usuario
+        );
+
+        return;
+    }
+
+    if (
+            "PACIENTE".equalsIgnoreCase(
+                    nombreRol
+            )
+    ) {
+
+        abrirPantallaPrincipal(
+                usuario
+        );
+
+        return;
+    }
+
+    throw new IllegalArgumentException(
+            "El rol del usuario todavía no tiene una pantalla disponible."
+    );
+}
+
+/**
+ * Abre el dashboard correspondiente al médico.
+ *
+ * @param usuario médico autenticado.
+ * @throws IOException si ocurre un error al cargar el FXML.
+ */
+private void abrirDashboardMedico(
+        Usuario usuario
+) throws IOException {
+
+    FXMLLoader loader =
+            new FXMLLoader(
+                    getClass().getResource(
+                            "/fxml/dashboard-medico.fxml"
+                    )
+            );
+
+    Scene scene =
+            new Scene(
+                    loader.load()
+            );
+
+    DashboardMedicoController controller =
+            loader.getController();
+
+    controller.setUsuario(
+            usuario
+    );
+
+    Stage stage =
+            (Stage) txtCorreo
+                    .getScene()
+                    .getWindow();
+
+    stage.setScene(
+            scene
+    );
+
+    stage.setTitle(
+            "MediAppoint - Portal médico"
+    );
+
+    stage.setResizable(
+            true
+    );
+
+    stage.setMinWidth(
+            1000
+    );
+
+    stage.setMinHeight(
+            650
+    );
+
+    stage.centerOnScreen();
+}
 
     /**
      * Abre la pantalla principal después de una

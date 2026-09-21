@@ -499,3 +499,439 @@
     -fx-border-color: #FF8585;
     -fx-text-fill: #FF9999;
 }
+
+/* ================================================================
+                    PORTAL MÉDICO - MEDIAPPOINT
+   ================================================================ */
+
+/* ------------------------------------------------
+   ESTRUCTURA PRINCIPAL
+   ------------------------------------------------ */
+
+.doctor-root {
+    -fx-background-color: #071719;
+}
+
+.doctor-content {
+    -fx-background-color: #071719;
+}
+
+/* ------------------------------------------------
+   MENÚ LATERAL
+   ------------------------------------------------ */
+
+.doctor-sidebar {
+    -fx-background-color: #061315;
+    -fx-border-color: transparent #173B3C transparent transparent;
+    -fx-border-width: 0 1 0 0;
+}
+
+.doctor-brand {
+    -fx-text-fill: #27D3BE;
+    -fx-font-size: 25px;
+    -fx-font-weight: bold;
+}
+
+.doctor-portal-label {
+    -fx-text-fill: #729B96;
+    -fx-font-size: 10px;
+    -fx-font-weight: bold;
+}
+
+.doctor-menu-label {
+    -fx-text-fill: #527A76;
+    -fx-font-size: 9px;
+    -fx-font-weight: bold;
+    -fx-padding: 4 0 2 8;
+}
+
+.doctor-separator .line {
+    -fx-border-color: #173B3C;
+    -fx-border-width: 1 0 0 0;
+}
+
+.doctor-sidebar-button-active {
+    -fx-background-color: #10383A;
+    -fx-text-fill: #5DE0D0;
+    -fx-font-size: 13px;
+    -fx-font-weight: bold;
+    -fx-alignment: CENTER_LEFT;
+    -fx-padding: 0 14;
+    -fx-background-radius: 9;
+    -fx-cursor: hand;
+}
+
+.doctor-sidebar-button-active:hover {
+    -fx-background-color: #154649;
+}
+
+.doctor-sidebar-profile {
+    -fx-background-color: #0B2022;
+    -fx-background-radius: 10;
+    -fx-border-color: #173B3C;
+    -fx-border-radius: 10;
+    -fx-border-width: 1;
+}
+
+.doctor-sidebar-name {
+    -fx-text-fill: #F4FBFA;
+    -fx-font-size: 12px;
+    -fx-font-weight: bold;
+}
+
+.doctor-sidebar-detail {
+    -fx-text-fill: #729B96;
+    -fx-font-size: 10px;
+}
+
+.doctor-logout-button {
+    -fx-background-color: transparent;
+    -fx-text-fill: #E98A8A;
+    -fx-font-size: 12px;
+    -fx-alignment: CENTER_LEFT;
+    -fx-padding: 0 12;
+    -fx-background-radius: 8;
+    -fx-cursor: hand;
+}
+
+.doctor-logout-button:hover {
+    -fx-background-color: #321F22;
+    -fx-text-fill: #FFAAAA;
+}
+
+/* ------------------------------------------------
+   ENCABEZADO
+   ------------------------------------------------ */
+
+.doctor-page-title {
+    -fx-text-fill: #F4FBFA;
+    -fx-font-size: 25px;
+    -fx-font-weight: bold;
+}
+
+.doctor-page-subtitle {
+    -fx-text-fill: #82A7A3;
+    -fx-font-size: 12px;
+}
+
+.doctor-primary-button {
+    -fx-background-color: #18B6A4;
+    -fx-text-fill: #041716;
+    -fx-background-radius: 9;
+    -fx-font-size: 12px;
+    -fx-font-weight: bold;
+    -fx-padding: 10 16;
+    -fx-cursor: hand;
+}
+
+.doctor-primary-button:hover {
+    -fx-background-color: #27D3BE;
+}
+
+.doctor-primary-button:pressed {
+    -fx-background-color: #109989;
+}
+
+/* ------------------------------------------------
+   TARJETAS DE RESUMEN
+   ------------------------------------------------ */
+
+.doctor-stat-card {
+    -fx-background-color: #0B2022;
+    -fx-background-radius: 13;
+    -fx-border-radius: 13;
+    -fx-border-width: 1;
+    -fx-min-width: 180;
+}
+
+.doctor-stat-total {
+    -fx-border-color: #245456;
+}
+
+.doctor-stat-programmed {
+    -fx-border-color: #1E716A;
+}
+
+.doctor-stat-cancelled {
+    -fx-border-color: #654044;
+}
+
+.doctor-stat-label {
+    -fx-text-fill: #759D98;
+    -fx-font-size: 10px;
+    -fx-font-weight: bold;
+}
+
+.doctor-stat-value {
+    -fx-text-fill: #F4FBFA;
+    -fx-font-size: 26px;
+    -fx-font-weight: bold;
+}
+
+.doctor-stat-description {
+    -fx-text-fill: #628783;
+    -fx-font-size: 10px;
+}
+
+/* ------------------------------------------------
+   FILTROS
+   ------------------------------------------------ */
+
+.doctor-filter-panel {
+    -fx-background-color: #0B2022;
+    -fx-background-radius: 13;
+    -fx-border-color: #173B3C;
+    -fx-border-radius: 13;
+    -fx-border-width: 1;
+}
+
+.doctor-section-title {
+    -fx-text-fill: #EAF7F5;
+    -fx-font-size: 14px;
+    -fx-font-weight: bold;
+}
+
+.doctor-section-description {
+    -fx-text-fill: #729B96;
+    -fx-font-size: 10px;
+}
+
+.doctor-filter-indicator {
+    -fx-text-fill: #27D3BE;
+    -fx-font-size: 10px;
+    -fx-font-weight: bold;
+}
+
+.doctor-search-field {
+    -fx-background-color: #0E292B;
+    -fx-text-fill: #F4FBFA;
+    -fx-prompt-text-fill: #557B77;
+
+    -fx-border-color: #245052;
+    -fx-border-radius: 8;
+    -fx-background-radius: 8;
+    -fx-border-width: 1;
+
+    -fx-padding: 0 12;
+    -fx-font-size: 12px;
+}
+
+.doctor-search-field:focused {
+    -fx-border-color: #27D3BE;
+    -fx-border-width: 1.5;
+}
+
+.doctor-filter-combo {
+    -fx-background-color: #0E292B;
+    -fx-border-color: #245052;
+    -fx-border-radius: 8;
+    -fx-background-radius: 8;
+}
+
+.doctor-filter-combo:focused {
+    -fx-border-color: #27D3BE;
+}
+
+.doctor-filter-combo .list-cell {
+    -fx-background-color: #0E292B;
+    -fx-text-fill: #DCECE9;
+    -fx-font-size: 11px;
+}
+
+.doctor-filter-combo .arrow-button {
+    -fx-background-color: transparent;
+}
+
+.doctor-filter-combo .arrow {
+    -fx-background-color: #27D3BE;
+}
+
+.doctor-filter-combo .list-view {
+    -fx-background-color: #0E292B;
+    -fx-border-color: #245052;
+}
+
+.doctor-filter-combo .list-view .list-cell:hover {
+    -fx-background-color: #164143;
+}
+
+.doctor-filter-combo .list-view .list-cell:selected {
+    -fx-background-color: #167D73;
+    -fx-text-fill: #FFFFFF;
+}
+
+.doctor-secondary-button {
+    -fx-background-color: transparent;
+    -fx-text-fill: #49D8C7;
+    -fx-border-color: #2A8C82;
+    -fx-border-radius: 8;
+    -fx-background-radius: 8;
+    -fx-font-size: 11px;
+    -fx-font-weight: bold;
+    -fx-padding: 0 14;
+    -fx-cursor: hand;
+}
+
+.doctor-secondary-button:hover {
+    -fx-background-color: #10383A;
+    -fx-border-color: #49D8C7;
+}
+
+/* ------------------------------------------------
+   CONTADOR
+   ------------------------------------------------ */
+
+.doctor-count-text {
+    -fx-text-fill: #729B96;
+    -fx-font-size: 11px;
+}
+
+.doctor-count-badge {
+    -fx-background-color: #10383A;
+    -fx-text-fill: #5DE0D0;
+    -fx-background-radius: 20;
+    -fx-padding: 4 9;
+    -fx-font-size: 11px;
+    -fx-font-weight: bold;
+}
+
+/* ------------------------------------------------
+   TARJETAS DE CITAS
+   ------------------------------------------------ */
+
+.doctor-appointment-card {
+    -fx-background-color: #0B2022;
+    -fx-background-radius: 13;
+
+    -fx-border-color: #173B3C;
+    -fx-border-radius: 13;
+    -fx-border-width: 1;
+}
+
+.doctor-appointment-card:hover {
+    -fx-background-color: #0E292B;
+    -fx-border-color: #2A6665;
+}
+
+.doctor-date-label {
+    -fx-text-fill: #65DCCF;
+    -fx-font-size: 10px;
+    -fx-font-weight: bold;
+}
+
+.doctor-time-label {
+    -fx-text-fill: #F4FBFA;
+    -fx-font-size: 16px;
+    -fx-font-weight: bold;
+}
+
+.doctor-patient-name {
+    -fx-text-fill: #F4FBFA;
+    -fx-font-size: 17px;
+    -fx-font-weight: bold;
+}
+
+.doctor-specialty {
+    -fx-text-fill: #58CDBF;
+    -fx-font-size: 11px;
+    -fx-font-weight: bold;
+}
+
+.doctor-info-label {
+    -fx-text-fill: #527A76;
+    -fx-font-size: 9px;
+    -fx-font-weight: bold;
+}
+
+.doctor-info-value {
+    -fx-text-fill: #B8CECB;
+    -fx-font-size: 11px;
+}
+
+.doctor-cancellation-box {
+    -fx-background-color: #2A1D20;
+    -fx-background-radius: 8;
+    -fx-border-color: #583338;
+    -fx-border-radius: 8;
+    -fx-border-width: 1;
+    -fx-padding: 9 12;
+}
+
+/* ------------------------------------------------
+   ESTADOS DE LAS CITAS
+   ------------------------------------------------ */
+
+.doctor-appointment-status {
+    -fx-text-fill: #FFFFFF;
+    -fx-font-size: 9px;
+    -fx-font-weight: bold;
+
+    -fx-padding: 5 10;
+
+    -fx-background-radius: 20;
+}
+
+.status-programada {
+    -fx-background-color: #147E75;
+}
+
+.status-confirmada {
+    -fx-background-color: #168C68;
+}
+
+.status-atendida {
+    -fx-background-color: #28784E;
+}
+
+.status-cancelada {
+    -fx-background-color: #8B454C;
+}
+
+.status-no-asistio {
+    -fx-background-color: #9A6C2F;
+}
+
+/* ------------------------------------------------
+   MENSAJES
+   ------------------------------------------------ */
+
+.doctor-message {
+    -fx-background-color: #0E292B;
+    -fx-text-fill: #8FC5BF;
+    -fx-border-color: #245052;
+    -fx-border-radius: 8;
+    -fx-background-radius: 8;
+    -fx-padding: 10 14;
+    -fx-font-size: 11px;
+}
+
+/* ------------------------------------------------
+   SCROLL
+   ------------------------------------------------ */
+
+.doctor-appointments-scroll {
+    -fx-background-color: transparent;
+    -fx-background: transparent;
+    -fx-border-color: transparent;
+}
+
+.doctor-appointments-scroll > .viewport {
+    -fx-background-color: transparent;
+}
+
+.doctor-appointments-scroll .scroll-bar:vertical {
+    -fx-background-color: transparent;
+}
+
+.doctor-appointments-scroll .scroll-bar:vertical .track {
+    -fx-background-color: #071719;
+}
+
+.doctor-appointments-scroll .scroll-bar:vertical .thumb {
+    -fx-background-color: #245052;
+    -fx-background-radius: 8;
+}
+
+.doctor-appointments-scroll .scroll-bar:vertical .thumb:hover {
+    -fx-background-color: #34706F;
+}

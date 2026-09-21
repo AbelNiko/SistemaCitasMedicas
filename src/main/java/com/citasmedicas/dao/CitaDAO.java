@@ -298,6 +298,124 @@ public List<Cita> listarPorPaciente(
 }
 
 /**
+ * Obtiene las citas asignadas a un médico con la información
+ * necesaria para mostrar su agenda.
+ *
+ * Incluye los datos descriptivos del paciente, especialidad
+ * y establecimiento asociados a cada cita.
+ *
+ * @param idMedico identificador del médico.
+ * @return lista de citas asignadas al médico.
+ * @throws SQLException si ocurre un error de acceso a datos.
+ */
+public List<Cita> listarPorMedico(
+        int idMedico
+) throws SQLException {
+
+    String sql = """
+            SELECT
+                c.id_cita,
+                c.id_paciente,
+                c.id_medico,
+                c.id_especialidad,
+                c.id_establecimiento,
+                c.fecha_cita,
+                c.hora_inicio,
+                c.hora_fin,
+                c.estado,
+                c.motivo_consulta,
+                c.observacion,
+                c.motivo_cancelacion,
+                c.fecha_creacion,
+                c.fecha_actualizacion,
+
+                CONCAT(
+                    um.nombres,
+                    ' ',
+                    um.apellidos
+                ) AS nombre_medico,
+
+                CONCAT(
+                    up.nombres,
+                    ' ',
+                    up.apellidos
+                ) AS nombre_paciente,
+
+                e.nombre AS nombre_especialidad,
+                est.nombre AS nombre_establecimiento
+
+            FROM citas c
+
+            INNER JOIN medicos m
+                ON c.id_medico = m.id_medico
+
+            INNER JOIN usuarios um
+                ON m.id_usuario = um.id_usuario
+
+            INNER JOIN pacientes p
+                ON c.id_paciente = p.id_paciente
+
+            INNER JOIN usuarios up
+                ON p.id_usuario = up.id_usuario
+
+            INNER JOIN especialidades e
+                ON c.id_especialidad = e.id_especialidad
+
+            INNER JOIN establecimientos est
+                ON c.id_establecimiento = est.id_establecimiento
+
+            WHERE c.id_medico = ?
+
+            ORDER BY
+                c.fecha_cita ASC,
+                c.hora_inicio ASC
+            """;
+
+    List<Cita> citas =
+            new ArrayList<>();
+
+    try (
+            Connection conexion =
+                    ConexionBD.obtenerConexion();
+
+            PreparedStatement sentencia =
+                    conexion.prepareStatement(sql)
+    ) {
+
+        sentencia.setInt(
+                1,
+                idMedico
+        );
+
+        try (
+                ResultSet resultado =
+                        sentencia.executeQuery()
+        ) {
+
+            while (resultado.next()) {
+
+                Cita cita =
+                        construirCita(
+                                resultado
+                        );
+
+                cita.setNombrePaciente(
+                        resultado.getString(
+                                "nombre_paciente"
+                        )
+                );
+
+                citas.add(
+                        cita
+                );
+            }
+        }
+    }
+
+    return citas;
+}
+
+/**
  * Construye un objeto Cita a partir del resultado
  * obtenido desde MySQL.
  */

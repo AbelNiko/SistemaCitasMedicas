@@ -1,0 +1,164 @@
+<?xml version="1.0" encoding="UTF-8"?>
+
+<?import javafx.geometry.Insets?>
+<?import javafx.scene.control.Button?>
+<?import javafx.scene.control.Label?>
+<?import javafx.scene.control.PasswordField?>
+<?import javafx.scene.control.Separator?>
+<?import javafx.scene.control.TextField?>
+<?import javafx.scene.layout.HBox?>
+<?import javafx.scene.layout.Region?>
+<?import javafx.scene.layout.StackPane?>
+<?import javafx.scene.layout.VBox?>
+
+<StackPane
+        xmlns="http://javafx.com/javafx/21"
+        xmlns:fx="http://javafx.com/fxml/1"
+        fx:controller="com.citasmedicas.controller.LoginController"
+        stylesheets="@../css/mediappoint.css"
+        styleClass="auth-background"
+        prefWidth="560"
+        prefHeight="680">
+
+    <VBox
+            alignment="CENTER"
+            maxWidth="410"
+            spacing="20">
+
+        <!-- Marca -->
+
+        <VBox
+                alignment="CENTER"
+                spacing="5">
+
+            <Label
+                    text="MediAppoint"
+                    styleClass="brand-title"/>
+
+            <Label
+                    text="Sistema de Gestión y Agendamiento de Citas Médicas"
+                    styleClass="brand-subtitle"/>
+
+        </VBox>
+
+        <!-- Tarjeta de autenticación -->
+
+        <VBox
+                alignment="CENTER"
+                spacing="14"
+                styleClass="auth-card">
+
+            <padding>
+                <Insets
+                        top="32"
+                        right="34"
+                        bottom="30"
+                        left="34"/>
+            </padding>
+
+            <Label
+                    text="Iniciar sesión"
+                    styleClass="auth-title"/>
+
+            <Label
+                    text="Ingresa tus credenciales para continuar"
+                    styleClass="auth-description"/>
+
+            <Region prefHeight="4"/>
+
+            <!-- Correo -->
+
+            <VBox
+                    spacing="6"
+                    maxWidth="Infinity">
+
+                <Label
+                        text="Correo electrónico"
+                        styleClass="field-label"/>
+
+                <TextField
+                        fx:id="txtCorreo"
+                        promptText="ejemplo@correo.com"
+                        styleClass="auth-field"
+                        prefHeight="42"/>
+
+            </VBox>
+
+            <!-- Contraseña -->
+
+            <VBox
+                    spacing="6"
+                    maxWidth="Infinity">
+
+                <Label
+                        text="Contraseña"
+                        styleClass="field-label"/>
+
+                <PasswordField
+                        fx:id="txtPassword"
+                        promptText="Ingresa tu contraseña"
+                        styleClass="auth-field"
+                        prefHeight="42"/>
+
+            </VBox>
+
+            <!-- Mensajes -->
+
+            <Label
+                    fx:id="lblMensaje"
+                    text=""
+                    wrapText="true"
+                    maxWidth="Infinity"
+                    styleClass="error-message"/>
+
+            <!-- Login -->
+
+            <Button
+                    text="INICIAR SESIÓN"
+                    onAction="#iniciarSesion"
+                    maxWidth="Infinity"
+                    prefHeight="43"
+                    styleClass="primary-button"/>
+
+            <Button
+                    text="¿Olvidaste tu contraseña?"
+                    styleClass="link-button"/>
+
+            <Separator/>
+
+            <!-- Registro -->
+
+            <HBox
+                    alignment="CENTER"
+                    spacing="3">
+
+                <Label
+                        text="¿Aún no tienes una cuenta?"
+                        styleClass="muted-text"/>
+
+                <Button
+                        text="Registrarse"
+                        onAction="#abrirRegistro"
+                        styleClass="link-button"/>
+
+            </HBox>
+
+            <Region prefHeight="2"/>
+
+            <Label
+                    text="¿Eres parte del personal médico o administrativo?&#10;Solicita la creación de tu cuenta al administrador del sistema."
+                    textAlignment="CENTER"
+                    alignment="CENTER"
+                    wrapText="true"
+                    maxWidth="330"
+                    styleClass="staff-message"/>
+
+        </VBox>
+
+        <Label
+                text="Acceso seguro al sistema"
+                styleClass="muted-text"/>
+
+    </VBox>
+
+</StackPane>

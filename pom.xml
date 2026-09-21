@@ -1,0 +1,159 @@
+<?xml version="1.0" encoding="UTF-8"?>
+
+<project xmlns="http://maven.apache.org/POM/4.0.0"
+         xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
+         xsi:schemaLocation="
+         http://maven.apache.org/POM/4.0.0
+         https://maven.apache.org/xsd/maven-4.0.0.xsd">
+
+    <modelVersion>4.0.0</modelVersion>
+
+    <!-- ========================================================= -->
+    <!--              SISTEMA DE CITAS MÉDICAS                     -->
+    <!-- ========================================================= -->
+    <!--
+        Proyecto:
+        Sistema de Gestión y Agendamiento de Citas Médicas
+
+        Materia:
+        Ingeniería de Software II
+
+        Tecnologías principales:
+        - Java 21
+        - JavaFX
+        - Maven
+        - MySQL
+    -->
+
+    <!-- ========================================================= -->
+    <!--              INFORMACIÓN DEL PROYECTO                     -->
+    <!-- ========================================================= -->
+
+    <groupId>com.citasmedicas</groupId>
+    <artifactId>SistemaCitasMedicas</artifactId>
+    <version>1.0-SNAPSHOT</version>
+
+    <name>Sistema de Citas Médicas</name>
+
+    <!-- ========================================================= -->
+    <!--                    PROPIEDADES                            -->
+    <!-- ========================================================= -->
+
+    <properties>
+
+        <!-- Codificación estándar del proyecto -->
+        <project.build.sourceEncoding>
+            UTF-8
+        </project.build.sourceEncoding>
+
+        <!-- Versión de Java utilizada -->
+        <maven.compiler.release>
+            21
+        </maven.compiler.release>
+
+        <!-- Versión de JavaFX -->
+        <javafx.version>
+            21.0.4
+        </javafx.version>
+
+        <!-- Versión del conector MySQL -->
+        <mysql.connector.version>
+            9.0.0
+        </mysql.connector.version>
+
+    </properties>
+
+    <!-- ========================================================= -->
+    <!--                    DEPENDENCIAS                           -->
+    <!-- ========================================================= -->
+
+    <dependencies>
+
+    <!-- ========================================================= -->
+    <!-- JavaFX - Controles de interfaz gráfica                   -->
+    <!-- ========================================================= -->
+    <dependency>
+        <groupId>org.openjfx</groupId>
+        <artifactId>javafx-controls</artifactId>
+        <version>${javafx.version}</version>
+    </dependency>
+
+    <!-- ========================================================= -->
+    <!-- JavaFX - Soporte para archivos FXML                      -->
+    <!-- ========================================================= -->
+    <dependency>
+        <groupId>org.openjfx</groupId>
+        <artifactId>javafx-fxml</artifactId>
+        <version>${javafx.version}</version>
+    </dependency>
+
+    <!-- ========================================================= -->
+    <!-- MySQL Connector/J                                        -->
+    <!-- ========================================================= -->
+    <dependency>
+        <groupId>com.mysql</groupId>
+        <artifactId>mysql-connector-j</artifactId>
+        <version>${mysql.connector.version}</version>
+    </dependency>
+
+    <!-- ========================================================= -->
+    <!-- BCrypt - Seguridad de contraseñas                        -->
+    <!-- ========================================================= -->
+    <dependency>
+        <groupId>org.mindrot</groupId>
+        <artifactId>jbcrypt</artifactId>
+        <version>0.4</version>
+    </dependency>
+
+</dependencies>
+
+    <!-- ========================================================= -->
+    <!--                 CONFIGURACIÓN DE BUILD                    -->
+    <!-- ========================================================= -->
+
+    <build>
+
+        <plugins>
+
+            <!-- ================================================= -->
+            <!-- Maven Compiler Plugin                             -->
+            <!-- ================================================= -->
+            <plugin>
+                <groupId>org.apache.maven.plugins</groupId>
+                <artifactId>maven-compiler-plugin</artifactId>
+                <version>3.13.0</version>
+
+                <configuration>
+                    <release>21</release>
+                </configuration>
+            </plugin>
+
+            <!-- ================================================= -->
+            <!-- JavaFX Maven Plugin                               -->
+            <!-- ================================================= -->
+            <!--
+                Permite ejecutar la aplicación JavaFX mediante:
+
+                mvn javafx:run
+            -->
+            <plugin>
+                <groupId>org.openjfx</groupId>
+                <artifactId>javafx-maven-plugin</artifactId>
+                <version>0.0.8</version>
+
+                <configuration>
+
+                    <!-- Clase principal del sistema -->
+                    <mainClass>
+                        com.citasmedicas.app.MainApp
+                    </mainClass>
+
+                </configuration>
+
+            </plugin>
+
+        </plugins>
+
+    </build>
+
+</project>

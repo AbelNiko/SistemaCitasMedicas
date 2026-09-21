@@ -1,0 +1,501 @@
+/* ================================================================
+                    MEDIAPPOINT - ESTILO GENERAL
+   ================================================================ */
+
+.root {
+    -fx-font-family: "Segoe UI";
+}
+
+/* ------------------------------------------------
+   FONDOS
+   ------------------------------------------------ */
+
+.auth-background {
+    -fx-background-color: #071525;
+}
+
+.auth-card {
+    -fx-background-color: #0B1D31;
+    -fx-background-radius: 18;
+    -fx-border-color: #173A59;
+    -fx-border-radius: 18;
+    -fx-border-width: 1;
+}
+
+/* ------------------------------------------------
+   MARCA
+   ------------------------------------------------ */
+
+.brand-title {
+    -fx-text-fill: #1597FF;
+    -fx-font-size: 32px;
+    -fx-font-weight: bold;
+}
+
+.brand-subtitle {
+    -fx-text-fill: #AAB9C8;
+    -fx-font-size: 13px;
+}
+
+/* ------------------------------------------------
+   TÍTULOS
+   ------------------------------------------------ */
+
+.auth-title {
+    -fx-text-fill: #FFFFFF;
+    -fx-font-size: 22px;
+    -fx-font-weight: bold;
+}
+
+.auth-description {
+    -fx-text-fill: #91A4B8;
+    -fx-font-size: 13px;
+}
+
+.field-label {
+    -fx-text-fill: #DCE8F3;
+    -fx-font-size: 12px;
+    -fx-font-weight: bold;
+}
+
+/* ------------------------------------------------
+   CAMPOS
+   ------------------------------------------------ */
+
+.auth-field {
+    -fx-background-color: #10263C;
+    -fx-text-fill: #FFFFFF;
+
+    -fx-prompt-text-fill: #71869A;
+
+    -fx-border-color: #27455F;
+    -fx-border-radius: 7;
+
+    -fx-background-radius: 7;
+
+    -fx-border-width: 1;
+
+    -fx-padding: 0 13 0 13;
+
+    -fx-font-size: 13px;
+}
+
+.auth-field:focused {
+    -fx-border-color: #1597FF;
+    -fx-border-width: 1.5;
+}
+
+/* ------------------------------------------------
+   BOTÓN PRINCIPAL
+   ------------------------------------------------ */
+
+.primary-button {
+    -fx-background-color: #0B84F3;
+    -fx-text-fill: #FFFFFF;
+
+    -fx-background-radius: 8;
+
+    -fx-font-size: 13px;
+    -fx-font-weight: bold;
+
+    -fx-cursor: hand;
+}
+
+.primary-button:hover {
+    -fx-background-color: #1597FF;
+}
+
+.primary-button:pressed {
+    -fx-background-color: #0671D5;
+}
+
+/* ------------------------------------------------
+   BOTÓN SECUNDARIO
+   ------------------------------------------------ */
+
+.secondary-button {
+    -fx-background-color: transparent;
+
+    -fx-text-fill: #1597FF;
+
+    -fx-border-color: #1597FF;
+    -fx-border-radius: 8;
+    -fx-border-width: 1;
+
+    -fx-background-radius: 8;
+
+    -fx-font-size: 13px;
+    -fx-font-weight: bold;
+
+    -fx-cursor: hand;
+}
+
+.secondary-button:hover {
+    -fx-background-color: #102A43;
+}
+
+/* ------------------------------------------------
+   ENLACES
+   ------------------------------------------------ */
+
+.link-button {
+    -fx-background-color: transparent;
+    -fx-text-fill: #1597FF;
+
+    -fx-padding: 2 5 2 5;
+
+    -fx-font-size: 12px;
+    -fx-font-weight: bold;
+
+    -fx-cursor: hand;
+}
+
+.link-button:hover {
+    -fx-underline: true;
+}
+
+/* ------------------------------------------------
+   TEXTOS AUXILIARES
+   ------------------------------------------------ */
+
+.muted-text {
+    -fx-text-fill: #8396A9;
+    -fx-font-size: 12px;
+}
+
+.staff-message {
+    -fx-text-fill: #70869A;
+    -fx-font-size: 11px;
+}
+
+.error-message {
+    -fx-text-fill: #FF6B6B;
+    -fx-font-size: 12px;
+}
+
+/* ------------------------------------------------
+   SEPARADOR
+   ------------------------------------------------ */
+
+.separator .line {
+    -fx-border-color: #1D3952;
+    -fx-border-width: 1 0 0 0;
+}
+
+/* ================================================================
+                    FORMULARIO DE REGISTRO
+   ================================================================ */
+
+.registration-background {
+    -fx-background-color: #071525;
+}
+
+.registration-container {
+    -fx-background-color: #071525;
+}
+
+.registration-card {
+    -fx-background-color: #0B1D31;
+    -fx-background-radius: 18;
+    -fx-border-color: #173A59;
+    -fx-border-radius: 18;
+    -fx-border-width: 1;
+}
+
+.section-title {
+    -fx-text-fill: #16C7FF;
+    -fx-font-size: 14px;
+    -fx-font-weight: bold;
+}
+
+.optional-text {
+    -fx-text-fill: #70869A;
+    -fx-font-size: 11px;
+}
+
+/* DatePicker */
+
+.auth-date-picker {
+    -fx-background-color: #10263C;
+    -fx-border-color: #27455F;
+    -fx-border-radius: 7;
+    -fx-background-radius: 7;
+}
+
+.auth-date-picker:focused {
+    -fx-border-color: #1597FF;
+}
+
+.auth-date-picker .text-field {
+    -fx-background-color: #10263C;
+    -fx-text-fill: white;
+    -fx-prompt-text-fill: #71869A;
+}
+
+.auth-date-picker .arrow-button {
+    -fx-background-color: #173A59;
+}
+
+.auth-date-picker .arrow-button .arrow {
+    -fx-background-color: #1597FF;
+}
+
+/* ComboBox */
+
+.auth-combo {
+    -fx-background-color: #10263C;
+    -fx-border-color: #27455F;
+    -fx-border-radius: 7;
+    -fx-background-radius: 7;
+}
+
+.auth-combo:focused {
+    -fx-border-color: #1597FF;
+}
+
+.auth-combo .list-cell {
+    -fx-background-color: #10263C;
+    -fx-text-fill: white;
+}
+
+.auth-combo .arrow {
+    -fx-background-color: #1597FF;
+}
+
+.auth-combo .arrow-button {
+    -fx-background-color: transparent;
+}
+
+/* ScrollPane */
+
+.registration-scroll {
+    -fx-background: #071525;
+    -fx-background-color: #071525;
+    -fx-border-color: transparent;
+}
+
+.registration-scroll > .viewport {
+    -fx-background-color: #071525;
+}
+
+.registration-scroll .scroll-bar:vertical {
+    -fx-background-color: #071525;
+}
+
+.registration-scroll .scroll-bar:vertical .thumb {
+    -fx-background-color: #27455F;
+    -fx-background-radius: 8;
+}
+
+.registration-scroll .scroll-bar:vertical .track {
+    -fx-background-color: #071525;
+}
+
+/* Mensaje de información */
+
+.info-box {
+    -fx-background-color: #0E2942;
+    -fx-background-radius: 8;
+    -fx-border-color: #1C496A;
+    -fx-border-radius: 8;
+}
+
+.info-text {
+    -fx-text-fill: #91A9BD;
+    -fx-font-size: 11px;
+}
+
+/* ================================================================
+                    DASHBOARD - MEDIAPPOINT
+   ================================================================ */
+
+.dashboard-root {
+    -fx-background-color: #071525;
+}
+
+/* ------------------------------------------------
+   MENÚ LATERAL
+   ------------------------------------------------ */
+
+.sidebar {
+    -fx-background-color: #081A2C;
+    -fx-border-color: transparent #173A59 transparent transparent;
+    -fx-border-width: 0 1 0 0;
+}
+
+.sidebar-brand {
+    -fx-text-fill: #1597FF;
+    -fx-font-size: 25px;
+    -fx-font-weight: bold;
+}
+
+.sidebar-subtitle {
+    -fx-text-fill: #70869A;
+    -fx-font-size: 10px;
+}
+
+.sidebar-button {
+    -fx-background-color: transparent;
+    -fx-text-fill: #A9BAC9;
+    -fx-font-size: 13px;
+    -fx-alignment: CENTER_LEFT;
+    -fx-padding: 0 15 0 15;
+    -fx-background-radius: 8;
+    -fx-cursor: hand;
+}
+
+.sidebar-button:hover {
+    -fx-background-color: #102A43;
+    -fx-text-fill: #FFFFFF;
+}
+
+.sidebar-button-active {
+    -fx-background-color: #0E3150;
+    -fx-text-fill: #16C7FF;
+    -fx-font-weight: bold;
+}
+
+.logout-button {
+    -fx-background-color: transparent;
+    -fx-text-fill: #FF7B7B;
+    -fx-font-size: 13px;
+    -fx-alignment: CENTER_LEFT;
+    -fx-padding: 0 15 0 15;
+    -fx-background-radius: 8;
+    -fx-cursor: hand;
+}
+
+.logout-button:hover {
+    -fx-background-color: #351D2A;
+}
+
+/* ------------------------------------------------
+   ENCABEZADO
+   ------------------------------------------------ */
+
+.dashboard-header {
+    -fx-background-color: #0B1D31;
+    -fx-border-color: transparent transparent #173A59 transparent;
+    -fx-border-width: 0 0 1 0;
+}
+
+.dashboard-page-title {
+    -fx-text-fill: #FFFFFF;
+    -fx-font-size: 19px;
+    -fx-font-weight: bold;
+}
+
+.dashboard-user-name {
+    -fx-text-fill: #FFFFFF;
+    -fx-font-size: 13px;
+    -fx-font-weight: bold;
+}
+
+.dashboard-user-role {
+    -fx-text-fill: #16C7FF;
+    -fx-font-size: 10px;
+    -fx-font-weight: bold;
+}
+
+/* ------------------------------------------------
+   CONTENIDO
+   ------------------------------------------------ */
+
+.dashboard-content {
+    -fx-background-color: #071525;
+}
+
+.welcome-title {
+    -fx-text-fill: #FFFFFF;
+    -fx-font-size: 27px;
+    -fx-font-weight: bold;
+}
+
+.welcome-subtitle {
+    -fx-text-fill: #91A4B8;
+    -fx-font-size: 13px;
+}
+
+/* ------------------------------------------------
+   TARJETAS
+   ------------------------------------------------ */
+
+.dashboard-card {
+    -fx-background-color: #0B1D31;
+    -fx-background-radius: 14;
+    -fx-border-color: #173A59;
+    -fx-border-radius: 14;
+    -fx-border-width: 1;
+}
+
+.card-title {
+    -fx-text-fill: #A9BAC9;
+    -fx-font-size: 12px;
+    -fx-font-weight: bold;
+}
+
+.card-value {
+    -fx-text-fill: #FFFFFF;
+    -fx-font-size: 21px;
+    -fx-font-weight: bold;
+}
+
+.card-description {
+    -fx-text-fill: #70869A;
+    -fx-font-size: 11px;
+}
+
+.card-accent {
+    -fx-text-fill: #16C7FF;
+    -fx-font-size: 12px;
+    -fx-font-weight: bold;
+}
+
+/* ------------------------------------------------
+   ACCIONES RÁPIDAS
+   ------------------------------------------------ */
+
+.quick-action {
+    -fx-background-color: #10263C;
+    -fx-text-fill: #FFFFFF;
+    -fx-border-color: #27455F;
+    -fx-border-radius: 9;
+    -fx-background-radius: 9;
+    -fx-font-size: 12px;
+    -fx-font-weight: bold;
+    -fx-cursor: hand;
+}
+
+.quick-action:hover {
+    -fx-background-color: #14324F;
+    -fx-border-color: #1597FF;
+}
+
+.dashboard-section-title {
+    -fx-text-fill: #FFFFFF;
+    -fx-font-size: 17px;
+    -fx-font-weight: bold;
+}
+
+/* ============================================================
+                   CANCELACIÓN DE CITAS
+   ============================================================ */
+
+.cancel-appointment-button {
+    -fx-background-color: transparent;
+    -fx-border-color: #FF6B6B;
+    -fx-border-radius: 6px;
+    -fx-background-radius: 6px;
+
+    -fx-text-fill: #FF7B7B;
+    -fx-font-weight: bold;
+
+    -fx-padding: 8px 16px;
+    -fx-cursor: hand;
+}
+
+.cancel-appointment-button:hover {
+    -fx-background-color: rgba(255, 107, 107, 0.12);
+    -fx-border-color: #FF8585;
+    -fx-text-fill: #FF9999;
+}

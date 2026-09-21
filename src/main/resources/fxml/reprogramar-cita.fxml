@@ -1,0 +1,244 @@
+<?xml version="1.0" encoding="UTF-8"?>
+
+<?import javafx.geometry.Insets?>
+<?import javafx.scene.control.Button?>
+<?import javafx.scene.control.DatePicker?>
+<?import javafx.scene.control.Label?>
+<?import javafx.scene.control.ScrollPane?>
+<?import javafx.scene.layout.BorderPane?>
+<?import javafx.scene.layout.HBox?>
+<?import javafx.scene.layout.Region?>
+<?import javafx.scene.layout.VBox?>
+
+<BorderPane
+        xmlns="http://javafx.com/javafx/21"
+        xmlns:fx="http://javafx.com/fxml/1"
+        fx:controller="com.citasmedicas.controller.ReprogramarCitaController"
+        prefWidth="1180"
+        prefHeight="720"
+        stylesheets="@../css/mediappoint.css"
+        styleClass="app-root">
+
+    <!-- ===================================================== -->
+    <!-- MENÚ LATERAL                                         -->
+    <!-- ===================================================== -->
+
+    <left>
+
+        <VBox
+                prefWidth="250"
+                spacing="12"
+                styleClass="sidebar">
+
+            <padding>
+                <Insets
+                        top="28"
+                        right="20"
+                        bottom="28"
+                        left="20"/>
+            </padding>
+
+            <Label
+                    text="MediAppoint"
+                    styleClass="brand-title"/>
+
+            <Label
+                    text="Gestión de citas médicas"
+                    styleClass="brand-subtitle"/>
+
+            <Region
+                    prefHeight="25"/>
+
+            <Label
+                    text="Reprogramar cita"
+                    styleClass="sidebar-button-active"/>
+
+            <Region
+                    VBox.vgrow="ALWAYS"/>
+
+            <Button
+                    text="Volver a Mis citas"
+                    maxWidth="Infinity"
+                    prefHeight="42"
+                    styleClass="sidebar-button"
+                    onAction="#volverMisCitas"/>
+
+        </VBox>
+
+    </left>
+
+    <!-- ===================================================== -->
+    <!-- CONTENIDO PRINCIPAL                                   -->
+    <!-- ===================================================== -->
+
+    <center>
+
+        <VBox
+                spacing="22"
+                styleClass="content-area">
+
+            <padding>
+                <Insets
+                        top="30"
+                        right="36"
+                        bottom="30"
+                        left="36"/>
+            </padding>
+
+            <!-- ================================================= -->
+            <!-- ENCABEZADO                                        -->
+            <!-- ================================================= -->
+
+            <HBox alignment="CENTER_LEFT">
+
+                <VBox spacing="4">
+
+                    <Label
+                            text="Reprogramar cita"
+                            styleClass="page-title"/>
+
+                    <Label
+                            text="Selecciona una nueva fecha y horario para tu atención."
+                            styleClass="page-subtitle"/>
+
+                </VBox>
+
+                <Region
+                        HBox.hgrow="ALWAYS"/>
+
+                <VBox
+                        alignment="CENTER_RIGHT"
+                        spacing="3">
+
+                    <Label
+                            text="Paciente"
+                            styleClass="user-role"/>
+
+                    <Label
+                            fx:id="lblNombreUsuario"
+                            text="Usuario"
+                            styleClass="user-name"/>
+
+                </VBox>
+
+            </HBox>
+
+            <!-- ================================================= -->
+            <!-- INFORMACIÓN DE LA CITA ACTUAL                     -->
+            <!-- ================================================= -->
+
+            <VBox
+                    spacing="10"
+                    styleClass="dashboard-card">
+
+                <padding>
+                    <Insets
+                            top="20"
+                            right="22"
+                            bottom="20"
+                            left="22"/>
+                </padding>
+
+                <Label
+                        text="Cita actual"
+                        styleClass="dashboard-section-title"/>
+
+                <Label
+                        fx:id="lblEspecialidad"
+                        text="-"
+                        styleClass="card-value"/>
+
+                <Label
+                        fx:id="lblMedico"
+                        text="-"
+                        styleClass="card-description"/>
+
+                <Label
+                        fx:id="lblEstablecimiento"
+                        text="-"
+                        styleClass="card-description"/>
+
+                <Label
+                        fx:id="lblCitaActual"
+                        text="-"
+                        styleClass="card-accent"/>
+
+            </VBox>
+
+            <!-- ================================================= -->
+            <!-- NUEVA FECHA Y HORARIO                             -->
+            <!-- ================================================= -->
+
+            <VBox
+                    spacing="12"
+                    styleClass="dashboard-card">
+
+                <padding>
+                    <Insets
+                            top="20"
+                            right="22"
+                            bottom="20"
+                            left="22"/>
+                </padding>
+
+                <Label
+                        text="Selecciona la nueva fecha"
+                        styleClass="dashboard-section-title"/>
+
+                <DatePicker
+                        fx:id="dpNuevaFecha"
+                        prefWidth="260"
+                        onAction="#cargarHorariosDisponibles"/>
+
+                <Label
+                        text="Horarios disponibles"
+                        styleClass="dashboard-section-title"/>
+
+                <!--
+                    Los botones de horarios disponibles
+                    se generan dinámicamente desde
+                    ReprogramarCitaController.
+                -->
+
+                <ScrollPane
+                        fitToWidth="true"
+                        prefHeight="130"
+                        styleClass="transparent-scroll">
+
+                    <content>
+
+                        <VBox
+                                fx:id="contenedorHorarios"
+                                spacing="8"/>
+
+                    </content>
+
+                </ScrollPane>
+
+                <!--
+                    IMPORTANTE:
+                    Este Label debe existir porque el Controller
+                    utiliza lblMensaje para mostrar información,
+                    errores y validaciones.
+                -->
+
+                <Label
+                        fx:id="lblMensaje"
+                        text=""
+                        wrapText="true"
+                        styleClass="card-description"/>
+
+                <Button
+                        text="Confirmar reprogramación"
+                        prefHeight="42"
+                        maxWidth="260"
+                        styleClass="primary-button"
+                        onAction="#confirmarReprogramacion"/>
+
+            </VBox>
+
+        </VBox>
+
+    </center>
+
+</BorderPane>

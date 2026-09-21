@@ -14,7 +14,9 @@ import javafx.scene.Scene;
 import javafx.scene.control.Alert;
 import javafx.scene.control.Button;
 import javafx.scene.control.ButtonType;
+import javafx.scene.control.ComboBox;
 import javafx.scene.control.Label;
+import javafx.scene.control.TextField;
 import javafx.scene.control.TextInputDialog;
 import javafx.scene.layout.HBox;
 import javafx.scene.layout.Priority;
@@ -24,7 +26,9 @@ import javafx.stage.Stage;
 
 import java.io.IOException;
 import java.time.format.DateTimeFormatter;
+import java.util.ArrayList;
 import java.util.List;
+import java.util.Locale;
 import java.util.Optional;
 
 /**
@@ -32,11 +36,12 @@ import java.util.Optional;
  *                CONTROLLER - MIS CITAS
  * ================================================================
  *
- * Gestiona la consulta, navegación, reprogramación y cancelación
- * de las citas médicas pertenecientes al paciente autenticado.
+ * Gestiona la consulta, búsqueda, filtrado, navegación,
+ * reprogramación y cancelación de las citas médicas
+ * pertenecientes al paciente autenticado.
  *
  * @author Equipo de Ingeniería de Software II
- * @version 1.1
+ * @version 1.2
  */
 public class MisCitasController {
 
@@ -52,10 +57,26 @@ public class MisCitasController {
     @FXML
     private VBox contenedorCitas;
 
+    @FXML
+    private TextField txtBuscarCita;
+
+    @FXML
+    private ComboBox<String> cmbEstado;
+
     private final PacienteDAO pacienteDAO;
     private final CitaService citaService;
 
     private Usuario usuarioActual;
+
+    /**
+     * Mantiene en memoria las citas obtenidas desde MySQL.
+     *
+     * Los filtros trabajan sobre esta lista para evitar
+     * consultas innecesarias a la base de datos cada vez
+     * que el usuario escribe en el buscador.
+     */
+    private List<Cita> citasPaciente =
+            new ArrayList<>();
 
     private final DateTimeFormatter formatoFecha =
             DateTimeFormatter.ofPattern("dd/MM/yyyy");
@@ -73,6 +94,49 @@ public class MisCitasController {
 
         this.citaService =
                 new CitaService();
+    }
+
+    /**
+     * Inicializa los controles de búsqueda y filtrado.
+     */
+    @FXML
+    private void initialize() {
+
+        cmbEstado.getItems().addAll(
+                "Todas",
+                "PROGRAMADA",
+                "CONFIRMADA",
+                "ATENDIDA",
+                "CANCELADA",
+                "NO_ASISTIO"
+        );
+
+        cmbEstado.setValue(
+                "Todas"
+        );
+
+        /*
+         * Búsqueda automática.
+         *
+         * Cada vez que el paciente escribe o elimina
+         * caracteres se actualizan las tarjetas.
+         */
+        txtBuscarCita
+                .textProperty()
+                .addListener(
+                        (observable, valorAnterior, valorNuevo) ->
+                                aplicarFiltros()
+                );
+
+        /*
+         * Filtrado automático por estado.
+         */
+        cmbEstado
+                .valueProperty()
+                .addListener(
+                        (observable, valorAnterior, valorNuevo) ->
+                                aplicarFiltros()
+                );
     }
 
     /**
@@ -132,19 +196,22 @@ public class MisCitasController {
 
                 lblCantidadCitas.setText("0");
 
+                citasPaciente.clear();
+
                 return;
             }
 
-            List<Cita> citas =
+            /*
+             * Guardamos todas las citas del paciente.
+             */
+            citasPaciente =
                     citaService.listarPorPaciente(
                             paciente.getIdPaciente()
                     );
 
-            lblCantidadCitas.setText(
-                    String.valueOf(citas.size())
-            );
+            if (citasPaciente.isEmpty()) {
 
-            if (citas.isEmpty()) {
+                lblCantidadCitas.setText("0");
 
                 mostrarMensaje(
                         "Todavía no tienes citas médicas registradas."
@@ -153,14 +220,13 @@ public class MisCitasController {
                 return;
             }
 
-            for (Cita cita : citas) {
-
-                contenedorCitas
-                        .getChildren()
-                        .add(
-                                crearTarjetaCita(cita)
-                        );
-            }
+            /*
+             * Aplicamos los filtros actuales.
+             *
+             * Cuando no existe búsqueda y el estado es
+             * "Todas", se mostrarán todas las citas.
+             */
+            aplicarFiltros();
 
         } catch (Exception e) {
 
@@ -175,6 +241,183 @@ public class MisCitasController {
 
             e.printStackTrace();
         }
+    }
+
+    /**
+     * Aplica la búsqueda de texto y el filtro por estado
+     * sobre las citas cargadas del paciente.
+     */
+    @FXML
+    private void aplicarFiltros() {
+
+        if (contenedorCitas == null) {
+            return;
+        }
+
+        contenedorCitas
+                .getChildren()
+                .clear();
+
+        limpiarMensaje();
+
+        /*
+         * Obtenemos el texto introducido por el usuario.
+         */
+        String texto =
+                txtBuscarCita == null
+                        || txtBuscarCita.getText() == null
+                        ? ""
+                        : txtBuscarCita
+                                .getText()
+                                .trim()
+                                .toLowerCase(
+                                        Locale.ROOT
+                                );
+
+        /*
+         * Obtenemos el estado seleccionado.
+         */
+        String estadoSeleccionado =
+                cmbEstado == null
+                        || cmbEstado.getValue() == null
+                        ? "Todas"
+                        : cmbEstado.getValue();
+
+        /*
+         * Aplicamos ambos filtros.
+         */
+        List<Cita> resultados =
+                citasPaciente
+                        .stream()
+                        .filter(
+                                cita ->
+                                        coincideBusqueda(
+                                                cita,
+                                                texto
+                                        )
+                        )
+                        .filter(
+                                cita ->
+                                        "Todas".equalsIgnoreCase(
+                                                estadoSeleccionado
+                                        )
+                                        || estadoSeleccionado
+                                                .equalsIgnoreCase(
+                                                        cita.getEstado()
+                                                )
+                        )
+                        .toList();
+
+        /*
+         * El contador representa las citas que actualmente
+         * se están mostrando.
+         */
+        lblCantidadCitas.setText(
+                String.valueOf(
+                        resultados.size()
+                )
+        );
+
+        if (resultados.isEmpty()) {
+
+            mostrarMensaje(
+                    "No se encontraron citas con los filtros seleccionados."
+            );
+
+            return;
+        }
+
+        /*
+         * Construimos nuevamente las tarjetas únicamente
+         * con las citas que cumplen los filtros.
+         */
+        for (Cita cita : resultados) {
+
+            contenedorCitas
+                    .getChildren()
+                    .add(
+                            crearTarjetaCita(
+                                    cita
+                            )
+                    );
+        }
+    }
+
+    /**
+     * Comprueba si una cita coincide con el texto
+     * ingresado en el buscador.
+     *
+     * La búsqueda se realiza por:
+     *
+     * - Especialidad.
+     * - Médico.
+     * - Establecimiento.
+     * - Motivo de consulta.
+     *
+     * @param cita cita que será evaluada.
+     * @param texto texto introducido.
+     * @return true si existe coincidencia.
+     */
+    private boolean coincideBusqueda(
+            Cita cita,
+            String texto
+    ) {
+
+        if (texto == null || texto.isBlank()) {
+            return true;
+        }
+
+        return contieneTexto(
+                cita.getNombreEspecialidad(),
+                texto
+        )
+        || contieneTexto(
+                cita.getNombreMedico(),
+                texto
+        )
+        || contieneTexto(
+                cita.getNombreEstablecimiento(),
+                texto
+        )
+        || contieneTexto(
+                cita.getMotivoConsulta(),
+                texto
+        );
+    }
+
+    /**
+     * Realiza una comparación segura ignorando
+     * mayúsculas y minúsculas.
+     */
+    private boolean contieneTexto(
+            String valor,
+            String texto
+    ) {
+
+        return valor != null
+                && valor
+                        .toLowerCase(
+                                Locale.ROOT
+                        )
+                        .contains(
+                                texto
+                        );
+    }
+
+    /**
+     * Limpia el buscador y restablece
+     * el filtro de estado.
+     */
+    @FXML
+    private void limpiarFiltros() {
+
+        txtBuscarCita.clear();
+
+        cmbEstado.setValue(
+                "Todas"
+        );
+
+        aplicarFiltros();
     }
 
     /**
@@ -341,8 +584,8 @@ public class MisCitasController {
                 "CANCELADA".equalsIgnoreCase(
                         cita.getEstado()
                 )
-                        && cita.getMotivoCancelacion() != null
-                        && !cita.getMotivoCancelacion().isBlank()
+                && cita.getMotivoCancelacion() != null
+                && !cita.getMotivoCancelacion().isBlank()
         ) {
 
             Label motivoCancelacion =
@@ -375,7 +618,7 @@ public class MisCitasController {
                 "PROGRAMADA".equalsIgnoreCase(
                         cita.getEstado()
                 )
-                        || "CONFIRMADA".equalsIgnoreCase(
+                || "CONFIRMADA".equalsIgnoreCase(
                         cita.getEstado()
                 );
 
@@ -393,12 +636,17 @@ public class MisCitasController {
                             "Reprogramar"
                     );
 
-            btnReprogramar.getStyleClass().add(
-                    "primary-button"
-            );
+            btnReprogramar
+                    .getStyleClass()
+                    .add(
+                            "primary-button"
+                    );
 
             btnReprogramar.setOnAction(
-                    event -> abrirReprogramacion(cita)
+                    event ->
+                            abrirReprogramacion(
+                                    cita
+                            )
             );
 
             /*
@@ -410,12 +658,17 @@ public class MisCitasController {
                             "Cancelar cita"
                     );
 
-            btnCancelar.getStyleClass().add(
-                    "cancel-appointment-button"
-            );
+            btnCancelar
+                    .getStyleClass()
+                    .add(
+                            "cancel-appointment-button"
+                    );
 
             btnCancelar.setOnAction(
-                    event -> cancelarCita(cita)
+                    event ->
+                            cancelarCita(
+                                    cita
+                            )
             );
 
             acciones.getChildren().addAll(
@@ -535,7 +788,7 @@ public class MisCitasController {
 
         if (
                 respuesta.isEmpty()
-                        || respuesta.get() != ButtonType.OK
+                || respuesta.get() != ButtonType.OK
         ) {
 
             return;
@@ -621,6 +874,10 @@ public class MisCitasController {
                     motivo
             );
 
+            /*
+             * Recargamos la información desde MySQL.
+             * Los filtros actuales se conservan.
+             */
             cargarCitas();
 
             mostrarExito(

@@ -258,6 +258,29 @@ public List<Cita> listarPorPaciente(
 }
 
 /**
+ * Obtiene todas las citas asignadas a un médico.
+ *
+ * @param idMedico identificador del médico.
+ * @return lista de citas de la agenda médica.
+ * @throws SQLException si ocurre un error de acceso a datos.
+ */
+public List<Cita> listarPorMedico(
+        int idMedico
+) throws SQLException {
+
+    if (idMedico <= 0) {
+
+        throw new IllegalArgumentException(
+                "El médico no es válido."
+        );
+    }
+
+    return citaDAO.listarPorMedico(
+            idMedico
+    );
+}
+
+/**
  * Cuenta las citas activas y futuras del paciente.
  */
 public long contarCitasProgramadas(

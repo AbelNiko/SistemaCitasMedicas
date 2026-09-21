@@ -139,6 +139,95 @@ public class MedicoDAO {
     }
 
     /**
+ * Obtiene el perfil médico asociado a un usuario.
+ *
+ * Se utiliza principalmente después de la autenticación
+ * para identificar el id_medico correspondiente al
+ * usuario que inició sesión.
+ *
+ * @param idUsuario identificador del usuario.
+ * @return médico encontrado o null si no existe.
+ * @throws SQLException si ocurre un error de acceso a datos.
+ */
+public Medico buscarPorIdUsuario(
+        int idUsuario
+) throws SQLException {
+
+    if (idUsuario <= 0) {
+        throw new IllegalArgumentException(
+                "El usuario no es válido."
+        );
+    }
+
+    String sql = """
+            SELECT
+                m.id_medico,
+                m.cedula_profesional,
+                m.observacion,
+                m.estado AS medico_estado,
+                m.fecha_creacion AS medico_fecha_creacion,
+
+                u.id_usuario,
+                u.nombres,
+                u.apellidos,
+                u.cedula,
+                u.correo,
+                u.password_hash,
+                u.telefono,
+                u.estado AS usuario_estado,
+                u.fecha_creacion AS usuario_fecha_creacion,
+                u.fecha_actualizacion,
+
+                r.id_rol,
+                r.nombre AS rol_nombre,
+                r.descripcion AS rol_descripcion,
+                r.estado AS rol_estado,
+                r.fecha_creacion AS rol_fecha_creacion
+
+            FROM medicos m
+
+            INNER JOIN usuarios u
+                ON m.id_usuario = u.id_usuario
+
+            INNER JOIN roles r
+                ON u.id_rol = r.id_rol
+
+            WHERE m.id_usuario = ?
+              AND m.estado = TRUE
+              AND u.estado = TRUE
+              AND r.estado = TRUE
+            """;
+
+    try (
+            Connection conexion =
+                    ConexionBD.obtenerConexion();
+
+            PreparedStatement sentencia =
+                    conexion.prepareStatement(sql)
+    ) {
+
+        sentencia.setInt(
+                1,
+                idUsuario
+        );
+
+        try (
+                ResultSet resultado =
+                        sentencia.executeQuery()
+        ) {
+
+            if (resultado.next()) {
+                return construirMedico(
+                        resultado
+                );
+            }
+        }
+    }
+
+    return null;
+}
+
+    /**
      * Construye un médico junto con su usuario y rol.
      */
     private Medico construirMedico(

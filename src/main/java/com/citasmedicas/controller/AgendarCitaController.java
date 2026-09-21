@@ -795,6 +795,147 @@ actualizarEstadoConfirmacion();
             e.printStackTrace();
         }
     }
+
+    /**
+ * Abre la pantalla Mis citas conservando
+ * el usuario autenticado.
+ */
+@FXML
+private void abrirMisCitas() {
+
+    try {
+
+        FXMLLoader loader =
+                new FXMLLoader(
+                        getClass().getResource(
+                                "/fxml/mis-citas.fxml"
+                        )
+                );
+
+        Scene scene =
+                new Scene(
+                        loader.load()
+                );
+
+        MisCitasController controller =
+                loader.getController();
+
+        /*
+         * Conservamos la sesión del usuario
+         * al cambiar de pantalla.
+         */
+        controller.setUsuario(
+                usuario
+        );
+
+        Stage stage =
+                (Stage) lblNombreUsuario
+                        .getScene()
+                        .getWindow();
+
+        stage.setScene(
+                scene
+        );
+
+        stage.setTitle(
+                "MediAppoint - Mis citas"
+        );
+
+        stage.setMinWidth(
+                950
+        );
+
+        stage.setMinHeight(
+                620
+        );
+
+        stage.centerOnScreen();
+
+    } catch (IOException e) {
+
+        mostrarError(
+                "No fue posible abrir Mis citas."
+        );
+
+        System.err.println(
+                "Error al cargar mis-citas.fxml: "
+                        + e.getMessage()
+        );
+
+        e.printStackTrace();
+    }
+}
+
+/**
+ * Abre la pantalla Mi perfil conservando
+ * el usuario autenticado.
+ */
+@FXML
+private void abrirPerfil() {
+
+    try {
+
+        FXMLLoader loader =
+                new FXMLLoader(
+                        getClass().getResource(
+                                "/fxml/perfil.fxml"
+                        )
+                );
+
+        Scene scene =
+                new Scene(
+                        loader.load()
+                );
+
+        PerfilController controller =
+                loader.getController();
+
+        /*
+         * Conservamos la sesión del usuario
+         * al cambiar de pantalla.
+         */
+        controller.setUsuario(
+                usuario
+        );
+
+        Stage stage =
+                (Stage) lblNombreUsuario
+                        .getScene()
+                        .getWindow();
+
+        stage.setScene(
+                scene
+        );
+
+        stage.setTitle(
+                "MediAppoint - Mi perfil"
+        );
+
+        stage.setMinWidth(
+                950
+        );
+
+        stage.setMinHeight(
+                620
+        );
+
+        stage.centerOnScreen();
+
+    } catch (IOException e) {
+
+        mostrarError(
+                "No fue posible abrir Mi perfil."
+        );
+
+        System.err.println(
+                "Error al cargar perfil.fxml: "
+                        + e.getMessage()
+        );
+
+        e.printStackTrace();
+    }
+}
+
     /**
  * Cierra la sesión del usuario autenticado
  * y regresa a la pantalla de inicio de sesión.

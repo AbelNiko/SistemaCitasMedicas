@@ -935,3 +935,39 @@
 .doctor-appointments-scroll .scroll-bar:vertical .thumb:hover {
     -fx-background-color: #34706F;
 }
+
+/* ============================================================
+   ACCIONES DE CITAS - PORTAL MÉDICO
+   ============================================================ */
+
+.doctor-action-primary {
+    -fx-background-color: #18B6A4;
+    -fx-text-fill: white;
+    -fx-font-size: 13px;
+    -fx-font-weight: bold;
+    -fx-background-radius: 8px;
+    -fx-padding: 9px 16px;
+    -fx-cursor: hand;
+}
+
+.doctor-action-primary:hover {
+    -fx-background-color: #27D3BE;
+}
+
+.doctor-action-secondary {
+    -fx-background-color: #102D30;
+    -fx-text-fill: #B8D7D5;
+    -fx-font-size: 13px;
+    -fx-font-weight: bold;
+    -fx-border-color: #285356;
+    -fx-border-width: 1px;
+    -fx-border-radius: 8px;
+    -fx-background-radius: 8px;
+    -fx-padding: 9px 16px;
+    -fx-cursor: hand;
+}
+
+.doctor-action-secondary:hover {
+    -fx-background-color: #173B3D;
+    -fx-text-fill: white;
+}

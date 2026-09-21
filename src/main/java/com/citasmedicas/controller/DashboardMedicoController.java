@@ -9,6 +9,8 @@ import com.citasmedicas.util.SesionUtil;
 
 import javafx.fxml.FXML;
 import javafx.geometry.Insets;
+import javafx.geometry.Pos;
+import javafx.scene.control.Button;
 import javafx.scene.control.ComboBox;
 import javafx.scene.control.Label;
 import javafx.scene.control.TextField;
@@ -32,11 +34,19 @@ import java.util.Locale;
  *
  * Gestiona la pantalla principal del médico autenticado.
  *
- * Permite consultar las citas asignadas, visualizar un resumen
- * de la agenda y aplicar filtros por texto, estado y fecha.
+ * Permite:
+ * - consultar las citas asignadas;
+ * - visualizar un resumen de la agenda;
+ * - buscar citas;
+ * - filtrar por estado y fecha;
+ * - confirmar citas programadas;
+ * - marcar citas confirmadas como atendidas;
+ * - registrar la no asistencia del paciente;
+ * - actualizar la agenda;
+ * - cerrar la sesión.
  *
  * @author Equipo de Ingeniería de Software II
- * @version 1.2
+ * @version 1.3
  */
 public class DashboardMedicoController {
 
@@ -390,9 +400,9 @@ public class DashboardMedicoController {
 
         if (
                 estadoSeleccionado == null
-                || "Todos".equalsIgnoreCase(
-                        estadoSeleccionado
-                )
+                        || "Todos".equalsIgnoreCase(
+                                estadoSeleccionado
+                        )
         ) {
             return true;
         }
@@ -413,9 +423,9 @@ public class DashboardMedicoController {
 
         if (
                 fechaSeleccionada == null
-                || "Todas".equalsIgnoreCase(
-                        fechaSeleccionada
-                )
+                        || "Todas".equalsIgnoreCase(
+                                fechaSeleccionada
+                        )
         ) {
             return true;
         }
@@ -536,13 +546,16 @@ public class DashboardMedicoController {
         );
 
         /*
-         * Encabezado de la cita.
+         * ========================================================
+         * ENCABEZADO
+         * ========================================================
          */
+
         HBox encabezado =
                 new HBox(14);
 
         encabezado.setAlignment(
-                javafx.geometry.Pos.CENTER_LEFT
+                Pos.CENTER_LEFT
         );
 
         VBox bloqueFecha =
@@ -611,8 +624,11 @@ public class DashboardMedicoController {
         );
 
         /*
-         * Paciente.
+         * ========================================================
+         * PACIENTE
+         * ========================================================
          */
+
         VBox bloquePaciente =
                 new VBox(3);
 
@@ -644,13 +660,16 @@ public class DashboardMedicoController {
         );
 
         /*
-         * Información complementaria.
+         * ========================================================
+         * INFORMACIÓN COMPLEMENTARIA
+         * ========================================================
          */
+
         HBox informacion =
                 new HBox(30);
 
         informacion.setAlignment(
-                javafx.geometry.Pos.CENTER_LEFT
+                Pos.CENTER_LEFT
         );
 
         VBox bloqueLugar =
@@ -682,14 +701,17 @@ public class DashboardMedicoController {
         );
 
         /*
-         * Información adicional para citas canceladas.
+         * ========================================================
+         * INFORMACIÓN DE CANCELACIÓN
+         * ========================================================
          */
+
         if (
                 "CANCELADA".equalsIgnoreCase(
                         cita.getEstado()
                 )
-                && cita.getMotivoCancelacion() != null
-                && !cita.getMotivoCancelacion().isBlank()
+                        && cita.getMotivoCancelacion() != null
+                        && !cita.getMotivoCancelacion().isBlank()
         ) {
 
             VBox bloqueCancelacion =
@@ -707,7 +729,237 @@ public class DashboardMedicoController {
             );
         }
 
+        /*
+         * ========================================================
+         * ACCIONES MÉDICAS
+         * ========================================================
+         */
+
+        HBox acciones =
+                crearAccionesCita(
+                        cita
+                );
+
+        if (acciones != null) {
+
+            tarjeta.getChildren().add(
+                    acciones
+            );
+        }
+
         return tarjeta;
+    }
+
+    /**
+     * Construye las acciones disponibles según
+     * el estado actual de la cita.
+     */
+    private HBox crearAccionesCita(
+            Cita cita
+    ) {
+
+        if (
+                cita == null
+                        || cita.getEstado() == null
+        ) {
+            return null;
+        }
+
+        String estado =
+                cita.getEstado()
+                        .trim()
+                        .toUpperCase(Locale.ROOT);
+
+        HBox acciones =
+                new HBox(10);
+
+        acciones.setAlignment(
+                Pos.CENTER_RIGHT
+        );
+
+        switch (estado) {
+
+            case "PROGRAMADA" -> {
+
+                Button btnConfirmar =
+                        new Button(
+                                "Confirmar cita"
+                        );
+
+                btnConfirmar
+                        .getStyleClass()
+                        .add(
+                                "doctor-action-primary"
+                        );
+
+                btnConfirmar.setOnAction(
+                        evento ->
+                                cambiarEstadoCita(
+                                        cita,
+                                        "CONFIRMADA"
+                                )
+                );
+
+                acciones.getChildren().add(
+                        btnConfirmar
+                );
+            }
+
+            case "CONFIRMADA" -> {
+
+                Button btnAtendida =
+                        new Button(
+                                "Marcar atendida"
+                        );
+
+                btnAtendida
+                        .getStyleClass()
+                        .add(
+                                "doctor-action-primary"
+                        );
+
+                btnAtendida.setOnAction(
+                        evento ->
+                                cambiarEstadoCita(
+                                        cita,
+                                        "ATENDIDA"
+                                )
+                );
+
+                Button btnNoAsistio =
+                        new Button(
+                                "No asistió"
+                        );
+
+                btnNoAsistio
+                        .getStyleClass()
+                        .add(
+                                "doctor-action-secondary"
+                        );
+
+                btnNoAsistio.setOnAction(
+                        evento ->
+                                cambiarEstadoCita(
+                                        cita,
+                                        "NO_ASISTIO"
+                                )
+                );
+
+                acciones.getChildren().addAll(
+                        btnAtendida,
+                        btnNoAsistio
+                );
+            }
+
+            default -> {
+
+                /*
+                 * ATENDIDA, CANCELADA y NO_ASISTIO
+                 * son estados finales para las acciones
+                 * disponibles en esta pantalla.
+                 */
+                return null;
+            }
+        }
+
+        return acciones;
+    }
+
+    /**
+     * Solicita al servicio el cambio de estado
+     * de una cita del médico autenticado.
+     */
+    private void cambiarEstadoCita(
+            Cita cita,
+            String nuevoEstado
+    ) {
+
+        if (
+                cita == null
+                        || medicoActual == null
+        ) {
+
+            mostrarMensaje(
+                    "No fue posible identificar la cita o el médico."
+            );
+
+            return;
+        }
+
+        try {
+
+            citaService.cambiarEstadoPorMedico(
+                    cita.getIdCita(),
+                    medicoActual.getIdMedico(),
+                    cita.getEstado(),
+                    nuevoEstado
+            );
+
+            /*
+             * Se vuelve a consultar MySQL para evitar
+             * trabajar con información desactualizada.
+             */
+            cargarAgenda();
+
+            mostrarMensaje(
+                    obtenerMensajeCambioEstado(
+                            nuevoEstado
+                    )
+            );
+
+        } catch (IllegalArgumentException e) {
+
+            /*
+             * Si el estado fue modificado desde otra
+             * operación, refrescamos la agenda.
+             */
+            cargarAgenda();
+
+            mostrarMensaje(
+                    e.getMessage()
+            );
+
+        } catch (SQLException e) {
+
+            mostrarMensaje(
+                    "No fue posible actualizar el estado de la cita."
+            );
+
+            System.err.println(
+                    "Error al actualizar estado de cita: "
+                            + e.getMessage()
+            );
+        }
+    }
+
+    /**
+     * Devuelve un mensaje amigable después
+     * de actualizar correctamente una cita.
+     */
+    private String obtenerMensajeCambioEstado(
+            String nuevoEstado
+    ) {
+
+        if (nuevoEstado == null) {
+            return "El estado de la cita fue actualizado.";
+        }
+
+        return switch (
+                nuevoEstado.toUpperCase(Locale.ROOT)
+        ) {
+
+            case "CONFIRMADA" ->
+                    "La cita fue confirmada correctamente.";
+
+            case "ATENDIDA" ->
+                    "La cita fue marcada como atendida.";
+
+            case "NO_ASISTIO" ->
+                    "La cita fue marcada como no asistida.";
+
+            default ->
+                    "El estado de la cita fue actualizado.";
+        };
     }
 
     /**
@@ -754,7 +1006,10 @@ public class DashboardMedicoController {
             String valor
     ) {
 
-        if (valor == null || valor.isBlank()) {
+        if (
+                valor == null
+                        || valor.isBlank()
+        ) {
             return "No especificado";
         }
 
@@ -809,9 +1064,17 @@ public class DashboardMedicoController {
 
         if (lblMensaje != null) {
 
-            lblMensaje.setText(mensaje);
-            lblMensaje.setVisible(true);
-            lblMensaje.setManaged(true);
+            lblMensaje.setText(
+                    mensaje
+            );
+
+            lblMensaje.setVisible(
+                    true
+            );
+
+            lblMensaje.setManaged(
+                    true
+            );
         }
     }
 
@@ -823,8 +1086,14 @@ public class DashboardMedicoController {
         if (lblMensaje != null) {
 
             lblMensaje.setText("");
-            lblMensaje.setVisible(false);
-            lblMensaje.setManaged(false);
+
+            lblMensaje.setVisible(
+                    false
+            );
+
+            lblMensaje.setManaged(
+                    false
+            );
         }
     }
 }

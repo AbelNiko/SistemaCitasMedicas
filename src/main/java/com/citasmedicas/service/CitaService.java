@@ -608,4 +608,109 @@ public boolean estaDisponibleParaReprogramacion(
                 );
     }
 }
+/**
+ * Cambia el estado de una cita desde el portal médico.
+ *
+ * Transiciones permitidas:
+ * PROGRAMADA -> CONFIRMADA
+ * CONFIRMADA -> ATENDIDA
+ * CONFIRMADA -> NO_ASISTIO
+ *
+ * @param idCita identificador de la cita.
+ * @param idMedico identificador del médico.
+ * @param estadoActual estado actual de la cita.
+ * @param nuevoEstado nuevo estado solicitado.
+ * @throws SQLException si ocurre un error de acceso a datos.
+ */
+public void cambiarEstadoPorMedico(
+        int idCita,
+        int idMedico,
+        String estadoActual,
+        String nuevoEstado
+) throws SQLException {
+
+    if (idCita <= 0) {
+        throw new IllegalArgumentException(
+                "La cita seleccionada no es válida."
+        );
+    }
+
+    if (idMedico <= 0) {
+        throw new IllegalArgumentException(
+                "El médico no es válido."
+        );
+    }
+
+    String actual =
+            normalizarEstado(estadoActual);
+
+    String nuevo =
+            normalizarEstado(nuevoEstado);
+
+    if (!esTransicionValida(actual, nuevo)) {
+        throw new IllegalArgumentException(
+                "No es posible cambiar la cita de "
+                + actual
+                + " a "
+                + nuevo
+                + "."
+        );
+    }
+
+    boolean actualizada =
+            citaDAO.actualizarEstadoPorMedico(
+                    idCita,
+                    idMedico,
+                    actual,
+                    nuevo
+            );
+
+    if (!actualizada) {
+        throw new IllegalArgumentException(
+                "No fue posible actualizar el estado de la cita. "
+                + "Es posible que la cita haya cambiado "
+                + "o no pertenezca al médico."
+        );
+    }
+}
+
+/**
+ * Normaliza un estado antes de procesarlo.
+ */
+private String normalizarEstado(
+        String estado
+) {
+
+    if (estado == null || estado.isBlank()) {
+        throw new IllegalArgumentException(
+                "El estado de la cita es obligatorio."
+        );
+    }
+
+    return estado
+            .trim()
+            .toUpperCase(java.util.Locale.ROOT);
+}
+
+/**
+ * Comprueba si el cambio solicitado corresponde
+ * a una transición válida del flujo médico.
+ */
+private boolean esTransicionValida(
+        String estadoActual,
+        String nuevoEstado
+) {
+
+    return switch (estadoActual) {
+
+        case "PROGRAMADA" ->
+                "CONFIRMADA".equals(nuevoEstado);
+
+        case "CONFIRMADA" ->
+                "ATENDIDA".equals(nuevoEstado)
+                || "NO_ASISTIO".equals(nuevoEstado);
+
+        default -> false;
+    };
+}
 }

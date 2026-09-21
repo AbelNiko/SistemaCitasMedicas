@@ -716,4 +716,68 @@ public boolean existeSolapamientoExcluyendoCita(
         }
     }
 }
+/**
+ * Actualiza el estado de una cita perteneciente a un médico.
+ *
+ * La actualización se realiza únicamente cuando la cita:
+ * - existe;
+ * - pertenece al médico indicado;
+ * - mantiene el estado esperado.
+ *
+ * Esto evita modificaciones sobre citas de otros médicos
+ * y protege el flujo frente a cambios concurrentes.
+ *
+ * @param idCita id de la cita.
+ * @param idMedico id del médico propietario de la cita.
+ * @param estadoActual estado que debe tener actualmente.
+ * @param nuevoEstado nuevo estado que se asignará.
+ * @return true si la cita fue actualizada correctamente.
+ * @throws SQLException si ocurre un error de acceso a datos.
+ */
+public boolean actualizarEstadoPorMedico(
+        int idCita,
+        int idMedico,
+        String estadoActual,
+        String nuevoEstado
+) throws SQLException {
+
+    String sql = """
+            UPDATE citas
+            SET estado = ?
+            WHERE id_cita = ?
+              AND id_medico = ?
+              AND estado = ?
+            """;
+
+    try (
+        Connection conexion =
+                ConexionBD.obtenerConexion();
+
+        PreparedStatement sentencia =
+                conexion.prepareStatement(sql)
+    ) {
+
+        sentencia.setString(
+                1,
+                nuevoEstado
+        );
+
+        sentencia.setInt(
+                2,
+                idCita
+        );
+
+        sentencia.setInt(
+                3,
+                idMedico
+        );
+
+        sentencia.setString(
+                4,
+                estadoActual
+        );
+
+        return sentencia.executeUpdate() == 1;
+    }
+}
 }

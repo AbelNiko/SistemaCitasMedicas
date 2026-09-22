@@ -780,4 +780,60 @@ public boolean actualizarEstadoPorMedico(
         return sentencia.executeUpdate() == 1;
     }
 }
+/**
+ * Finaliza una cita médica registrando simultáneamente
+ * la observación de atención y el estado ATENDIDA.
+ *
+ * La actualización solo se realiza cuando:
+ * - la cita existe;
+ * - pertenece al médico autenticado;
+ * - mantiene el estado CONFIRMADA.
+ *
+ * @param idCita identificador de la cita.
+ * @param idMedico identificador del médico.
+ * @param observacion observación registrada durante la atención.
+ * @return true si la cita fue actualizada correctamente.
+ * @throws SQLException si ocurre un error de acceso a datos.
+ */
+public boolean finalizarAtencion(
+        int idCita,
+        int idMedico,
+        String observacion
+) throws SQLException {
+
+    String sql = """
+            UPDATE citas
+            SET estado = 'ATENDIDA',
+                observacion = ?
+            WHERE id_cita = ?
+              AND id_medico = ?
+              AND estado = 'CONFIRMADA'
+            """;
+
+    try (
+        Connection conexion =
+                ConexionBD.obtenerConexion();
+
+        PreparedStatement sentencia =
+                conexion.prepareStatement(sql)
+    ) {
+
+        sentencia.setString(
+                1,
+                observacion
+        );
+
+        sentencia.setInt(
+                2,
+                idCita
+        );
+
+        sentencia.setInt(
+                3,
+                idMedico
+        );
+
+        return sentencia.executeUpdate() == 1;
+    }
+}
 }

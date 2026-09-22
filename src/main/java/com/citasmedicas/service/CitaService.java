@@ -773,4 +773,54 @@ public void finalizarAtencion(
         );
     }
 }
+/**
+ * Obtiene el historial de atenciones realizadas
+ * de un paciente.
+ *
+ * El historial incluye únicamente citas que hayan
+ * finalizado correctamente con estado ATENDIDA.
+ *
+ * @param idPaciente identificador del paciente.
+ * @return lista de atenciones realizadas.
+ * @throws SQLException si ocurre un error de acceso a datos.
+ */
+public List<Cita> listarHistorialPaciente(
+        int idPaciente
+) throws SQLException {
+
+    if (idPaciente <= 0) {
+
+        throw new IllegalArgumentException(
+                "El paciente no es válido."
+        );
+    }
+
+    return citaDAO.listarPorPaciente(
+            idPaciente
+    )
+            .stream()
+            .filter(
+                    cita ->
+                            "ATENDIDA".equalsIgnoreCase(
+                                    cita.getEstado()
+                            )
+            )
+            .sorted(
+                    java.util.Comparator
+                            .comparing(
+                                    Cita::getFechaCita,
+                                    java.util.Comparator.nullsLast(
+                                            java.util.Comparator.naturalOrder()
+                                    )
+                            )
+                            .thenComparing(
+                                    Cita::getHoraInicio,
+                                    java.util.Comparator.nullsLast(
+                                            java.util.Comparator.naturalOrder()
+                                    )
+                            )
+                            .reversed()
+            )
+            .toList();
+}
 }

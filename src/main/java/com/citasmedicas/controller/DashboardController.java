@@ -1,10 +1,11 @@
 package com.citasmedicas.controller;
-import com.citasmedicas.util.SesionUtil;
+
 import com.citasmedicas.dao.PacienteDAO;
 import com.citasmedicas.model.Cita;
 import com.citasmedicas.model.Paciente;
 import com.citasmedicas.model.Usuario;
 import com.citasmedicas.service.CitaService;
+import com.citasmedicas.util.SesionUtil;
 
 import javafx.fxml.FXML;
 import javafx.fxml.FXMLLoader;
@@ -26,8 +27,14 @@ import java.util.Optional;
  * Muestra la información del usuario autenticado,
  * su próxima cita y el número de citas programadas.
  *
+ * También administra la navegación hacia:
+ * - Agendar cita.
+ * - Mis citas.
+ * - Historial de atenciones.
+ * - Mi perfil.
+ *
  * @author Equipo de Ingeniería de Software II
- * @version 1.0
+ * @version 1.1
  */
 public class DashboardController {
 
@@ -64,6 +71,9 @@ public class DashboardController {
                     "HH:mm"
             );
 
+    /**
+     * Constructor principal.
+     */
     public DashboardController() {
 
         this.pacienteDAO =
@@ -75,8 +85,12 @@ public class DashboardController {
 
     /**
      * Recibe el usuario autenticado.
+     *
+     * @param usuario usuario autenticado.
      */
-    public void setUsuario(Usuario usuario) {
+    public void setUsuario(
+            Usuario usuario
+    ) {
 
         this.usuarioActual =
                 usuario;
@@ -116,7 +130,7 @@ public class DashboardController {
 
         lblBienvenida.setText(
                 "Bienvenido, "
-                + usuarioActual.getNombres()
+                        + usuarioActual.getNombres()
         );
     }
 
@@ -178,15 +192,15 @@ public class DashboardController {
                 lblProximaCita.setText(
                         cita.getFechaCita()
                                 .format(formatoFecha)
-                        + " · "
-                        + cita.getHoraInicio()
+                                + " · "
+                                + cita.getHoraInicio()
                                 .format(formatoHora)
                 );
 
                 lblDetalleProximaCita.setText(
                         cita.getNombreEspecialidad()
-                        + " · "
-                        + cita.getNombreMedico()
+                                + " · "
+                                + cita.getNombreMedico()
                 );
 
             } else {
@@ -216,7 +230,7 @@ public class DashboardController {
 
             System.err.println(
                     "Error al cargar resumen de citas: "
-                    + e.getMessage()
+                            + e.getMessage()
             );
 
             e.printStackTrace();
@@ -254,183 +268,245 @@ public class DashboardController {
                     usuarioActual
             );
 
+            cambiarEscena(
+                    scene,
+                    "MediAppoint - Agendar cita"
+            );
+
+        } catch (IOException e) {
+
+            registrarErrorNavegacion(
+                    "agendamiento",
+                    e
+            );
+        }
+    }
+
+    /**
+     * Abre la pantalla que muestra las citas
+     * del paciente autenticado.
+     */
+    @FXML
+    private void abrirMisCitas() {
+
+        if (usuarioActual == null) {
+            return;
+        }
+
+        try {
+
+            FXMLLoader loader =
+                    new FXMLLoader(
+                            getClass().getResource(
+                                    "/fxml/mis-citas.fxml"
+                            )
+                    );
+
+            Scene scene =
+                    new Scene(
+                            loader.load()
+                    );
+
+            MisCitasController controller =
+                    loader.getController();
+
+            controller.setUsuario(
+                    usuarioActual
+            );
+
+            cambiarEscena(
+                    scene,
+                    "MediAppoint - Mis citas"
+            );
+
+        } catch (IOException e) {
+
+            registrarErrorNavegacion(
+                    "Mis citas",
+                    e
+            );
+        }
+    }
+
+    /**
+     * Abre el historial de atenciones médicas
+     * del paciente autenticado.
+     */
+    @FXML
+    private void abrirHistorial() {
+
+        if (usuarioActual == null) {
+            return;
+        }
+
+        try {
+
+            FXMLLoader loader =
+                    new FXMLLoader(
+                            getClass().getResource(
+                                    "/fxml/historial-paciente.fxml"
+                            )
+                    );
+
+            Scene scene =
+                    new Scene(
+                            loader.load()
+                    );
+
+            HistorialPacienteController controller =
+                    loader.getController();
+
+            controller.setUsuario(
+                    usuarioActual
+            );
+
+            cambiarEscena(
+                    scene,
+                    "MediAppoint - Historial de atenciones"
+            );
+
+        } catch (IOException e) {
+
+            registrarErrorNavegacion(
+                    "Historial de atenciones",
+                    e
+            );
+        }
+    }
+
+    /**
+     * Abre el perfil del paciente autenticado.
+     */
+    @FXML
+    private void abrirPerfil() {
+
+        if (usuarioActual == null) {
+            return;
+        }
+
+        try {
+
+            FXMLLoader loader =
+                    new FXMLLoader(
+                            getClass().getResource(
+                                    "/fxml/perfil.fxml"
+                            )
+                    );
+
+            Scene scene =
+                    new Scene(
+                            loader.load()
+                    );
+
+            PerfilController controller =
+                    loader.getController();
+
+            controller.setUsuario(
+                    usuarioActual
+            );
+
+            cambiarEscena(
+                    scene,
+                    "MediAppoint - Mi perfil"
+            );
+
+        } catch (IOException e) {
+
+            registrarErrorNavegacion(
+                    "Mi perfil",
+                    e
+            );
+        }
+    }
+
+    /**
+     * Cambia la escena de la ventana principal.
+     *
+     * Centraliza la configuración de tamaño y título
+     * utilizada durante la navegación del paciente.
+     *
+     * @param scene escena que será mostrada.
+     * @param titulo título de la ventana.
+     */
+    private void cambiarEscena(
+            Scene scene,
+            String titulo
+    ) {
+
+        Stage stage =
+                (Stage) lblNombreUsuario
+                        .getScene()
+                        .getWindow();
+
+        stage.setScene(
+                scene
+        );
+
+        stage.setTitle(
+                titulo
+        );
+
+        stage.setMinWidth(
+                950
+        );
+
+        stage.setMinHeight(
+                620
+        );
+
+        stage.centerOnScreen();
+    }
+
+    /**
+     * Registra en consola un error ocurrido
+     * durante la navegación.
+     *
+     * @param pantalla nombre de la pantalla.
+     * @param e excepción generada.
+     */
+    private void registrarErrorNavegacion(
+            String pantalla,
+            IOException e
+    ) {
+
+        System.err.println(
+                "No fue posible abrir "
+                        + pantalla
+                        + ": "
+                        + e.getMessage()
+        );
+
+        e.printStackTrace();
+    }
+
+    /**
+     * Cierra la sesión del usuario autenticado
+     * y regresa a la pantalla de inicio de sesión.
+     */
+    @FXML
+    private void cerrarSesion() {
+
+        try {
+
             Stage stage =
                     (Stage) lblNombreUsuario
                             .getScene()
                             .getWindow();
 
-            stage.setScene(scene);
+            usuarioActual = null;
 
-            stage.setTitle(
-                    "MediAppoint - Agendar cita"
+            SesionUtil.cerrarSesion(
+                    stage
             );
-
-            stage.setMinWidth(950);
-            stage.setMinHeight(620);
-
-            stage.centerOnScreen();
 
         } catch (IOException e) {
 
             System.err.println(
-                    "Error al cargar la pantalla "
-                    + "de agendamiento: "
-                    + e.getMessage()
+                    "Error al cerrar sesión: "
+                            + e.getMessage()
             );
 
             e.printStackTrace();
         }
     }
-    /**
- * Abre la pantalla que muestra las citas
- * del paciente autenticado.
- */
-@FXML
-private void abrirMisCitas() {
-
-    if (usuarioActual == null) {
-        return;
-    }
-
-    try {
-
-        FXMLLoader loader =
-                new FXMLLoader(
-                        getClass().getResource(
-                                "/fxml/mis-citas.fxml"
-                        )
-                );
-
-        Scene scene =
-                new Scene(
-                        loader.load()
-                );
-
-        MisCitasController controller =
-                loader.getController();
-
-        controller.setUsuario(
-                usuarioActual
-        );
-
-        Stage stage =
-                (Stage) lblNombreUsuario
-                        .getScene()
-                        .getWindow();
-
-        stage.setScene(scene);
-
-        stage.setTitle(
-                "MediAppoint - Mis citas"
-        );
-
-        stage.setMinWidth(950);
-        stage.setMinHeight(620);
-
-        stage.centerOnScreen();
-
-    } catch (IOException e) {
-
-        System.err.println(
-                "Error al abrir Mis citas: "
-                + e.getMessage()
-        );
-
-        e.printStackTrace();
-    }
-}
-/**
- * Abre el perfil del paciente autenticado.
- */
-@FXML
-private void abrirPerfil() {
-
-    if (usuarioActual == null) {
-        return;
-    }
-
-    try {
-
-        FXMLLoader loader =
-                new FXMLLoader(
-                        getClass().getResource(
-                                "/fxml/perfil.fxml"
-                        )
-                );
-
-        Scene scene =
-                new Scene(loader.load());
-
-        PerfilController controller =
-                loader.getController();
-
-        controller.setUsuario(
-                usuarioActual
-        );
-
-        Stage stage =
-                (Stage) lblNombreUsuario
-                        .getScene()
-                        .getWindow();
-
-        stage.setScene(scene);
-
-        stage.setTitle(
-                "MediAppoint - Mi perfil"
-        );
-
-        stage.setMinWidth(950);
-        stage.setMinHeight(620);
-
-        stage.centerOnScreen();
-
-    } catch (IOException e) {
-
-        System.err.println(
-                "Error al abrir Mi perfil: "
-                + e.getMessage()
-        );
-
-        e.printStackTrace();
-    }
-}
-/**
- * Cierra la sesión del usuario autenticado
- * y regresa a la pantalla de inicio de sesión.
- */
-@FXML
-private void cerrarSesion() {
-
-    try {
-
-        /*
-         * Obtenemos la ventana antes de eliminar
-         * la referencia al usuario.
-         */
-        Stage stage =
-                (Stage) lblNombreUsuario
-                        .getScene()
-                        .getWindow();
-
-        /*
-         * Eliminamos la referencia mantenida
-         * por este controlador.
-         */
-        usuarioActual = null;
-
-        /*
-         * Regresamos a la pantalla Login.
-         */
-        SesionUtil.cerrarSesion(stage);
-
-    } catch (IOException e) {
-
-        System.err.println(
-                "Error al cerrar sesión: "
-                + e.getMessage()
-        );
-
-        e.printStackTrace();
-    }
-}
 }

@@ -1005,3 +1005,504 @@
     -fx-border-color: rgba(24, 182, 164, 0.25);
     -fx-border-radius: 8px;
 }
+
+/* ============================================================
+   HISTORIAL DE ATENCIONES - PACIENTE
+   ============================================================ */
+
+.history-counter-card {
+    -fx-background-color: #0B1D31;
+    -fx-background-radius: 12px;
+    -fx-border-color: #173A59;
+    -fx-border-radius: 12px;
+    -fx-border-width: 1px;
+    -fx-padding: 12px 20px;
+}
+
+.history-counter-number {
+    -fx-font-size: 25px;
+    -fx-font-weight: bold;
+    -fx-text-fill: #16C7FF;
+}
+
+.history-counter-label {
+    -fx-font-size: 10px;
+    -fx-font-weight: bold;
+    -fx-text-fill: #8396A9;
+}
+
+.history-info-banner {
+    -fx-background-color: rgba(11, 132, 243, 0.08);
+    -fx-background-radius: 10px;
+    -fx-border-color: rgba(21, 151, 255, 0.25);
+    -fx-border-radius: 10px;
+    -fx-border-width: 1px;
+    -fx-padding: 14px 18px;
+}
+
+.history-banner-title {
+    -fx-font-size: 14px;
+    -fx-font-weight: bold;
+    -fx-text-fill: #EAF6FF;
+}
+
+.history-banner-text {
+    -fx-font-size: 12px;
+    -fx-text-fill: #91A4B8;
+}
+
+.history-section-title {
+    -fx-font-size: 18px;
+    -fx-font-weight: bold;
+    -fx-text-fill: white;
+}
+
+.history-section-subtitle {
+    -fx-font-size: 12px;
+    -fx-text-fill: #8396A9;
+}
+
+.history-scroll-pane {
+    -fx-background-color: transparent;
+    -fx-background: transparent;
+    -fx-border-color: transparent;
+}
+
+.history-scroll-pane > .viewport {
+    -fx-background-color: transparent;
+}
+
+.history-card {
+    -fx-background-color: #0B1D31;
+    -fx-background-radius: 12px;
+    -fx-border-color: #173A59;
+    -fx-border-radius: 12px;
+    -fx-border-width: 1px;
+}
+
+.history-card:hover {
+    -fx-border-color: #27577D;
+}
+
+.history-date {
+    -fx-font-size: 13px;
+    -fx-font-weight: bold;
+    -fx-text-fill: #16C7FF;
+}
+
+.history-time {
+    -fx-font-size: 14px;
+    -fx-font-weight: bold;
+    -fx-text-fill: white;
+}
+
+.history-specialty {
+    -fx-font-size: 17px;
+    -fx-font-weight: bold;
+    -fx-text-fill: #EAF6FF;
+}
+
+.history-info-label {
+    -fx-font-size: 10px;
+    -fx-font-weight: bold;
+    -fx-text-fill: #70869A;
+}
+
+.history-info-value {
+    -fx-font-size: 13px;
+    -fx-text-fill: #C8D5E1;
+}
+
+.history-observation {
+    -fx-background-color: rgba(22, 199, 255, 0.06);
+    -fx-background-radius: 8px;
+    -fx-border-color: rgba(22, 199, 255, 0.20);
+    -fx-border-radius: 8px;
+    -fx-border-width: 1px;
+    -fx-padding: 12px;
+}
+
+/* ================================================================
+        PORTAL DEL PACIENTE 2.0 - SISTEMA VISUAL UNIFICADO
+   ================================================================ */
+
+/* ------------------------------------------------
+   ESTRUCTURA GENERAL
+   ------------------------------------------------ */
+
+.dashboard-root {
+    -fx-background-color: #061321;
+}
+
+.dashboard-content {
+    -fx-background-color: #071827;
+}
+
+.sidebar {
+    -fx-background-color: #081B2C;
+    -fx-border-color: transparent #173A59 transparent transparent;
+    -fx-border-width: 0 1 0 0;
+}
+
+/* ------------------------------------------------
+   MARCA Y MENÚ LATERAL
+   ------------------------------------------------ */
+
+.sidebar-brand {
+    -fx-text-fill: #25A8FF;
+    -fx-font-size: 26px;
+    -fx-font-weight: bold;
+}
+
+.sidebar-subtitle {
+    -fx-text-fill: #66839B;
+    -fx-font-size: 9px;
+    -fx-font-weight: bold;
+}
+
+.sidebar-section-label {
+    -fx-text-fill: #526D83;
+    -fx-font-size: 9px;
+    -fx-font-weight: bold;
+    -fx-padding: 0 0 3 10;
+}
+
+.sidebar-button {
+    -fx-background-color: transparent;
+    -fx-text-fill: #A9BDCD;
+    -fx-font-size: 13px;
+    -fx-alignment: CENTER_LEFT;
+    -fx-padding: 0 14 0 14;
+    -fx-background-radius: 9;
+    -fx-cursor: hand;
+}
+
+.sidebar-button:hover {
+    -fx-background-color: #102D46;
+    -fx-text-fill: #FFFFFF;
+}
+
+.sidebar-button-active {
+    -fx-background-color: #103B5D;
+    -fx-text-fill: #35B8FF;
+    -fx-font-size: 13px;
+    -fx-font-weight: bold;
+    -fx-alignment: CENTER_LEFT;
+    -fx-padding: 0 14 0 14;
+    -fx-background-radius: 9;
+}
+
+.sidebar-user-card {
+    -fx-background-color: #0B2236;
+    -fx-background-radius: 10;
+    -fx-border-color: #183C58;
+    -fx-border-radius: 10;
+    -fx-border-width: 1;
+}
+
+.sidebar-user-role {
+    -fx-text-fill: #35B8FF;
+    -fx-font-size: 9px;
+    -fx-font-weight: bold;
+}
+
+.sidebar-user-name {
+    -fx-text-fill: #EDF7FF;
+    -fx-font-size: 12px;
+    -fx-font-weight: bold;
+}
+
+.sidebar-separator .line {
+    -fx-border-color: #173A59;
+    -fx-border-width: 1 0 0 0;
+}
+
+.logout-button {
+    -fx-background-color: transparent;
+    -fx-text-fill: #E98787;
+    -fx-font-size: 12px;
+    -fx-font-weight: bold;
+    -fx-alignment: CENTER_LEFT;
+    -fx-padding: 0 14;
+    -fx-background-radius: 9;
+    -fx-cursor: hand;
+}
+
+.logout-button:hover {
+    -fx-background-color: #321E2A;
+    -fx-text-fill: #FFAAAA;
+}
+
+/* ------------------------------------------------
+   ENCABEZADO
+   ------------------------------------------------ */
+
+.dashboard-header {
+    -fx-background-color: #091C2E;
+    -fx-border-color: transparent transparent #173A59 transparent;
+    -fx-border-width: 0 0 1 0;
+}
+
+.dashboard-page-title {
+    -fx-text-fill: #F5FAFF;
+    -fx-font-size: 19px;
+    -fx-font-weight: bold;
+}
+
+.page-header-subtitle {
+    -fx-text-fill: #6F899F;
+    -fx-font-size: 10px;
+}
+
+.header-session-label {
+    -fx-text-fill: #5F788D;
+    -fx-font-size: 8px;
+    -fx-font-weight: bold;
+}
+
+.dashboard-user-role {
+    -fx-text-fill: #27B7FF;
+    -fx-font-size: 10px;
+    -fx-font-weight: bold;
+}
+
+/* ------------------------------------------------
+   PANEL DE BIENVENIDA
+   ------------------------------------------------ */
+
+.patient-welcome-panel {
+    -fx-background-color:
+        linear-gradient(
+            to right,
+            #0B2841,
+            #0A2238
+        );
+
+    -fx-background-radius: 15;
+
+    -fx-border-color: #194D70;
+    -fx-border-radius: 15;
+    -fx-border-width: 1;
+}
+
+.welcome-eyebrow {
+    -fx-text-fill: #22B8FF;
+    -fx-font-size: 9px;
+    -fx-font-weight: bold;
+}
+
+.welcome-title {
+    -fx-text-fill: #FFFFFF;
+    -fx-font-size: 25px;
+    -fx-font-weight: bold;
+}
+
+.welcome-subtitle {
+    -fx-text-fill: #94AABD;
+    -fx-font-size: 12px;
+}
+
+.patient-primary-button {
+    -fx-background-color: #168EF5;
+    -fx-text-fill: #FFFFFF;
+
+    -fx-background-radius: 9;
+
+    -fx-font-size: 12px;
+    -fx-font-weight: bold;
+
+    -fx-padding: 10 17;
+
+    -fx-cursor: hand;
+}
+
+.patient-primary-button:hover {
+    -fx-background-color: #29A7FF;
+}
+
+.patient-primary-button:pressed {
+    -fx-background-color: #0877D3;
+}
+
+/* ------------------------------------------------
+   TÍTULOS DE SECCIÓN
+   ------------------------------------------------ */
+
+.dashboard-section-title {
+    -fx-text-fill: #F4F9FD;
+    -fx-font-size: 16px;
+    -fx-font-weight: bold;
+}
+
+.section-helper-text {
+    -fx-text-fill: #71899D;
+    -fx-font-size: 10px;
+}
+
+/* ------------------------------------------------
+   TARJETAS DE RESUMEN
+   ------------------------------------------------ */
+
+.dashboard-card {
+    -fx-background-color: #0B2034;
+
+    -fx-background-radius: 13;
+
+    -fx-border-color: #183C58;
+    -fx-border-radius: 13;
+    -fx-border-width: 1;
+}
+
+.dashboard-card:hover {
+    -fx-background-color: #0D263D;
+    -fx-border-color: #245B80;
+}
+
+.dashboard-card-primary {
+    -fx-border-color: #17669A;
+}
+
+.card-title {
+    -fx-text-fill: #7F9AAF;
+    -fx-font-size: 10px;
+    -fx-font-weight: bold;
+}
+
+.card-value {
+    -fx-text-fill: #F6FBFF;
+    -fx-font-size: 18px;
+    -fx-font-weight: bold;
+}
+
+.card-description {
+    -fx-text-fill: #8097A9;
+    -fx-font-size: 10px;
+}
+
+.card-badge-blue {
+    -fx-background-color: #103E60;
+    -fx-text-fill: #4AC4FF;
+
+    -fx-background-radius: 20;
+
+    -fx-padding: 4 8;
+
+    -fx-font-size: 8px;
+    -fx-font-weight: bold;
+}
+
+.stat-number {
+    -fx-text-fill: #2BB8FF;
+    -fx-font-size: 29px;
+    -fx-font-weight: bold;
+}
+
+.card-link-button {
+    -fx-background-color: transparent;
+
+    -fx-text-fill: #38B7FF;
+
+    -fx-padding: 2 0 2 0;
+
+    -fx-font-size: 10px;
+    -fx-font-weight: bold;
+
+    -fx-alignment: CENTER_LEFT;
+
+    -fx-cursor: hand;
+}
+
+.card-link-button:hover {
+    -fx-text-fill: #7CD2FF;
+}
+
+.account-active-dot {
+    -fx-text-fill: #45D483;
+    -fx-font-size: 12px;
+}
+
+.account-active-text {
+    -fx-text-fill: #55DF91;
+    -fx-font-size: 18px;
+    -fx-font-weight: bold;
+}
+
+/* ------------------------------------------------
+   ACCESOS RÁPIDOS
+   ------------------------------------------------ */
+
+.patient-action-card {
+    -fx-background-color: #0B2034;
+
+    -fx-text-fill: #DCEAF4;
+
+    -fx-border-color: #183C58;
+    -fx-border-width: 1;
+    -fx-border-radius: 10;
+
+    -fx-background-radius: 10;
+
+    -fx-font-size: 11px;
+    -fx-font-weight: bold;
+
+    -fx-cursor: hand;
+}
+
+.patient-action-card:hover {
+    -fx-background-color: #102D46;
+    -fx-border-color: #2781B8;
+    -fx-text-fill: #FFFFFF;
+}
+
+.patient-action-primary {
+    -fx-background-color: #0D4770;
+    -fx-border-color: #147EBB;
+    -fx-text-fill: #FFFFFF;
+}
+
+.patient-action-primary:hover {
+    -fx-background-color: #115A8C;
+    -fx-border-color: #28A7EA;
+}
+
+/* ------------------------------------------------
+   PANEL INFORMATIVO
+   ------------------------------------------------ */
+
+.patient-info-panel {
+    -fx-background-color: rgba(22, 151, 255, 0.06);
+
+    -fx-background-radius: 11;
+
+    -fx-border-color: rgba(22, 151, 255, 0.18);
+    -fx-border-radius: 11;
+    -fx-border-width: 1;
+}
+
+.patient-info-icon {
+    -fx-background-color: #0E4D77;
+    -fx-background-radius: 30;
+
+    -fx-text-fill: #66CEFF;
+
+    -fx-font-size: 13px;
+    -fx-font-weight: bold;
+
+    -fx-alignment: CENTER;
+
+    -fx-min-width: 28;
+    -fx-min-height: 28;
+    -fx-max-width: 28;
+    -fx-max-height: 28;
+}
+
+.patient-info-title {
+    -fx-text-fill: #DDEFFF;
+    -fx-font-size: 12px;
+    -fx-font-weight: bold;
+}
+
+.patient-info-description {
+    -fx-text-fill: #7792A8;
+    -fx-font-size: 10px;
+}

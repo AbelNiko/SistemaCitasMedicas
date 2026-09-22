@@ -68,6 +68,13 @@
         styleClass="sidebar-button"
         onAction="#abrirMisCitas"/>
 
+        <Button
+        text="Historial"
+        maxWidth="Infinity"
+        prefHeight="42"
+        styleClass="sidebar-button"
+        onAction="#abrirHistorial"/>
+
             <Button
         text="Mi perfil"
         maxWidth="Infinity"

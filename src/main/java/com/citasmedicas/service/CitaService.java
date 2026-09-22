@@ -713,4 +713,64 @@ private boolean esTransicionValida(
         default -> false;
     };
 }
+/**
+ * Finaliza la atención médica de una cita confirmada
+ * y registra la observación correspondiente.
+ *
+ * @param idCita identificador de la cita.
+ * @param idMedico identificador del médico.
+ * @param observacion observación de la atención.
+ * @throws SQLException si ocurre un error de acceso a datos.
+ */
+public void finalizarAtencion(
+        int idCita,
+        int idMedico,
+        String observacion
+) throws SQLException {
+
+    if (idCita <= 0) {
+        throw new IllegalArgumentException(
+                "La cita seleccionada no es válida."
+        );
+    }
+
+    if (idMedico <= 0) {
+        throw new IllegalArgumentException(
+                "El médico no es válido."
+        );
+    }
+
+    if (observacion == null
+            || observacion.isBlank()) {
+
+        throw new IllegalArgumentException(
+                "Debe registrar una observación de la atención."
+        );
+    }
+
+    String observacionLimpia =
+            observacion.trim();
+
+    if (observacionLimpia.length() > 500) {
+
+        throw new IllegalArgumentException(
+                "La observación no puede superar los 500 caracteres."
+        );
+    }
+
+    boolean actualizada =
+            citaDAO.finalizarAtencion(
+                    idCita,
+                    idMedico,
+                    observacionLimpia
+            );
+
+    if (!actualizada) {
+
+        throw new IllegalArgumentException(
+                "No fue posible finalizar la atención. "
+                + "La cita debe estar confirmada y pertenecer al médico."
+        );
+    }
+}
 }

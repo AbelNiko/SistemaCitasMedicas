@@ -10,9 +10,14 @@ import com.citasmedicas.util.SesionUtil;
 import javafx.fxml.FXML;
 import javafx.geometry.Insets;
 import javafx.geometry.Pos;
+import javafx.scene.Node;
 import javafx.scene.control.Button;
+import javafx.scene.control.ButtonBar;
+import javafx.scene.control.ButtonType;
 import javafx.scene.control.ComboBox;
+import javafx.scene.control.Dialog;
 import javafx.scene.control.Label;
+import javafx.scene.control.TextArea;
 import javafx.scene.control.TextField;
 import javafx.scene.layout.HBox;
 import javafx.scene.layout.Priority;
@@ -40,13 +45,14 @@ import java.util.Locale;
  * - buscar citas;
  * - filtrar por estado y fecha;
  * - confirmar citas programadas;
+ * - registrar observaciones de atención;
  * - marcar citas confirmadas como atendidas;
  * - registrar la no asistencia del paciente;
  * - actualizar la agenda;
  * - cerrar la sesión.
  *
  * @author Equipo de Ingeniería de Software II
- * @version 1.3
+ * @version 1.4
  */
 public class DashboardMedicoController {
 
@@ -387,6 +393,10 @@ public class DashboardMedicoController {
                 || contieneTexto(
                         cita.getMotivoConsulta(),
                         texto
+                )
+                || contieneTexto(
+                        cita.getObservacion(),
+                        texto
                 );
     }
 
@@ -578,7 +588,7 @@ public class DashboardMedicoController {
                                 .format(formatoHora)
                                 + "  —  "
                                 + cita.getHoraFin()
-                                .format(formatoHora)
+                                        .format(formatoHora)
                 );
 
         lblHora.getStyleClass().add(
@@ -731,6 +741,35 @@ public class DashboardMedicoController {
 
         /*
          * ========================================================
+         * OBSERVACIÓN DE ATENCIÓN
+         * ========================================================
+         */
+
+        if (
+                "ATENDIDA".equalsIgnoreCase(
+                        cita.getEstado()
+                )
+                        && cita.getObservacion() != null
+                        && !cita.getObservacion().isBlank()
+        ) {
+
+            VBox bloqueObservacion =
+                    crearBloqueInformacion(
+                            "OBSERVACIÓN DE ATENCIÓN",
+                            cita.getObservacion()
+                    );
+
+            bloqueObservacion.getStyleClass().add(
+                    "doctor-observation-box"
+            );
+
+            tarjeta.getChildren().add(
+                    bloqueObservacion
+            );
+        }
+
+        /*
+         * ========================================================
          * ACCIONES MÉDICAS
          * ========================================================
          */
@@ -818,11 +857,14 @@ public class DashboardMedicoController {
                                 "doctor-action-primary"
                         );
 
+                /*
+                 * Una cita no pasa directamente a ATENDIDA.
+                 * Primero se solicita la observación médica.
+                 */
                 btnAtendida.setOnAction(
                         evento ->
-                                cambiarEstadoCita(
-                                        cita,
-                                        "ATENDIDA"
+                                abrirDialogoAtencion(
+                                        cita
                                 )
                 );
 
@@ -866,8 +908,333 @@ public class DashboardMedicoController {
     }
 
     /**
-     * Solicita al servicio el cambio de estado
-     * de una cita del médico autenticado.
+     * Abre el formulario para registrar la observación
+     * antes de finalizar una atención médica.
+     *
+     * @param cita cita que será atendida.
+     */
+    private void abrirDialogoAtencion(
+            Cita cita
+    ) {
+
+        if (
+                cita == null
+                        || medicoActual == null
+        ) {
+
+            mostrarMensaje(
+                    "No fue posible identificar la cita o el médico."
+            );
+
+            return;
+        }
+
+        Dialog<String> dialogo =
+                new Dialog<>();
+
+        dialogo.setTitle(
+                "Finalizar atención"
+        );
+
+        dialogo.setHeaderText(
+                "Registrar observación médica"
+        );
+
+        /*
+         * Asocia el diálogo con la ventana principal.
+         */
+        if (
+                lblNombreMedico != null
+                        && lblNombreMedico.getScene() != null
+        ) {
+
+            dialogo.initOwner(
+                    lblNombreMedico
+                            .getScene()
+                            .getWindow()
+            );
+        }
+
+        ButtonType btnFinalizar =
+                new ButtonType(
+                        "Finalizar atención",
+                        ButtonBar.ButtonData.OK_DONE
+                );
+
+        ButtonType btnCancelar =
+                new ButtonType(
+                        "Cancelar",
+                        ButtonBar.ButtonData.CANCEL_CLOSE
+                );
+
+        dialogo.getDialogPane()
+                .getButtonTypes()
+                .addAll(
+                        btnCancelar,
+                        btnFinalizar
+                );
+
+        /*
+         * ========================================================
+         * CONTENIDO DEL DIÁLOGO
+         * ========================================================
+         */
+
+        VBox contenido =
+                new VBox(10);
+
+        contenido.setPadding(
+                new Insets(10)
+        );
+
+        contenido.setPrefWidth(440);
+
+        Label lblPacienteTitulo =
+                new Label(
+                        "PACIENTE"
+                );
+
+        lblPacienteTitulo.getStyleClass().add(
+                "doctor-dialog-label"
+        );
+
+        Label lblPaciente =
+                new Label(
+                        valorSeguro(
+                                cita.getNombrePaciente()
+                        )
+                );
+
+        lblPaciente.getStyleClass().add(
+                "doctor-dialog-patient"
+        );
+
+        Label lblObservacion =
+                new Label(
+                        "OBSERVACIÓN DE LA ATENCIÓN"
+                );
+
+        lblObservacion.getStyleClass().add(
+                "doctor-dialog-label"
+        );
+
+        TextArea txtObservacion =
+                new TextArea();
+
+        txtObservacion.setPromptText(
+                "Registre las observaciones realizadas durante la atención..."
+        );
+
+        txtObservacion.setWrapText(
+                true
+        );
+
+        txtObservacion.setPrefRowCount(
+                6
+        );
+
+        txtObservacion.getStyleClass().add(
+                "doctor-observation-area"
+        );
+
+        Label lblContador =
+                new Label(
+                        "0 / 500"
+                );
+
+        lblContador.getStyleClass().add(
+                "doctor-character-counter"
+        );
+
+        /*
+         * Limita físicamente la entrada a los
+         * 500 caracteres admitidos por MySQL.
+         */
+        txtObservacion.textProperty().addListener(
+                (observable, anterior, nuevo) -> {
+
+                    if (
+                            nuevo != null
+                                    && nuevo.length() > 500
+                    ) {
+
+                        txtObservacion.setText(
+                                nuevo.substring(
+                                        0,
+                                        500
+                                )
+                        );
+
+                        txtObservacion.positionCaret(
+                                500
+                        );
+
+                        return;
+                    }
+
+                    int cantidad =
+                            nuevo == null
+                                    ? 0
+                                    : nuevo.length();
+
+                    lblContador.setText(
+                            cantidad
+                                    + " / 500"
+                    );
+                }
+        );
+
+        Region espacioContador =
+                new Region();
+
+        HBox.setHgrow(
+                espacioContador,
+                Priority.ALWAYS
+        );
+
+        HBox filaContador =
+                new HBox();
+
+        filaContador.getChildren().addAll(
+                espacioContador,
+                lblContador
+        );
+
+        contenido.getChildren().addAll(
+                lblPacienteTitulo,
+                lblPaciente,
+                lblObservacion,
+                txtObservacion,
+                filaContador
+        );
+
+        dialogo.getDialogPane()
+                .setContent(
+                        contenido
+                );
+
+        /*
+         * ========================================================
+         * VALIDACIÓN DEL BOTÓN FINALIZAR
+         * ========================================================
+         */
+
+        Node botonFinalizar =
+                dialogo.getDialogPane()
+                        .lookupButton(
+                                btnFinalizar
+                        );
+
+        botonFinalizar.setDisable(
+                true
+        );
+
+        txtObservacion.textProperty().addListener(
+                (observable, anterior, nuevo) ->
+                        botonFinalizar.setDisable(
+                                nuevo == null
+                                        || nuevo.isBlank()
+                        )
+        );
+
+        /*
+         * El diálogo devuelve la observación solamente
+         * cuando el usuario confirma la atención.
+         */
+        dialogo.setResultConverter(
+                boton -> {
+
+                    if (boton == btnFinalizar) {
+
+                        return txtObservacion
+                                .getText()
+                                .trim();
+                    }
+
+                    return null;
+                }
+        );
+
+        dialogo.showAndWait()
+                .ifPresent(
+                        observacion ->
+                                finalizarAtencion(
+                                        cita,
+                                        observacion
+                                )
+                );
+    }
+
+    /**
+     * Finaliza una cita confirmada y registra
+     * la observación médica correspondiente.
+     *
+     * @param cita cita atendida.
+     * @param observacion observación registrada.
+     */
+    private void finalizarAtencion(
+            Cita cita,
+            String observacion
+    ) {
+
+        if (
+                cita == null
+                        || medicoActual == null
+        ) {
+
+            mostrarMensaje(
+                    "No fue posible identificar la cita o el médico."
+            );
+
+            return;
+        }
+
+        try {
+
+            citaService.finalizarAtencion(
+                    cita.getIdCita(),
+                    medicoActual.getIdMedico(),
+                    observacion
+            );
+
+            /*
+             * Recarga los datos desde MySQL para mostrar
+             * inmediatamente el nuevo estado y observación.
+             */
+            cargarAgenda();
+
+            mostrarMensaje(
+                    "La atención fue finalizada correctamente."
+            );
+
+        } catch (IllegalArgumentException e) {
+
+            /*
+             * Si la cita cambió mientras estaba abierto
+             * el diálogo, se actualiza la agenda.
+             */
+            cargarAgenda();
+
+            mostrarMensaje(
+                    e.getMessage()
+            );
+
+        } catch (SQLException e) {
+
+            mostrarMensaje(
+                    "No fue posible finalizar la atención."
+            );
+
+            System.err.println(
+                    "Error al finalizar atención: "
+                            + e.getMessage()
+            );
+        }
+    }
+
+    /**
+     * Solicita al servicio un cambio de estado
+     * que no requiere observación médica.
      */
     private void cambiarEstadoCita(
             Cita cita,
@@ -941,6 +1308,7 @@ public class DashboardMedicoController {
     ) {
 
         if (nuevoEstado == null) {
+
             return "El estado de la cita fue actualizado.";
         }
 
@@ -950,9 +1318,6 @@ public class DashboardMedicoController {
 
             case "CONFIRMADA" ->
                     "La cita fue confirmada correctamente.";
-
-            case "ATENDIDA" ->
-                    "La cita fue marcada como atendida.";
 
             case "NO_ASISTIO" ->
                     "La cita fue marcada como no asistida.";
@@ -974,7 +1339,9 @@ public class DashboardMedicoController {
                 new VBox(4);
 
         Label lblTitulo =
-                new Label(titulo);
+                new Label(
+                        titulo
+                );
 
         lblTitulo.getStyleClass().add(
                 "doctor-info-label"
@@ -982,14 +1349,18 @@ public class DashboardMedicoController {
 
         Label lblValor =
                 new Label(
-                        valorSeguro(valor)
+                        valorSeguro(
+                                valor
+                        )
                 );
 
         lblValor.getStyleClass().add(
                 "doctor-info-value"
         );
 
-        lblValor.setWrapText(true);
+        lblValor.setWrapText(
+                true
+        );
 
         bloque.getChildren().addAll(
                 lblTitulo,
@@ -1010,6 +1381,7 @@ public class DashboardMedicoController {
                 valor == null
                         || valor.isBlank()
         ) {
+
             return "No especificado";
         }
 

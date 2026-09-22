@@ -971,3 +971,37 @@
     -fx-background-color: #173B3D;
     -fx-text-fill: white;
 }
+
+/* ============================================================
+   OBSERVACIONES DE ATENCIÓN - PORTAL MÉDICO
+   ============================================================ */
+
+.doctor-dialog-label {
+    -fx-font-size: 11px;
+    -fx-font-weight: bold;
+    -fx-text-fill: #5F7A7D;
+}
+
+.doctor-dialog-patient {
+    -fx-font-size: 16px;
+    -fx-font-weight: bold;
+    -fx-text-fill: #173B3D;
+}
+
+.doctor-observation-area {
+    -fx-font-size: 13px;
+    -fx-pref-height: 130px;
+}
+
+.doctor-character-counter {
+    -fx-font-size: 11px;
+    -fx-text-fill: #70869A;
+}
+
+.doctor-observation-box {
+    -fx-background-color: rgba(24, 182, 164, 0.08);
+    -fx-background-radius: 8px;
+    -fx-padding: 12px;
+    -fx-border-color: rgba(24, 182, 164, 0.25);
+    -fx-border-radius: 8px;
+}

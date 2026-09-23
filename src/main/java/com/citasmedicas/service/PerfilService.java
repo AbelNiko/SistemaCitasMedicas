@@ -9,6 +9,8 @@ import java.sql.Connection;
 import java.sql.PreparedStatement;
 import java.sql.SQLException;
 import java.sql.Types;
+import java.time.LocalDate;
+import java.util.Set;
 
 /**
  * ================================================================
@@ -22,16 +24,35 @@ import java.sql.Types;
  * de la información.
  *
  * @author Equipo de Ingeniería de Software II
- * @version 1.1
+ * @version 1.2
  */
 public class PerfilService {
+
+    private static final Set<String> TIPOS_SANGRE_VALIDOS =
+            Set.of(
+                    "A+",
+                    "A-",
+                    "B+",
+                    "B-",
+                    "AB+",
+                    "AB-",
+                    "O+",
+                    "O-",
+                    "No conoce"
+            );
+
+    private static final Set<String> SEXOS_VALIDOS =
+            Set.of(
+                    "Masculino",
+                    "Femenino",
+                    "Otro",
+                    "Prefiero no indicar"
+            );
 
     private final PacienteDAO pacienteDAO;
 
     public PerfilService() {
-
-        this.pacienteDAO =
-                new PacienteDAO();
+        this.pacienteDAO = new PacienteDAO();
     }
 
     /**
@@ -43,7 +64,6 @@ public class PerfilService {
     ) throws SQLException {
 
         if (idUsuario <= 0) {
-
             throw new IllegalArgumentException(
                     "El usuario no es válido."
             );
@@ -55,8 +75,11 @@ public class PerfilService {
     }
 
     /**
-     * Actualiza los datos editables del usuario
-     * y del paciente dentro de una única transacción.
+     * Actualiza los datos personales, de contacto
+     * y médicos básicos del paciente.
+     *
+     * Los cambios de usuarios y pacientes se realizan
+     * dentro de una misma transacción.
      */
     public void actualizarPerfil(
             Usuario usuario,
@@ -65,35 +88,63 @@ public class PerfilService {
             String apellidos,
             String correo,
             String telefono,
-            String direccion
+            LocalDate fechaNacimiento,
+            String sexo,
+            String direccion,
+            String tipoSangre,
+            String alergias,
+            String condicionesMedicas,
+            String contactoEmergencia,
+            String telefonoEmergencia
     ) throws SQLException {
 
         if (usuario == null) {
-
             throw new IllegalArgumentException(
                     "No existe un usuario autenticado."
             );
         }
 
         if (idPaciente <= 0) {
-
             throw new IllegalArgumentException(
                     "El paciente no es válido."
             );
         }
 
+        /*
+         * Normalización de los datos recibidos.
+         */
         nombres = limpiar(nombres);
         apellidos = limpiar(apellidos);
         correo = limpiar(correo).toLowerCase();
         telefono = limpiar(telefono);
-        direccion = limpiar(direccion);
 
+        sexo = limpiar(sexo);
+        direccion = limpiar(direccion);
+        tipoSangre = limpiar(tipoSangre);
+        alergias = limpiar(alergias);
+        condicionesMedicas =
+                limpiar(condicionesMedicas);
+        contactoEmergencia =
+                limpiar(contactoEmergencia);
+        telefonoEmergencia =
+                limpiar(telefonoEmergencia);
+
+        /*
+         * Validación antes de acceder a la base de datos.
+         */
         validarDatos(
                 nombres,
                 apellidos,
                 correo,
                 telefono,
-                direccion
+                fechaNacimiento,
+                sexo,
+                direccion,
+                tipoSangre,
+                alergias,
+                condicionesMedicas,
+                contactoEmergencia,
+                telefonoEmergencia
         );
 
         String sqlUsuario = """
@@ -108,7 +159,15 @@ public class PerfilService {
 
         String sqlPaciente = """
                 UPDATE pacientes
-                SET direccion = ?
+                SET
+                    fecha_nacimiento = ?,
+                    direccion = ?,
+                    sexo = ?,
+                    tipo_sangre = ?,
+                    alergias = ?,
+                    condiciones_medicas = ?,
+                    contacto_emergencia = ?,
+                    telefono_emergencia = ?
                 WHERE id_paciente = ?
                   AND id_usuario = ?
                 """;
@@ -118,11 +177,6 @@ public class PerfilService {
                         ConexionBD.obtenerConexion()
         ) {
 
-            /*
-             * Desactivamos temporalmente el autocommit.
-             * Los dos UPDATE deben completarse correctamente
-             * antes de confirmar la operación.
-             */
             conexion.setAutoCommit(false);
 
             try (
@@ -139,7 +193,7 @@ public class PerfilService {
 
                 /*
                  * =================================================
-                 * ACTUALIZACIÓN DE USUARIOS
+                 * USUARIO
                  * =================================================
                  */
 
@@ -158,20 +212,11 @@ public class PerfilService {
                         correo
                 );
 
-                if (telefono.isEmpty()) {
-
-                    stmtUsuario.setNull(
-                            4,
-                            Types.VARCHAR
-                    );
-
-                } else {
-
-                    stmtUsuario.setString(
-                            4,
-                            telefono
-                    );
-                }
+                asignarTextoOpcional(
+                        stmtUsuario,
+                        4,
+                        telefono
+                );
 
                 stmtUsuario.setInt(
                         5,
@@ -182,7 +227,6 @@ public class PerfilService {
                         stmtUsuario.executeUpdate();
 
                 if (usuariosActualizados != 1) {
-
                     throw new SQLException(
                             "No fue posible actualizar "
                             + "los datos del usuario."
@@ -191,36 +235,80 @@ public class PerfilService {
 
                 /*
                  * =================================================
-                 * ACTUALIZACIÓN DE PACIENTES
+                 * PACIENTE
                  * =================================================
                  */
 
-                if (direccion.isEmpty()) {
+                if (fechaNacimiento == null) {
 
                     stmtPaciente.setNull(
                             1,
-                            Types.VARCHAR
+                            Types.DATE
                     );
 
                 } else {
 
-                    stmtPaciente.setString(
+                    stmtPaciente.setDate(
                             1,
-                            direccion
+                            java.sql.Date.valueOf(
+                                    fechaNacimiento
+                            )
                     );
                 }
 
-                stmtPaciente.setInt(
+                asignarTextoOpcional(
+                        stmtPaciente,
                         2,
+                        direccion
+                );
+
+                asignarTextoOpcional(
+                        stmtPaciente,
+                        3,
+                        sexo
+                );
+
+                asignarTextoOpcional(
+                        stmtPaciente,
+                        4,
+                        tipoSangre
+                );
+
+                asignarTextoOpcional(
+                        stmtPaciente,
+                        5,
+                        alergias
+                );
+
+                asignarTextoOpcional(
+                        stmtPaciente,
+                        6,
+                        condicionesMedicas
+                );
+
+                asignarTextoOpcional(
+                        stmtPaciente,
+                        7,
+                        contactoEmergencia
+                );
+
+                asignarTextoOpcional(
+                        stmtPaciente,
+                        8,
+                        telefonoEmergencia
+                );
+
+                stmtPaciente.setInt(
+                        9,
                         idPaciente
                 );
 
                 /*
-                 * También comprobamos que el paciente
+                 * Garantiza que el paciente modificado
                  * pertenezca al usuario autenticado.
                  */
                 stmtPaciente.setInt(
-                        3,
+                        10,
                         usuario.getIdUsuario()
                 );
 
@@ -228,7 +316,6 @@ public class PerfilService {
                         stmtPaciente.executeUpdate();
 
                 if (pacientesActualizados != 1) {
-
                     throw new SQLException(
                             "No fue posible actualizar "
                             + "los datos del paciente."
@@ -236,13 +323,14 @@ public class PerfilService {
                 }
 
                 /*
-                 * Los dos UPDATE finalizaron correctamente.
+                 * Confirmamos únicamente cuando ambas
+                 * actualizaciones fueron exitosas.
                  */
                 conexion.commit();
 
                 /*
-                 * Solo después del COMMIT actualizamos
-                 * el objeto que permanece en memoria.
+                 * Sincronizamos el Usuario mantenido
+                 * actualmente en memoria.
                  */
                 usuario.setNombres(
                         nombres
@@ -264,29 +352,31 @@ public class PerfilService {
 
             } catch (Exception e) {
 
-                /*
-                 * Si cualquiera de las operaciones falla,
-                 * revertimos todos los cambios.
-                 */
                 try {
-
                     conexion.rollback();
 
                 } catch (SQLException rollbackError) {
-
                     e.addSuppressed(
                             rollbackError
                     );
                 }
 
                 if (e instanceof SQLException sqlException) {
-
                     throw sqlException;
                 }
 
-                throw e;
-            }
+                if (
+                        e instanceof
+                        IllegalArgumentException illegalArgumentException
+                ) {
+                    throw illegalArgumentException;
+                }
 
+                throw new SQLException(
+                        "No fue posible actualizar el perfil.",
+                        e
+                );
+            }
         }
     }
 
@@ -298,25 +388,29 @@ public class PerfilService {
             String apellidos,
             String correo,
             String telefono,
-            String direccion
+            LocalDate fechaNacimiento,
+            String sexo,
+            String direccion,
+            String tipoSangre,
+            String alergias,
+            String condicionesMedicas,
+            String contactoEmergencia,
+            String telefonoEmergencia
     ) {
 
         if (nombres.isEmpty()) {
-
             throw new IllegalArgumentException(
                     "Los nombres son obligatorios."
             );
         }
 
         if (apellidos.isEmpty()) {
-
             throw new IllegalArgumentException(
                     "Los apellidos son obligatorios."
             );
         }
 
         if (correo.isEmpty()) {
-
             throw new IllegalArgumentException(
                     "El correo electrónico es obligatorio."
             );
@@ -327,7 +421,6 @@ public class PerfilService {
                         "^[A-Za-z0-9+_.-]+@[A-Za-z0-9.-]+$"
                 )
         ) {
-
             throw new IllegalArgumentException(
                     "El correo electrónico no tiene "
                     + "un formato válido."
@@ -338,39 +431,131 @@ public class PerfilService {
                 !telefono.isEmpty()
                 && !telefono.matches("\\d{7,10}")
         ) {
-
             throw new IllegalArgumentException(
                     "El teléfono debe contener "
                     + "entre 7 y 10 dígitos."
             );
         }
 
-        if (nombres.length() > 100) {
+        if (
+                fechaNacimiento != null
+                && fechaNacimiento.isAfter(
+                        LocalDate.now()
+                )
+        ) {
+            throw new IllegalArgumentException(
+                    "La fecha de nacimiento no puede "
+                    + "ser posterior a la fecha actual."
+            );
+        }
 
+        if (
+                !sexo.isEmpty()
+                && !SEXOS_VALIDOS.contains(sexo)
+        ) {
+            throw new IllegalArgumentException(
+                    "El sexo seleccionado no es válido."
+            );
+        }
+
+        if (
+                !tipoSangre.isEmpty()
+                && !TIPOS_SANGRE_VALIDOS.contains(
+                        tipoSangre
+                )
+        ) {
+            throw new IllegalArgumentException(
+                    "El tipo de sangre seleccionado "
+                    + "no es válido."
+            );
+        }
+
+        if (
+                !telefonoEmergencia.isEmpty()
+                && !telefonoEmergencia.matches(
+                        "\\d{7,10}"
+                )
+        ) {
+            throw new IllegalArgumentException(
+                    "El teléfono de emergencia debe "
+                    + "contener entre 7 y 10 dígitos."
+            );
+        }
+
+        if (nombres.length() > 100) {
             throw new IllegalArgumentException(
                     "Los nombres son demasiado largos."
             );
         }
 
         if (apellidos.length() > 100) {
-
             throw new IllegalArgumentException(
                     "Los apellidos son demasiado largos."
             );
         }
 
         if (correo.length() > 150) {
-
             throw new IllegalArgumentException(
                     "El correo electrónico es demasiado largo."
             );
         }
 
         if (direccion.length() > 255) {
-
             throw new IllegalArgumentException(
                     "La dirección no puede superar "
                     + "los 255 caracteres."
+            );
+        }
+
+        if (tipoSangre.length() > 15) {
+            throw new IllegalArgumentException(
+                    "El tipo de sangre no es válido."
+            );
+        }
+
+        if (alergias.length() > 500) {
+            throw new IllegalArgumentException(
+                    "Las alergias no pueden superar "
+                    + "los 500 caracteres."
+            );
+        }
+
+        if (condicionesMedicas.length() > 500) {
+            throw new IllegalArgumentException(
+                    "Las condiciones médicas no pueden "
+                    + "superar los 500 caracteres."
+            );
+        }
+
+        if (contactoEmergencia.length() > 150) {
+            throw new IllegalArgumentException(
+                    "El contacto de emergencia no puede "
+                    + "superar los 150 caracteres."
+            );
+        }
+    }
+
+    /**
+     * Asigna NULL a campos opcionales vacíos.
+     */
+    private void asignarTextoOpcional(
+            PreparedStatement sentencia,
+            int indice,
+            String valor
+    ) throws SQLException {
+
+        if (valor == null || valor.isBlank()) {
+
+            sentencia.setNull(
+                    indice,
+                    Types.VARCHAR
+            );
+
+        } else {
+
+            sentencia.setString(
+                    indice,
+                    valor.trim()
             );
         }
     }

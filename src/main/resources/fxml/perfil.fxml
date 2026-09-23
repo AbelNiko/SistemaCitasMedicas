@@ -2,10 +2,15 @@
 
 <?import javafx.geometry.Insets?>
 <?import javafx.scene.control.Button?>
+<?import javafx.scene.control.ComboBox?>
+<?import javafx.scene.control.DatePicker?>
 <?import javafx.scene.control.Label?>
+<?import javafx.scene.control.ScrollPane?>
 <?import javafx.scene.control.Separator?>
+<?import javafx.scene.control.TextArea?>
 <?import javafx.scene.control.TextField?>
 <?import javafx.scene.layout.BorderPane?>
+<?import javafx.scene.layout.ColumnConstraints?>
 <?import javafx.scene.layout.GridPane?>
 <?import javafx.scene.layout.HBox?>
 <?import javafx.scene.layout.Priority?>
@@ -18,8 +23,8 @@
         fx:controller="com.citasmedicas.controller.PerfilController"
         stylesheets="@../css/mediappoint.css"
         styleClass="dashboard-root"
-        prefWidth="1050"
-        prefHeight="680">
+        prefWidth="1180"
+        prefHeight="720">
 
     <!-- =========================================================
                          MENÚ LATERAL
@@ -28,93 +33,129 @@
     <left>
 
         <VBox
-                prefWidth="220"
-                spacing="8"
+                prefWidth="235"
+                spacing="7"
                 styleClass="sidebar">
 
             <padding>
-                <Insets
-                        top="28"
-                        right="18"
-                        bottom="22"
-                        left="18"/>
+                <Insets top="30" right="18" bottom="22" left="18"/>
             </padding>
 
-            <Label
-                    text="MediAppoint"
-                    styleClass="sidebar-brand"/>
+            <VBox spacing="3">
+
+                <Label
+                        text="MediAppoint"
+                        styleClass="sidebar-brand"/>
+
+                <Label
+                        text="PORTAL DEL PACIENTE"
+                        styleClass="sidebar-subtitle"/>
+
+            </VBox>
+
+            <Region prefHeight="28"/>
 
             <Label
-                    text="GESTIÓN DE CITAS MÉDICAS"
-                    styleClass="sidebar-subtitle"/>
+                    text="NAVEGACIÓN"
+                    styleClass="sidebar-section-label"/>
 
-            <Region prefHeight="25"/>
+            <Region prefHeight="4"/>
 
             <Button
-                    text="Inicio"
+                    text="⌂   Inicio"
                     maxWidth="Infinity"
-                    prefHeight="42"
+                    prefHeight="44"
                     styleClass="sidebar-button"
                     onAction="#volverDashboard"/>
 
             <Button
-                    text="Agendar cita"
+                    text="+   Agendar cita"
                     maxWidth="Infinity"
-                    prefHeight="42"
+                    prefHeight="44"
                     styleClass="sidebar-button"
                     onAction="#abrirAgendarCita"/>
 
             <Button
-                    text="Mis citas"
+                    text="▣   Mis citas"
                     maxWidth="Infinity"
-                    prefHeight="42"
+                    prefHeight="44"
                     styleClass="sidebar-button"
                     onAction="#abrirMisCitas"/>
 
             <Button
-                    text="Mi perfil"
+                    text="◷   Historial"
                     maxWidth="Infinity"
-                    prefHeight="42"
-                    styleClass="sidebar-button-active"/>
+                    prefHeight="44"
+                    styleClass="sidebar-button"
+                    onAction="#abrirHistorial"/>
+
+            <Button
+                    text="●   Mi perfil"
+                    maxWidth="Infinity"
+                    prefHeight="44"
+                    styleClass="sidebar-button-active"
+                    onAction="#abrirPerfil"/>
 
             <Region VBox.vgrow="ALWAYS"/>
 
-            <Separator/>
+            <VBox
+                    spacing="4"
+                    styleClass="sidebar-user-card">
+
+                <Label
+                        text="PACIENTE"
+                        styleClass="sidebar-user-role"/>
+
+                <Label
+                        fx:id="lblNombreUsuario"
+                        text="Usuario"
+                        wrapText="true"
+                        styleClass="sidebar-user-name"/>
+
+            </VBox>
+
+            <Region prefHeight="5"/>
+
+            <Separator styleClass="sidebar-separator"/>
 
             <Button
-        text="Cerrar sesión"
-        maxWidth="Infinity"
-        prefHeight="42"
-        styleClass="logout-button"
-        onAction="#cerrarSesion"/>
+                    text="↪   Cerrar sesión"
+                    maxWidth="Infinity"
+                    prefHeight="42"
+                    styleClass="logout-button"
+                    onAction="#cerrarSesion"/>
 
         </VBox>
 
     </left>
 
     <!-- =========================================================
-                            CABECERA
+                             CABECERA
          ========================================================= -->
 
     <top>
 
         <HBox
                 alignment="CENTER_LEFT"
-                prefHeight="82"
+                prefHeight="76"
                 spacing="15"
                 styleClass="dashboard-header">
 
             <padding>
-                <Insets
-                        top="15"
-                        right="28"
-                        bottom="15"
-                        left="28"/>
+                <Insets top="14" right="32" bottom="14" left="32"/>
             </padding>
 
-            <Label
-                    text="Mi perfil"
-                    styleClass="dashboard-page-title"/>
+            <VBox spacing="2">
+
+                <Label
+                        text="Mi perfil"
+                        styleClass="dashboard-page-title"/>
+
+                <Label
+                        text="Administra tu información personal y médica"
+                        styleClass="dashboard-page-subtitle"/>
+
+            </VBox>
 
             <Region HBox.hgrow="ALWAYS"/>
 
@@ -123,13 +164,12 @@
                     spacing="3">
 
                 <Label
-                        fx:id="lblNombreUsuario"
-                        text="Usuario"
-                        styleClass="dashboard-user-name"/>
+                        text="INFORMACIÓN PERSONAL"
+                        styleClass="header-context-label"/>
 
                 <Label
-                        text="PACIENTE"
-                        styleClass="dashboard-user-role"/>
+                        text="PERFIL DEL PACIENTE"
+                        styleClass="header-context-value"/>
 
             </VBox>
 
@@ -138,152 +178,499 @@
     </top>
 
     <!-- =========================================================
-                           CONTENIDO
+                         CONTENIDO PRINCIPAL
          ========================================================= -->
 
     <center>
 
-        <VBox
-                spacing="22"
-                styleClass="dashboard-content">
+        <ScrollPane
+                fitToWidth="true"
+                pannable="true"
+                styleClass="profile-scroll">
 
-            <padding>
-                <Insets
-                        top="30"
-                        right="35"
-                        bottom="30"
-                        left="35"/>
-            </padding>
+            <content>
 
-            <VBox spacing="5">
+                <VBox
+                        spacing="18"
+                        styleClass="profile-page">
 
-                <Label
-                        text="Información personal"
-                        styleClass="welcome-title"/>
+                    <padding>
+                        <Insets top="26" right="34" bottom="30" left="34"/>
+                    </padding>
 
-                <Label
-                        text="Consulta y administra la información asociada a tu cuenta."
-                        styleClass="welcome-subtitle"/>
+                    <!-- =========================================
+                                 PRESENTACIÓN
+                         ========================================= -->
 
-            </VBox>
+                    <HBox
+                            alignment="CENTER_LEFT"
+                            spacing="18"
+                            styleClass="profile-hero">
 
-            <VBox
-                    spacing="20"
-                    maxWidth="720"
-                    styleClass="dashboard-card">
+                        <padding>
+                            <Insets top="20" right="22" bottom="20" left="22"/>
+                        </padding>
 
-                <padding>
-                    <Insets
-                            top="25"
-                            right="28"
-                            bottom="25"
-                            left="28"/>
-                </padding>
+                        <Label
+                                text="P"
+                                styleClass="profile-avatar"/>
 
-                <Label
-                        text="Datos de la cuenta"
-                        styleClass="dashboard-section-title"/>
+                        <VBox spacing="5">
 
-                <GridPane
-                        hgap="20"
-                        vgap="16">
+                            <Label
+                                    text="TU INFORMACIÓN"
+                                    styleClass="section-eyebrow"/>
 
-                    <Label
-                            text="Nombres"
-                            GridPane.columnIndex="0"
-                            GridPane.rowIndex="0"
-                            styleClass="card-description"/>
+                            <Label
+                                    text="Perfil del paciente"
+                                    styleClass="profile-title"/>
 
-                    <TextField
-                            fx:id="txtNombres"
-                            prefWidth="280"
-                            GridPane.columnIndex="0"
-                            GridPane.rowIndex="1"/>
+                            <Label
+                                    text="Mantén tus datos actualizados para facilitar la gestión de tus atenciones médicas."
+                                    wrapText="true"
+                                    styleClass="profile-subtitle"/>
 
-                    <Label
-                            text="Apellidos"
-                            GridPane.columnIndex="1"
-                            GridPane.rowIndex="0"
-                            styleClass="card-description"/>
+                        </VBox>
 
-                    <TextField
-                            fx:id="txtApellidos"
-                            prefWidth="280"
-                            GridPane.columnIndex="1"
-                            GridPane.rowIndex="1"/>
+                        <Region HBox.hgrow="ALWAYS"/>
 
-                    <Label
-                            text="Cédula"
-                            GridPane.columnIndex="0"
-                            GridPane.rowIndex="2"
-                            styleClass="card-description"/>
+                        <Label
+                                text="●  PERFIL ACTIVO"
+                                styleClass="profile-active-badge"/>
 
-                    <TextField
-                            fx:id="txtCedula"
-                            editable="false"
-                            GridPane.columnIndex="0"
-                            GridPane.rowIndex="3"/>
+                    </HBox>
 
-                    <Label
-                            text="Correo electrónico"
-                            GridPane.columnIndex="1"
-                            GridPane.rowIndex="2"
-                            styleClass="card-description"/>
+                    <!-- =========================================
+                              CONTENIDO EN COLUMNAS
+                         ========================================= -->
 
-                    <TextField
-                            fx:id="txtCorreo"
-                            GridPane.columnIndex="1"
-                            GridPane.rowIndex="3"/>
+                    <HBox
+                            spacing="18"
+                            alignment="TOP_LEFT">
 
-                    <Label
-                            text="Teléfono"
-                            GridPane.columnIndex="0"
-                            GridPane.rowIndex="4"
-                            styleClass="card-description"/>
+                        <!-- =====================================
+                                  COLUMNA IZQUIERDA
+                             ===================================== -->
 
-                    <TextField
-                            fx:id="txtTelefono"
-                            GridPane.columnIndex="0"
-                            GridPane.rowIndex="5"/>
+                        <VBox
+                                spacing="18"
+                                HBox.hgrow="ALWAYS">
 
-                    <Label
-                            text="Dirección"
-                            GridPane.columnIndex="1"
-                            GridPane.rowIndex="4"
-                            styleClass="card-description"/>
+                            <!-- DATOS PERSONALES -->
 
-                    <TextField
-                            fx:id="txtDireccion"
-                            GridPane.columnIndex="1"
-                            GridPane.rowIndex="5"/>
+                            <VBox
+                                    spacing="15"
+                                    styleClass="profile-section-card">
 
-                </GridPane>
+                                <padding>
+                                    <Insets top="19" right="20" bottom="20" left="20"/>
+                                </padding>
 
-                <Label
-                        fx:id="lblMensaje"
-                        text=""
-                        wrapText="true"
-                        styleClass="card-description"/>
+                                <HBox
+                                        spacing="11"
+                                        alignment="CENTER_LEFT">
 
-                <HBox
-                        alignment="CENTER_RIGHT"
-                        spacing="12">
+                                    <Label
+                                            text="01"
+                                            styleClass="profile-section-number"/>
 
-                    <Button
-                            text="Cancelar cambios"
-                            styleClass="quick-action"
-                            onAction="#recargarDatos"/>
+                                    <VBox spacing="2">
 
-                    <Button
-                            text="Guardar cambios"
-                            styleClass="primary-button"
-                            onAction="#guardarCambios"/>
+                                        <Label
+                                                text="Datos personales"
+                                                styleClass="profile-section-title"/>
 
-                </HBox>
+                                        <Label
+                                                text="Información de identificación del paciente."
+                                                styleClass="profile-section-description"/>
 
-            </VBox>
+                                    </VBox>
 
-        </VBox>
+                                </HBox>
+
+                                <GridPane
+                                        hgap="14"
+                                        vgap="8">
+
+                                    <columnConstraints>
+
+                                        <ColumnConstraints
+                                                percentWidth="50"
+                                                hgrow="ALWAYS"/>
+
+                                        <ColumnConstraints
+                                                percentWidth="50"
+                                                hgrow="ALWAYS"/>
+
+                                    </columnConstraints>
+
+                                    <Label
+                                            text="NOMBRES"
+                                            styleClass="field-label"
+                                            GridPane.columnIndex="0"
+                                            GridPane.rowIndex="0"/>
+
+                                    <Label
+                                            text="APELLIDOS"
+                                            styleClass="field-label"
+                                            GridPane.columnIndex="1"
+                                            GridPane.rowIndex="0"/>
+
+                                    <TextField
+                                            fx:id="txtNombres"
+                                            maxWidth="Infinity"
+                                            prefHeight="40"
+                                            styleClass="profile-field"
+                                            GridPane.columnIndex="0"
+                                            GridPane.rowIndex="1"/>
+
+                                    <TextField
+                                            fx:id="txtApellidos"
+                                            maxWidth="Infinity"
+                                            prefHeight="40"
+                                            styleClass="profile-field"
+                                            GridPane.columnIndex="1"
+                                            GridPane.rowIndex="1"/>
+
+                                    <Label
+                                            text="CÉDULA"
+                                            styleClass="field-label"
+                                            GridPane.columnIndex="0"
+                                            GridPane.rowIndex="2"/>
+
+                                    <Label
+                                            text="FECHA DE NACIMIENTO"
+                                            styleClass="field-label"
+                                            GridPane.columnIndex="1"
+                                            GridPane.rowIndex="2"/>
+
+                                    <TextField
+                                            fx:id="txtCedula"
+                                            maxWidth="Infinity"
+                                            prefHeight="40"
+                                            styleClass="profile-field profile-field-readonly"
+                                            GridPane.columnIndex="0"
+                                            GridPane.rowIndex="3"/>
+
+                                    <DatePicker
+                                            fx:id="dpFechaNacimiento"
+                                            maxWidth="Infinity"
+                                            prefHeight="40"
+                                            styleClass="profile-date-picker"
+                                            GridPane.columnIndex="1"
+                                            GridPane.rowIndex="3"/>
+
+                                    <Label
+                                            text="SEXO"
+                                            styleClass="field-label"
+                                            GridPane.columnIndex="0"
+                                            GridPane.rowIndex="4"/>
+
+                                    <ComboBox
+                                            fx:id="cmbSexo"
+                                            promptText="Selecciona una opción"
+                                            maxWidth="Infinity"
+                                            prefHeight="40"
+                                            styleClass="profile-combo"
+                                            GridPane.columnIndex="0"
+                                            GridPane.columnSpan="2"
+                                            GridPane.rowIndex="5"/>
+
+                                </GridPane>
+
+                            </VBox>
+
+                            <!-- CONTACTO -->
+
+                            <VBox
+                                    spacing="15"
+                                    styleClass="profile-section-card">
+
+                                <padding>
+                                    <Insets top="19" right="20" bottom="20" left="20"/>
+                                </padding>
+
+                                <HBox
+                                        spacing="11"
+                                        alignment="CENTER_LEFT">
+
+                                    <Label
+                                            text="02"
+                                            styleClass="profile-section-number"/>
+
+                                    <VBox spacing="2">
+
+                                        <Label
+                                                text="Información de contacto"
+                                                styleClass="profile-section-title"/>
+
+                                        <Label
+                                                text="Datos utilizados para comunicaciones relacionadas con tu cuenta."
+                                                styleClass="profile-section-description"/>
+
+                                    </VBox>
+
+                                </HBox>
+
+                                <GridPane
+                                        hgap="14"
+                                        vgap="8">
+
+                                    <columnConstraints>
+
+                                        <ColumnConstraints
+                                                percentWidth="60"
+                                                hgrow="ALWAYS"/>
+
+                                        <ColumnConstraints
+                                                percentWidth="40"
+                                                hgrow="ALWAYS"/>
+
+                                    </columnConstraints>
+
+                                    <Label
+                                            text="CORREO ELECTRÓNICO"
+                                            styleClass="field-label"
+                                            GridPane.columnIndex="0"
+                                            GridPane.rowIndex="0"/>
+
+                                    <Label
+                                            text="TELÉFONO"
+                                            styleClass="field-label"
+                                            GridPane.columnIndex="1"
+                                            GridPane.rowIndex="0"/>
+
+                                    <TextField
+                                            fx:id="txtCorreo"
+                                            maxWidth="Infinity"
+                                            prefHeight="40"
+                                            styleClass="profile-field"
+                                            GridPane.columnIndex="0"
+                                            GridPane.rowIndex="1"/>
+
+                                    <TextField
+                                            fx:id="txtTelefono"
+                                            promptText="Ej. 0999999999"
+                                            maxWidth="Infinity"
+                                            prefHeight="40"
+                                            styleClass="profile-field"
+                                            GridPane.columnIndex="1"
+                                            GridPane.rowIndex="1"/>
+
+                                    <Label
+                                            text="DIRECCIÓN"
+                                            styleClass="field-label"
+                                            GridPane.columnIndex="0"
+                                            GridPane.columnSpan="2"
+                                            GridPane.rowIndex="2"/>
+
+                                    <TextField
+                                            fx:id="txtDireccion"
+                                            promptText="Dirección domiciliaria"
+                                            maxWidth="Infinity"
+                                            prefHeight="40"
+                                            styleClass="profile-field"
+                                            GridPane.columnIndex="0"
+                                            GridPane.columnSpan="2"
+                                            GridPane.rowIndex="3"/>
+
+                                </GridPane>
+
+                            </VBox>
+
+                        </VBox>
+
+                        <!-- =====================================
+                                   COLUMNA DERECHA
+                             ===================================== -->
+
+                        <VBox
+                                spacing="18"
+                                prefWidth="360">
+
+                            <!-- INFORMACIÓN MÉDICA -->
+
+                            <VBox
+                                    spacing="15"
+                                    styleClass="profile-medical-card">
+
+                                <padding>
+                                    <Insets top="19" right="20" bottom="20" left="20"/>
+                                </padding>
+
+                                <HBox
+                                        spacing="11"
+                                        alignment="CENTER_LEFT">
+
+                                    <Label
+                                            text="+"
+                                            styleClass="profile-medical-icon"/>
+
+                                    <VBox spacing="2">
+
+                                        <Label
+                                                text="Información médica"
+                                                styleClass="profile-section-title"/>
+
+                                        <Label
+                                                text="Datos básicos relevantes para tu atención."
+                                                styleClass="profile-section-description"/>
+
+                                    </VBox>
+
+                                </HBox>
+
+                                <Label
+                                        text="TIPO DE SANGRE"
+                                        styleClass="field-label"/>
+
+                                <ComboBox
+                                        fx:id="cmbTipoSangre"
+                                        promptText="Selecciona tu tipo de sangre"
+                                        maxWidth="Infinity"
+                                        prefHeight="40"
+                                        styleClass="profile-combo"/>
+
+                                <Label
+                                        text="ALERGIAS CONOCIDAS"
+                                        styleClass="field-label"/>
+
+                                <TextArea
+                                        fx:id="txtAlergias"
+                                        promptText="Ej.: penicilina, mariscos. Si no conoces alergias puedes dejar el campo vacío."
+                                        wrapText="true"
+                                        prefRowCount="3"
+                                        prefHeight="85"
+                                        styleClass="profile-text-area"/>
+
+                                <Label
+                                        text="CONDICIONES MÉDICAS RELEVANTES"
+                                        styleClass="field-label"/>
+
+                                <TextArea
+                                        fx:id="txtCondicionesMedicas"
+                                        promptText="Ej.: hipertensión, diabetes, asma..."
+                                        wrapText="true"
+                                        prefRowCount="3"
+                                        prefHeight="85"
+                                        styleClass="profile-text-area"/>
+
+                                <HBox
+                                        spacing="9"
+                                        alignment="CENTER_LEFT"
+                                        styleClass="profile-medical-notice">
+
+                                    <Label
+                                            text="i"
+                                            styleClass="profile-notice-icon"/>
+
+                                    <Label
+                                            text="Esta información complementa tu perfil y no reemplaza una historia clínica."
+                                            wrapText="true"
+                                            styleClass="profile-notice-text"/>
+
+                                </HBox>
+
+                            </VBox>
+
+                            <!-- EMERGENCIA -->
+
+                            <VBox
+                                    spacing="15"
+                                    styleClass="profile-section-card">
+
+                                <padding>
+                                    <Insets top="19" right="20" bottom="20" left="20"/>
+                                </padding>
+
+                                <HBox
+                                        spacing="11"
+                                        alignment="CENTER_LEFT">
+
+                                    <Label
+                                            text="!"
+                                            styleClass="profile-emergency-icon"/>
+
+                                    <VBox spacing="2">
+
+                                        <Label
+                                                text="Contacto de emergencia"
+                                                styleClass="profile-section-title"/>
+
+                                        <Label
+                                                text="Persona de referencia en caso de necesidad."
+                                                wrapText="true"
+                                                styleClass="profile-section-description"/>
+
+                                    </VBox>
+
+                                </HBox>
+
+                                <Label
+                                        text="NOMBRE DEL CONTACTO"
+                                        styleClass="field-label"/>
+
+                                <TextField
+                                        fx:id="txtContactoEmergencia"
+                                        promptText="Nombre completo"
+                                        maxWidth="Infinity"
+                                        prefHeight="40"
+                                        styleClass="profile-field"/>
+
+                                <Label
+                                        text="TELÉFONO DE EMERGENCIA"
+                                        styleClass="field-label"/>
+
+                                <TextField
+                                        fx:id="txtTelefonoEmergencia"
+                                        promptText="Ej. 0999999999"
+                                        maxWidth="Infinity"
+                                        prefHeight="40"
+                                        styleClass="profile-field"/>
+
+                            </VBox>
+
+                        </VBox>
+
+                    </HBox>
+
+                    <!-- =========================================
+                             MENSAJES Y ACCIONES
+                         ========================================= -->
+
+                    <HBox
+                            alignment="CENTER_LEFT"
+                            spacing="14"
+                            styleClass="profile-actions-panel">
+
+                        <Label
+                                fx:id="lblMensaje"
+                                text=""
+                                wrapText="true"
+                                HBox.hgrow="ALWAYS"
+                                styleClass="profile-message"/>
+
+                        <Region HBox.hgrow="ALWAYS"/>
+
+                        <Button
+                                text="Descartar cambios"
+                                prefHeight="42"
+                                styleClass="secondary-button"
+                                onAction="#recargarDatos"/>
+
+                        <Button
+                                text="Guardar cambios"
+                                prefHeight="42"
+                                styleClass="patient-primary-button"
+                                onAction="#guardarCambios"/>
+
+                    </HBox>
+
+                </VBox>
+
+            </content>
+
+        </ScrollPane>
 
     </center>
 

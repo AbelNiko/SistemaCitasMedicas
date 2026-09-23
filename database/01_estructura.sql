@@ -246,8 +246,16 @@ CREATE TABLE IF NOT EXISTS usuarios (
 -- • sexo
 --   Sexo registrado del paciente.
 --
+-- • tipo_sangre
+--   Tipo de sangre declarado por el paciente.
+--
+-- • alergias
+--   Alergias declaradas por el paciente.
+--
+-- • condiciones_medicas
+--   Condiciones médicas relevantes declaradas por el paciente.
+--
 -- • contacto_emergencia
---   Nombre del contacto de emergencia.
 --
 -- • telefono_emergencia
 --   Número telefónico del contacto de emergencia.
@@ -272,6 +280,12 @@ CREATE TABLE IF NOT EXISTS pacientes (
     direccion VARCHAR(255),
 
     sexo VARCHAR(20),
+
+    tipo_sangre VARCHAR(15),
+
+    alergias VARCHAR(500),
+
+    condiciones_medicas VARCHAR(500),
 
     contacto_emergencia VARCHAR(150),
 

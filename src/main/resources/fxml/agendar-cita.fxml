@@ -5,10 +5,13 @@
 <?import javafx.scene.control.ComboBox?>
 <?import javafx.scene.control.DatePicker?>
 <?import javafx.scene.control.Label?>
+<?import javafx.scene.control.Separator?>
 <?import javafx.scene.control.TextArea?>
 <?import javafx.scene.layout.BorderPane?>
+<?import javafx.scene.layout.ColumnConstraints?>
 <?import javafx.scene.layout.GridPane?>
 <?import javafx.scene.layout.HBox?>
+<?import javafx.scene.layout.Priority?>
 <?import javafx.scene.layout.Region?>
 <?import javafx.scene.layout.VBox?>
 
@@ -18,89 +21,128 @@
         fx:controller="com.citasmedicas.controller.AgendarCitaController"
         stylesheets="@../css/mediappoint.css"
         styleClass="dashboard-root"
-        prefWidth="1050"
-        prefHeight="680">
+        prefWidth="1180"
+        prefHeight="720">
 
+    <!-- =========================================================
+                         MENÚ LATERAL
+         ========================================================= -->
     <left>
+
         <VBox
-                prefWidth="220"
-                spacing="8"
+                prefWidth="235"
+                spacing="7"
                 styleClass="sidebar">
 
             <padding>
-                <Insets
-                        top="28"
-                        right="18"
-                        bottom="22"
-                        left="18"/>
+                <Insets top="30" right="18" bottom="22" left="18"/>
             </padding>
 
-            <Label
-                    text="MediAppoint"
-                    styleClass="sidebar-brand"/>
+            <VBox spacing="3">
+                <Label
+                        text="MediAppoint"
+                        styleClass="sidebar-brand"/>
+
+                <Label
+                        text="PORTAL DEL PACIENTE"
+                        styleClass="sidebar-subtitle"/>
+            </VBox>
+
+            <Region prefHeight="28"/>
 
             <Label
-                    text="GESTIÓN DE CITAS MÉDICAS"
-                    styleClass="sidebar-subtitle"/>
+                    text="NAVEGACIÓN"
+                    styleClass="sidebar-section-label"/>
 
-            <Region prefHeight="25"/>
+            <Region prefHeight="4"/>
 
             <Button
-                    text="Inicio"
+                    text="⌂   Inicio"
                     maxWidth="Infinity"
-                    prefHeight="42"
+                    prefHeight="44"
                     styleClass="sidebar-button"
                     onAction="#volverDashboard"/>
 
             <Button
-                    text="Agendar cita"
+                    text="+   Agendar cita"
                     maxWidth="Infinity"
-                    prefHeight="42"
+                    prefHeight="44"
                     styleClass="sidebar-button-active"/>
 
             <Button
-                text="Mis citas"
-                maxWidth="Infinity"
-                styleClass="sidebar-button"
-                onAction="#abrirMisCitas"/>
+                    text="▣   Mis citas"
+                    maxWidth="Infinity"
+                    prefHeight="44"
+                    styleClass="sidebar-button"
+                    onAction="#abrirMisCitas"/>
 
             <Button
-                text="Mi perfil"
-                maxWidth="Infinity"
-                styleClass="sidebar-button"
-                onAction="#abrirPerfil"/>
-                    
+                    text="●   Mi perfil"
+                    maxWidth="Infinity"
+                    prefHeight="44"
+                    styleClass="sidebar-button"
+                    onAction="#abrirPerfil"/>
 
             <Region VBox.vgrow="ALWAYS"/>
 
+            <VBox
+                    spacing="4"
+                    styleClass="sidebar-user-card">
+
+                <padding>
+                    <Insets top="13" right="14" bottom="13" left="14"/>
+                </padding>
+
+                <Label
+                        text="PACIENTE"
+                        styleClass="sidebar-user-role"/>
+
+                <Label
+                        fx:id="lblNombreUsuario"
+                        text="Paciente"
+                        wrapText="true"
+                        styleClass="sidebar-user-name"/>
+            </VBox>
+
+            <Region prefHeight="5"/>
+
+            <Separator styleClass="sidebar-separator"/>
+
             <Button
-                    text="Volver al inicio"
+                    text="↪   Volver al inicio"
                     maxWidth="Infinity"
                     prefHeight="42"
                     styleClass="logout-button"
                     onAction="#volverDashboard"/>
 
         </VBox>
+
     </left>
 
+    <!-- =========================================================
+                             CABECERA
+         ========================================================= -->
     <top>
+
         <HBox
                 alignment="CENTER_LEFT"
-                prefHeight="82"
+                prefHeight="76"
                 spacing="15"
                 styleClass="dashboard-header">
 
             <padding>
-                <Insets
-                        top="15"
-                        right="28"
-                        bottom="15"
-                        left="28"/>
+                <Insets top="14" right="32" bottom="14" left="32"/>
             </padding>
 
-            <Label
-                    text="Agendar cita médica"
-                    styleClass="dashboard-page-title"/>
+            <VBox spacing="2">
+                <Label
+                        text="Agendar cita"
+                        styleClass="dashboard-page-title"/>
+
+                <Label
+                        text="Programa una nueva atención médica"
+                        styleClass="page-header-subtitle"/>
+            </VBox>
 
             <Region HBox.hgrow="ALWAYS"/>
 
@@ -109,186 +151,367 @@
                     spacing="3">
 
                 <Label
-                        fx:id="lblNombreUsuario"
-                        text="Paciente"
-                        styleClass="dashboard-user-name"/>
+                        text="PROCESO DE RESERVA"
+                        styleClass="header-session-label"/>
 
                 <Label
-                        text="PACIENTE"
+                        text="NUEVA CITA"
                         styleClass="dashboard-user-role"/>
-
             </VBox>
 
         </HBox>
+
     </top>
 
+    <!-- =========================================================
+                             CONTENIDO
+         ========================================================= -->
     <center>
+
         <VBox
-                spacing="22"
+                spacing="18"
                 styleClass="dashboard-content">
 
             <padding>
-                <Insets
-                        top="30"
-                        right="40"
-                        bottom="35"
-                        left="40"/>
+                <Insets top="25" right="34" bottom="28" left="34"/>
             </padding>
 
-            <VBox spacing="5">
+            <!-- Introducción -->
 
-                <Label
-                        text="Nueva cita"
-                        styleClass="welcome-title"/>
-
-                <Label
-                        text="Selecciona los datos de tu atención médica. Los horarios se actualizan según la disponibilidad."
-                        wrapText="true"
-                        styleClass="welcome-subtitle"/>
-
-            </VBox>
-
-            <VBox
-                    spacing="20"
-                    maxWidth="720"
-                    styleClass="dashboard-card">
+            <HBox
+                    alignment="CENTER_LEFT"
+                    spacing="18"
+                    styleClass="appointment-intro-panel">
 
                 <padding>
-                    <Insets
-                            top="25"
-                            right="28"
-                            bottom="28"
-                            left="28"/>
+                    <Insets top="18" right="22" bottom="18" left="22"/>
                 </padding>
 
-                <Label
-                        text="Datos de la cita"
-                        styleClass="dashboard-section-title"/>
-
-                <GridPane
-                        hgap="18"
-                        vgap="9">
+                <VBox spacing="5">
 
                     <Label
-                            text="Especialidad"
-                            styleClass="field-label"
-                            GridPane.columnIndex="0"
-                            GridPane.rowIndex="0"/>
+                            text="NUEVA ATENCIÓN"
+                            styleClass="welcome-eyebrow"/>
 
                     <Label
-                            text="Establecimiento"
-                            styleClass="field-label"
-                            GridPane.columnIndex="1"
-                            GridPane.rowIndex="0"/>
-
-                    <ComboBox
-                            fx:id="cmbEspecialidad"
-                            promptText="Selecciona una especialidad"
-                            prefWidth="310"
-                            styleClass="auth-combo"
-                            GridPane.columnIndex="0"
-                            GridPane.rowIndex="1"/>
-
-                    <ComboBox
-                            fx:id="cmbEstablecimiento"
-                            promptText="Selecciona un establecimiento"
-                            prefWidth="310"
-                            styleClass="auth-combo"
-                            GridPane.columnIndex="1"
-                            GridPane.rowIndex="1"/>
+                            text="Agenda tu cita médica"
+                            styleClass="appointment-main-title"/>
 
                     <Label
-                            text="Médico"
-                            styleClass="field-label"
-                            GridPane.columnIndex="0"
-                            GridPane.rowIndex="2"/>
-
-                    <Label
-                            text="Fecha"
-                            styleClass="field-label"
-                            GridPane.columnIndex="1"
-                            GridPane.rowIndex="2"/>
-
-                    <ComboBox
-                            fx:id="cmbMedico"
-                            promptText="Selecciona un médico"
-                            prefWidth="310"
-                            disable="true"
-                            styleClass="auth-combo"
-                            GridPane.columnIndex="0"
-                            GridPane.rowIndex="3"/>
-
-                    <DatePicker
-                            fx:id="dpFecha"
-                            prefWidth="310"
-                            disable="true"
-                            styleClass="auth-date-picker"
-                            GridPane.columnIndex="1"
-                            GridPane.rowIndex="3"/>
-
-                    <Label
-                            text="Horario disponible"
-                            styleClass="field-label"
-                            GridPane.columnIndex="0"
-                            GridPane.rowIndex="4"/>
-
-                    <ComboBox
-                            fx:id="cmbHorario"
-                            promptText="Selecciona un horario"
-                            prefWidth="310"
-                            disable="true"
-                            styleClass="auth-combo"
-                            GridPane.columnIndex="0"
-                            GridPane.rowIndex="5"/>
-
-                </GridPane>
-
-                <VBox spacing="7">
-
-                    <Label
-                            text="Motivo de consulta"
-                            styleClass="field-label"/>
-
-                    <TextArea
-                            fx:id="txtMotivoConsulta"
-                            promptText="Describe brevemente el motivo de tu consulta"
-                            prefRowCount="3"
+                            text="Completa los datos en orden. Los médicos y horarios se actualizarán automáticamente según tu selección."
                             wrapText="true"
-                            styleClass="appointment-text-area"/>
+                            styleClass="welcome-subtitle"/>
+                </VBox>
+
+                <Region HBox.hgrow="ALWAYS"/>
+
+                <VBox
+                        alignment="CENTER"
+                        spacing="2"
+                        styleClass="appointment-help-badge">
+
+                    <Label
+                            text="3"
+                            styleClass="appointment-help-number"/>
+
+                    <Label
+                            text="PASOS"
+                            styleClass="appointment-help-label"/>
+                </VBox>
+
+            </HBox>
+
+            <!-- Formulario -->
+
+            <HBox
+                    spacing="18"
+                    VBox.vgrow="ALWAYS">
+
+                <!-- Columna principal -->
+
+                <VBox
+                        spacing="16"
+                        HBox.hgrow="ALWAYS">
+
+                    <!-- PASO 1 -->
+
+                    <VBox
+                            spacing="14"
+                            styleClass="appointment-section-card">
+
+                        <padding>
+                            <Insets top="18" right="20" bottom="20" left="20"/>
+                        </padding>
+
+                        <HBox
+                                alignment="CENTER_LEFT"
+                                spacing="11">
+
+                            <Label
+                                    text="1"
+                                    styleClass="appointment-step-number"/>
+
+                            <VBox spacing="2">
+                                <Label
+                                        text="Selecciona tu atención"
+                                        styleClass="appointment-section-title"/>
+
+                                <Label
+                                        text="Indica la especialidad, establecimiento y profesional médico."
+                                        styleClass="appointment-section-description"/>
+                            </VBox>
+
+                        </HBox>
+
+                        <GridPane
+                                hgap="16"
+                                vgap="8">
+
+                            <columnConstraints>
+                                <ColumnConstraints
+                                        percentWidth="50"
+                                        hgrow="ALWAYS"/>
+
+                                <ColumnConstraints
+                                        percentWidth="50"
+                                        hgrow="ALWAYS"/>
+                            </columnConstraints>
+
+                            <Label
+                                    text="ESPECIALIDAD"
+                                    styleClass="field-label"
+                                    GridPane.columnIndex="0"
+                                    GridPane.rowIndex="0"/>
+
+                            <Label
+                                    text="ESTABLECIMIENTO"
+                                    styleClass="field-label"
+                                    GridPane.columnIndex="1"
+                                    GridPane.rowIndex="0"/>
+
+                            <ComboBox
+                                    fx:id="cmbEspecialidad"
+                                    promptText="Selecciona una especialidad"
+                                    maxWidth="Infinity"
+                                    prefHeight="42"
+                                    styleClass="auth-combo"
+                                    GridPane.columnIndex="0"
+                                    GridPane.rowIndex="1"/>
+
+                            <ComboBox
+                                    fx:id="cmbEstablecimiento"
+                                    promptText="Selecciona un establecimiento"
+                                    maxWidth="Infinity"
+                                    prefHeight="42"
+                                    styleClass="auth-combo"
+                                    GridPane.columnIndex="1"
+                                    GridPane.rowIndex="1"/>
+
+                            <Label
+                                    text="MÉDICO"
+                                    styleClass="field-label"
+                                    GridPane.columnIndex="0"
+                                    GridPane.columnSpan="2"
+                                    GridPane.rowIndex="2"/>
+
+                            <ComboBox
+                                    fx:id="cmbMedico"
+                                    promptText="Selecciona un médico"
+                                    maxWidth="Infinity"
+                                    prefHeight="42"
+                                    disable="true"
+                                    styleClass="auth-combo"
+                                    GridPane.columnIndex="0"
+                                    GridPane.columnSpan="2"
+                                    GridPane.rowIndex="3"/>
+
+                        </GridPane>
+
+                    </VBox>
+
+                    <!-- PASO 2 -->
+
+                    <VBox
+                            spacing="14"
+                            styleClass="appointment-section-card">
+
+                        <padding>
+                            <Insets top="18" right="20" bottom="20" left="20"/>
+                        </padding>
+
+                        <HBox
+                                alignment="CENTER_LEFT"
+                                spacing="11">
+
+                            <Label
+                                    text="2"
+                                    styleClass="appointment-step-number"/>
+
+                            <VBox spacing="2">
+                                <Label
+                                        text="Elige fecha y horario"
+                                        styleClass="appointment-section-title"/>
+
+                                <Label
+                                        text="Solo se mostrarán opciones disponibles para el médico seleccionado."
+                                        styleClass="appointment-section-description"/>
+                            </VBox>
+
+                        </HBox>
+
+                        <GridPane
+                                hgap="16"
+                                vgap="8">
+
+                            <columnConstraints>
+                                <ColumnConstraints
+                                        percentWidth="50"
+                                        hgrow="ALWAYS"/>
+
+                                <ColumnConstraints
+                                        percentWidth="50"
+                                        hgrow="ALWAYS"/>
+                            </columnConstraints>
+
+                            <Label
+                                    text="FECHA"
+                                    styleClass="field-label"
+                                    GridPane.columnIndex="0"
+                                    GridPane.rowIndex="0"/>
+
+                            <Label
+                                    text="HORARIO DISPONIBLE"
+                                    styleClass="field-label"
+                                    GridPane.columnIndex="1"
+                                    GridPane.rowIndex="0"/>
+
+                            <DatePicker
+                                    fx:id="dpFecha"
+                                    maxWidth="Infinity"
+                                    prefHeight="42"
+                                    disable="true"
+                                    styleClass="auth-date-picker"
+                                    GridPane.columnIndex="0"
+                                    GridPane.rowIndex="1"/>
+
+                            <ComboBox
+                                    fx:id="cmbHorario"
+                                    promptText="Selecciona un horario"
+                                    maxWidth="Infinity"
+                                    prefHeight="42"
+                                    disable="true"
+                                    styleClass="auth-combo"
+                                    GridPane.columnIndex="1"
+                                    GridPane.rowIndex="1"/>
+
+                        </GridPane>
+
+                    </VBox>
 
                 </VBox>
 
-                <Label
-                        fx:id="lblMensaje"
-                        text=""
-                        wrapText="true"
-                        styleClass="error-message"/>
+                <!-- Columna derecha -->
 
-                <HBox
-                        alignment="CENTER_RIGHT"
-                        spacing="12">
+                <VBox
+                        spacing="16"
+                        prefWidth="330">
 
-                    <Button
-                            text="Cancelar"
-                            prefWidth="130"
-                            prefHeight="42"
-                            styleClass="secondary-button"
-                            onAction="#volverDashboard"/>
+                    <!-- PASO 3 -->
 
-                    <Button
-        fx:id="btnConfirmar"
-        text="Confirmar cita"
-        prefWidth="170"
-        prefHeight="42"
-        disable="true"
-        styleClass="primary-button"
-        onAction="#confirmarCita"/>
+                    <VBox
+                            spacing="14"
+                            styleClass="appointment-section-card">
 
-                </HBox>
+                        <padding>
+                            <Insets top="18" right="20" bottom="20" left="20"/>
+                        </padding>
 
-            </VBox>
+                        <HBox
+                                alignment="CENTER_LEFT"
+                                spacing="11">
+
+                            <Label
+                                    text="3"
+                                    styleClass="appointment-step-number"/>
+
+                            <VBox spacing="2">
+                                <Label
+                                        text="Motivo de consulta"
+                                        styleClass="appointment-section-title"/>
+
+                                <Label
+                                        text="Describe brevemente por qué necesitas la atención."
+                                        wrapText="true"
+                                        styleClass="appointment-section-description"/>
+                            </VBox>
+
+                        </HBox>
+
+                        <TextArea
+                                fx:id="txtMotivoConsulta"
+                                promptText="Ej.: control médico, dolor persistente, revisión de resultados..."
+                                prefRowCount="6"
+                                prefHeight="145"
+                                wrapText="true"
+                                styleClass="appointment-text-area"/>
+
+                    </VBox>
+
+                    <!-- Información -->
+
+                    <VBox
+                            spacing="7"
+                            styleClass="appointment-security-panel">
+
+                        <padding>
+                            <Insets top="14" right="16" bottom="14" left="16"/>
+                        </padding>
+
+                        <Label
+                                text="Antes de confirmar"
+                                styleClass="appointment-security-title"/>
+
+                        <Label
+                                text="Revisa que la especialidad, médico, establecimiento, fecha y horario sean correctos."
+                                wrapText="true"
+                                styleClass="appointment-security-text"/>
+
+                    </VBox>
+
+                    <Region VBox.vgrow="ALWAYS"/>
+
+                    <Label
+                            fx:id="lblMensaje"
+                            text=""
+                            wrapText="true"
+                            styleClass="error-message"/>
+
+                    <VBox spacing="9">
+
+                        <Button
+                                fx:id="btnConfirmar"
+                                text="Confirmar cita"
+                                maxWidth="Infinity"
+                                prefHeight="46"
+                                disable="true"
+                                styleClass="patient-primary-button"
+                                onAction="#confirmarCita"/>
+
+                        <Button
+                                text="Cancelar y volver"
+                                maxWidth="Infinity"
+                                prefHeight="40"
+                                styleClass="appointment-cancel-button"
+                                onAction="#volverDashboard"/>
+
+                    </VBox>
+
+                </VBox>
+
+            </HBox>
 
         </VBox>
+
     </center>
 
 </BorderPane>

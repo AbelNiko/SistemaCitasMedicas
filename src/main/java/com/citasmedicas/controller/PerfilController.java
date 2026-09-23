@@ -1,18 +1,22 @@
 package com.citasmedicas.controller;
 
-import com.citasmedicas.util.SesionUtil;
 import com.citasmedicas.model.Paciente;
 import com.citasmedicas.model.Usuario;
 import com.citasmedicas.service.PerfilService;
+import com.citasmedicas.util.SesionUtil;
 
 import javafx.fxml.FXML;
 import javafx.fxml.FXMLLoader;
 import javafx.scene.Scene;
+import javafx.scene.control.ComboBox;
+import javafx.scene.control.DatePicker;
 import javafx.scene.control.Label;
+import javafx.scene.control.TextArea;
 import javafx.scene.control.TextField;
 import javafx.stage.Stage;
 
 import java.io.IOException;
+import java.time.LocalDate;
 
 /**
  * ================================================================
@@ -20,18 +24,26 @@ import java.io.IOException;
  * ================================================================
  *
  * Gestiona la consulta y actualización de la información
- * personal del paciente autenticado.
+ * personal, de contacto y médica básica del paciente autenticado.
  *
  * @author Equipo de Ingeniería de Software II
- * @version 1.0
+ * @version 1.1
  */
 public class PerfilController {
+
+    /* ============================================================
+                           INFORMACIÓN GENERAL
+       ============================================================ */
 
     @FXML
     private Label lblNombreUsuario;
 
     @FXML
     private Label lblMensaje;
+
+    /* ============================================================
+                           DATOS PERSONALES
+       ============================================================ */
 
     @FXML
     private TextField txtNombres;
@@ -43,6 +55,16 @@ public class PerfilController {
     private TextField txtCedula;
 
     @FXML
+    private DatePicker dpFechaNacimiento;
+
+    @FXML
+    private ComboBox<String> cmbSexo;
+
+    /* ============================================================
+                         DATOS DE CONTACTO
+       ============================================================ */
+
+    @FXML
     private TextField txtCorreo;
 
     @FXML
@@ -51,37 +73,120 @@ public class PerfilController {
     @FXML
     private TextField txtDireccion;
 
+    /* ============================================================
+                         INFORMACIÓN MÉDICA
+       ============================================================ */
+
+    @FXML
+    private ComboBox<String> cmbTipoSangre;
+
+    @FXML
+    private TextArea txtAlergias;
+
+    @FXML
+    private TextArea txtCondicionesMedicas;
+
+    /* ============================================================
+                       CONTACTO DE EMERGENCIA
+       ============================================================ */
+
+    @FXML
+    private TextField txtContactoEmergencia;
+
+    @FXML
+    private TextField txtTelefonoEmergencia;
+
+    /* ============================================================
+                             ESTADO
+       ============================================================ */
+
     private Usuario usuarioActual;
     private Paciente pacienteActual;
 
     private final PerfilService perfilService;
 
     public PerfilController() {
+        this.perfilService = new PerfilService();
+    }
 
-        this.perfilService =
-                new PerfilService();
+    /**
+     * Configura las opciones disponibles de los controles
+     * cuando JavaFX termina de cargar el FXML.
+     */
+    @FXML
+    private void initialize() {
+
+        cmbSexo.getItems().setAll(
+                "Masculino",
+                "Femenino",
+                "Otro",
+                "Prefiero no indicar"
+        );
+
+        cmbTipoSangre.getItems().setAll(
+                "A+",
+                "A-",
+                "B+",
+                "B-",
+                "AB+",
+                "AB-",
+                "O+",
+                "O-",
+                "No conoce"
+        );
+
+        /*
+         * La cédula identifica al usuario dentro del sistema
+         * y no debe modificarse desde el perfil.
+         */
+        txtCedula.setEditable(false);
+        txtCedula.setFocusTraversable(false);
+
+        /*
+         * No permitimos seleccionar fechas futuras.
+         */
+        dpFechaNacimiento.setDayCellFactory(
+                datePicker -> new javafx.scene.control.DateCell() {
+
+                    @Override
+                    public void updateItem(
+                            LocalDate fecha,
+                            boolean empty
+                    ) {
+                        super.updateItem(fecha, empty);
+
+                        if (empty || fecha == null) {
+                            return;
+                        }
+
+                        setDisable(
+                                fecha.isAfter(LocalDate.now())
+                        );
+                    }
+                }
+        );
     }
 
     /**
      * Recibe el usuario autenticado y carga
      * la información completa del perfil.
      */
-    public void setUsuario(
-            Usuario usuario
-    ) {
+    public void setUsuario(Usuario usuario) {
 
-        this.usuarioActual =
-                usuario;
-
+        this.usuarioActual = usuario;
         cargarDatos();
     }
 
     /**
-     * Consulta y muestra los datos actuales.
+     * Consulta nuevamente la información del paciente
+     * y la muestra en pantalla.
      */
     private void cargarDatos() {
 
         if (usuarioActual == null) {
+            mostrarError(
+                    "No existe un usuario autenticado."
+            );
             return;
         }
 
@@ -93,6 +198,12 @@ public class PerfilController {
                     perfilService.obtenerPaciente(
                             usuarioActual.getIdUsuario()
                     );
+
+            /*
+             * =====================================================
+             * USUARIO
+             * =====================================================
+             */
 
             lblNombreUsuario.setText(
                     usuarioActual.getNombreCompleto()
@@ -128,27 +239,76 @@ public class PerfilController {
                     )
             );
 
-            if (pacienteActual != null) {
+            /*
+             * =====================================================
+             * PACIENTE
+             * =====================================================
+             */
 
-                txtDireccion.setText(
-                        valorSeguro(
-                                pacienteActual.getDireccion()
-                        )
-                );
+            if (pacienteActual == null) {
 
-            } else {
-
-                txtDireccion.setText("");
+                limpiarDatosPaciente();
 
                 mostrarError(
                         "No se encontró el perfil de paciente."
                 );
+
+                return;
             }
+
+            dpFechaNacimiento.setValue(
+                    pacienteActual.getFechaNacimiento()
+            );
+
+            seleccionarValor(
+                    cmbSexo,
+                    pacienteActual.getSexo()
+            );
+
+            txtDireccion.setText(
+                    valorSeguro(
+                            pacienteActual.getDireccion()
+                    )
+            );
+
+            seleccionarValor(
+                    cmbTipoSangre,
+                    pacienteActual.getTipoSangre()
+            );
+
+            txtAlergias.setText(
+                    valorSeguro(
+                            pacienteActual.getAlergias()
+                    )
+            );
+
+            txtCondicionesMedicas.setText(
+                    valorSeguro(
+                            pacienteActual.getCondicionesMedicas()
+                    )
+            );
+
+            txtContactoEmergencia.setText(
+                    valorSeguro(
+                            pacienteActual.getContactoEmergencia()
+                    )
+            );
+
+            txtTelefonoEmergencia.setText(
+                    valorSeguro(
+                            pacienteActual.getTelefonoEmergencia()
+                    )
+            );
 
         } catch (Exception e) {
 
             mostrarError(
                     "No fue posible cargar la información del perfil."
+            );
+
+            System.err.println(
+                    "Error al cargar perfil: "
+                    + e.getMessage()
             );
 
             e.printStackTrace();
@@ -157,20 +317,22 @@ public class PerfilController {
 
     /**
      * Descarta los cambios realizados en pantalla
-     * y vuelve a cargar la información actual.
+     * y vuelve a cargar los valores persistidos.
      */
     @FXML
     private void recargarDatos() {
 
         cargarDatos();
 
-        mostrarMensaje(
-                "Los cambios fueron descartados."
-        );
+        if (pacienteActual != null) {
+            mostrarMensaje(
+                    "Los cambios fueron descartados."
+            );
+        }
     }
 
     /**
-     * Guarda los cambios del perfil.
+     * Guarda los cambios realizados por el paciente.
      */
     @FXML
     private void guardarCambios() {
@@ -196,12 +358,19 @@ public class PerfilController {
                     txtApellidos.getText(),
                     txtCorreo.getText(),
                     txtTelefono.getText(),
-                    txtDireccion.getText()
+                    dpFechaNacimiento.getValue(),
+                    cmbSexo.getValue(),
+                    txtDireccion.getText(),
+                    cmbTipoSangre.getValue(),
+                    txtAlergias.getText(),
+                    txtCondicionesMedicas.getText(),
+                    txtContactoEmergencia.getText(),
+                    txtTelefonoEmergencia.getText()
             );
 
             /*
-             * Volvemos a consultar el paciente para
-             * mantener sincronizados los datos.
+             * Volvemos a consultar MySQL después del UPDATE
+             * para mantener el objeto local sincronizado.
              */
             pacienteActual =
                     perfilService.obtenerPaciente(
@@ -209,48 +378,18 @@ public class PerfilController {
                     );
 
             /*
-             * Actualizamos el nombre mostrado en
-             * la cabecera inmediatamente.
+             * PerfilService ya sincroniza los datos básicos
+             * del objeto Usuario después del commit.
              */
             lblNombreUsuario.setText(
                     usuarioActual.getNombreCompleto()
             );
 
             /*
-             * Normalizamos visualmente los campos.
+             * Normalizamos nuevamente la representación
+             * visual usando los datos persistidos.
              */
-            txtNombres.setText(
-                    valorSeguro(
-                            usuarioActual.getNombres()
-                    )
-            );
-
-            txtApellidos.setText(
-                    valorSeguro(
-                            usuarioActual.getApellidos()
-                    )
-            );
-
-            txtCorreo.setText(
-                    valorSeguro(
-                            usuarioActual.getCorreo()
-                    )
-            );
-
-            txtTelefono.setText(
-                    valorSeguro(
-                            usuarioActual.getTelefono()
-                    )
-            );
-
-            if (pacienteActual != null) {
-
-                txtDireccion.setText(
-                        valorSeguro(
-                                pacienteActual.getDireccion()
-                        )
-                );
-            }
+            cargarCamposActualizados();
 
             mostrarExito(
                     "Perfil actualizado correctamente."
@@ -276,6 +415,137 @@ public class PerfilController {
             e.printStackTrace();
         }
     }
+
+    /**
+     * Refresca los controles después de guardar,
+     * sin eliminar el mensaje de éxito.
+     */
+    private void cargarCamposActualizados() {
+
+        txtNombres.setText(
+                valorSeguro(
+                        usuarioActual.getNombres()
+                )
+        );
+
+        txtApellidos.setText(
+                valorSeguro(
+                        usuarioActual.getApellidos()
+                )
+        );
+
+        txtCedula.setText(
+                valorSeguro(
+                        usuarioActual.getCedula()
+                )
+        );
+
+        txtCorreo.setText(
+                valorSeguro(
+                        usuarioActual.getCorreo()
+                )
+        );
+
+        txtTelefono.setText(
+                valorSeguro(
+                        usuarioActual.getTelefono()
+                )
+        );
+
+        if (pacienteActual == null) {
+            return;
+        }
+
+        dpFechaNacimiento.setValue(
+                pacienteActual.getFechaNacimiento()
+        );
+
+        seleccionarValor(
+                cmbSexo,
+                pacienteActual.getSexo()
+        );
+
+        txtDireccion.setText(
+                valorSeguro(
+                        pacienteActual.getDireccion()
+                )
+        );
+
+        seleccionarValor(
+                cmbTipoSangre,
+                pacienteActual.getTipoSangre()
+        );
+
+        txtAlergias.setText(
+                valorSeguro(
+                        pacienteActual.getAlergias()
+                )
+        );
+
+        txtCondicionesMedicas.setText(
+                valorSeguro(
+                        pacienteActual.getCondicionesMedicas()
+                )
+        );
+
+        txtContactoEmergencia.setText(
+                valorSeguro(
+                        pacienteActual.getContactoEmergencia()
+                )
+        );
+
+        txtTelefonoEmergencia.setText(
+                valorSeguro(
+                        pacienteActual.getTelefonoEmergencia()
+                )
+        );
+    }
+
+    /**
+     * Limpia únicamente los datos propios del paciente.
+     */
+    private void limpiarDatosPaciente() {
+
+        dpFechaNacimiento.setValue(null);
+        cmbSexo.getSelectionModel().clearSelection();
+        txtDireccion.clear();
+
+        cmbTipoSangre
+                .getSelectionModel()
+                .clearSelection();
+
+        txtAlergias.clear();
+        txtCondicionesMedicas.clear();
+        txtContactoEmergencia.clear();
+        txtTelefonoEmergencia.clear();
+    }
+
+    /**
+     * Selecciona un elemento del ComboBox cuando
+     * existe un valor persistido.
+     */
+    private void seleccionarValor(
+            ComboBox<String> comboBox,
+            String valor
+    ) {
+
+        if (valor == null || valor.isBlank()) {
+
+            comboBox
+                    .getSelectionModel()
+                    .clearSelection();
+
+            return;
+        }
+
+        comboBox.setValue(
+                valor.trim()
+        );
+    }
+
+    /* ============================================================
+                              NAVEGACIÓN
+       ============================================================ */
 
     /**
      * Regresa al Dashboard.
@@ -314,7 +584,29 @@ public class PerfilController {
     }
 
     /**
-     * Gestiona la navegación conservando
+     * Abre el historial de atenciones del paciente.
+     */
+    @FXML
+    private void abrirHistorial() {
+
+        cambiarPantalla(
+                "/fxml/historial-paciente.fxml",
+                "MediAppoint - Historial de atenciones"
+        );
+    }
+
+    /**
+     * Permanece en Mi perfil y descarta
+     * modificaciones no guardadas.
+     */
+    @FXML
+    private void abrirPerfil() {
+
+        recargarDatos();
+    }
+
+    /**
+     * Gestiona la navegación manteniendo
      * el usuario autenticado.
      */
     private void cambiarPantalla(
@@ -323,6 +615,11 @@ public class PerfilController {
     ) {
 
         if (usuarioActual == null) {
+
+            mostrarError(
+                    "No existe un usuario autenticado."
+            );
+
             return;
         }
 
@@ -367,6 +664,24 @@ public class PerfilController {
                 misCitas.setUsuario(
                         usuarioActual
                 );
+
+            } else if (
+                    controller
+                    instanceof HistorialPacienteController historial
+            ) {
+
+                historial.setUsuario(
+                        usuarioActual
+                );
+
+            } else if (
+                    controller
+                    instanceof PerfilController perfil
+            ) {
+
+                perfil.setUsuario(
+                        usuarioActual
+                );
             }
 
             Stage stage =
@@ -377,37 +692,54 @@ public class PerfilController {
             stage.setScene(scene);
             stage.setTitle(titulo);
 
-            stage.setMinWidth(950);
-            stage.setMinHeight(620);
+            stage.setMinWidth(1050);
+            stage.setMinHeight(680);
 
             stage.centerOnScreen();
 
         } catch (IOException e) {
 
             mostrarError(
-                    "No fue posible abrir la pantalla."
+                    "No fue posible abrir la pantalla seleccionada."
+            );
+
+            System.err.println(
+                    "Error al cambiar de pantalla: "
+                    + e.getMessage()
             );
 
             e.printStackTrace();
         }
     }
 
+    /* ============================================================
+                              MENSAJES
+       ============================================================ */
+
     private void mostrarMensaje(
             String mensaje
     ) {
+
+        if (lblMensaje == null) {
+            return;
+        }
 
         lblMensaje.setText(
                 mensaje
         );
 
         lblMensaje.setStyle(
-                "-fx-text-fill: #91A4B8;"
+                "-fx-text-fill: #A8BBC9;"
         );
     }
 
     private void mostrarError(
             String mensaje
     ) {
+
+        if (lblMensaje == null) {
+            return;
+        }
 
         lblMensaje.setText(
                 mensaje
@@ -422,6 +754,10 @@ public class PerfilController {
             String mensaje
     ) {
 
+        if (lblMensaje == null) {
+            return;
+        }
+
         lblMensaje.setText(
                 mensaje
         );
@@ -433,7 +769,9 @@ public class PerfilController {
 
     private void limpiarMensaje() {
 
-        lblMensaje.setText("");
+        if (lblMensaje != null) {
+            lblMensaje.setText("");
+        }
     }
 
     /**
@@ -447,40 +785,35 @@ public class PerfilController {
                 ? ""
                 : valor;
     }
+
     /**
- * Cierra la sesión del usuario autenticado
- * y regresa a la pantalla de inicio de sesión.
- */
-@FXML
-private void cerrarSesion() {
+     * Cierra la sesión del usuario autenticado.
+     */
+    @FXML
+    private void cerrarSesion() {
 
-    try {
+        try {
 
-        Stage stage =
-                (Stage) lblNombreUsuario
-                        .getScene()
-                        .getWindow();
+            Stage stage =
+                    (Stage) lblNombreUsuario
+                            .getScene()
+                            .getWindow();
 
-        /*
-         * Eliminamos las referencias mantenidas
-         * por este controlador.
-         */
-        usuarioActual = null;
-        pacienteActual = null;
+            usuarioActual = null;
+            pacienteActual = null;
 
-        /*
-         * Regresamos a la pantalla de inicio de sesión.
-         */
-        SesionUtil.cerrarSesion(stage);
+            SesionUtil.cerrarSesion(
+                    stage
+            );
 
-    } catch (IOException e) {
+        } catch (IOException e) {
 
-        System.err.println(
-                "Error al cerrar sesión desde Mi perfil: "
-                + e.getMessage()
-        );
+            System.err.println(
+                    "Error al cerrar sesión desde Mi perfil: "
+                    + e.getMessage()
+            );
 
-        e.printStackTrace();
+            e.printStackTrace();
+        }
     }
-}
 }

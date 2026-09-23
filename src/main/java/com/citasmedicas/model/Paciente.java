@@ -11,19 +11,31 @@ import java.time.LocalDate;
  * dentro del Sistema de Gestión de Citas Médicas.
  *
  * La información general de acceso e identificación se almacena
- * en Usuario, mientras que esta clase contiene los datos propios
- * del perfil del paciente.
+ * en Usuario, mientras que esta clase contiene los datos personales,
+ * de contacto y médicos básicos propios del paciente.
  *
  * @author Equipo de Ingeniería de Software II
- * @version 1.0
+ * @version 1.1
  */
 public class Paciente {
 
     private int idPaciente;
     private Usuario usuario;
+
     private LocalDate fechaNacimiento;
     private String direccion;
     private String sexo;
+
+    /*
+     * Información médica básica.
+     */
+    private String tipoSangre;
+    private String alergias;
+    private String condicionesMedicas;
+
+    /*
+     * Información para emergencias.
+     */
     private String contactoEmergencia;
     private String telefonoEmergencia;
 
@@ -41,6 +53,9 @@ public class Paciente {
      * @param fechaNacimiento fecha de nacimiento.
      * @param direccion dirección domiciliaria.
      * @param sexo sexo registrado.
+     * @param tipoSangre tipo de sangre registrado.
+     * @param alergias alergias conocidas.
+     * @param condicionesMedicas condiciones médicas relevantes.
      * @param contactoEmergencia contacto de emergencia.
      * @param telefonoEmergencia teléfono de emergencia.
      */
@@ -50,6 +65,9 @@ public class Paciente {
             LocalDate fechaNacimiento,
             String direccion,
             String sexo,
+            String tipoSangre,
+            String alergias,
+            String condicionesMedicas,
             String contactoEmergencia,
             String telefonoEmergencia
     ) {
@@ -59,6 +77,9 @@ public class Paciente {
         this.fechaNacimiento = fechaNacimiento;
         this.direccion = direccion;
         this.sexo = sexo;
+        this.tipoSangre = tipoSangre;
+        this.alergias = alergias;
+        this.condicionesMedicas = condicionesMedicas;
         this.contactoEmergencia = contactoEmergencia;
         this.telefonoEmergencia = telefonoEmergencia;
     }
@@ -105,6 +126,32 @@ public class Paciente {
         this.sexo = sexo;
     }
 
+    public String getTipoSangre() {
+        return tipoSangre;
+    }
+
+    public void setTipoSangre(String tipoSangre) {
+        this.tipoSangre = tipoSangre;
+    }
+
+    public String getAlergias() {
+        return alergias;
+    }
+
+    public void setAlergias(String alergias) {
+        this.alergias = alergias;
+    }
+
+    public String getCondicionesMedicas() {
+        return condicionesMedicas;
+    }
+
+    public void setCondicionesMedicas(
+            String condicionesMedicas
+    ) {
+        this.condicionesMedicas = condicionesMedicas;
+    }
+
     public String getContactoEmergencia() {
         return contactoEmergencia;
     }
@@ -112,8 +159,7 @@ public class Paciente {
     public void setContactoEmergencia(
             String contactoEmergencia
     ) {
-        this.contactoEmergencia =
-                contactoEmergencia;
+        this.contactoEmergencia = contactoEmergencia;
     }
 
     public String getTelefonoEmergencia() {
@@ -123,7 +169,6 @@ public class Paciente {
     public void setTelefonoEmergencia(
             String telefonoEmergencia
     ) {
-        this.telefonoEmergencia =
-                telefonoEmergencia;
+        this.telefonoEmergencia = telefonoEmergencia;
     }
 }

@@ -1506,3 +1506,1350 @@
     -fx-text-fill: #7792A8;
     -fx-font-size: 10px;
 }
+
+/* ================================================================
+              PORTAL PACIENTE 2.0 - AGENDAR CITA
+   ================================================================ */
+
+.appointment-intro-panel {
+    -fx-background-color:
+        linear-gradient(
+            to right,
+            #0B2841,
+            #0A2238
+        );
+    -fx-background-radius: 14;
+    -fx-border-color: #194D70;
+    -fx-border-radius: 14;
+    -fx-border-width: 1;
+}
+
+.appointment-main-title {
+    -fx-text-fill: #FFFFFF;
+    -fx-font-size: 21px;
+    -fx-font-weight: bold;
+}
+
+.appointment-help-badge {
+    -fx-background-color: #0D3552;
+    -fx-background-radius: 11;
+    -fx-border-color: #1A5B84;
+    -fx-border-radius: 11;
+    -fx-border-width: 1;
+    -fx-padding: 9 18;
+    -fx-min-width: 80;
+}
+
+.appointment-help-number {
+    -fx-text-fill: #31B9FF;
+    -fx-font-size: 20px;
+    -fx-font-weight: bold;
+}
+
+.appointment-help-label {
+    -fx-text-fill: #7F9AAF;
+    -fx-font-size: 8px;
+    -fx-font-weight: bold;
+}
+
+.appointment-section-card {
+    -fx-background-color: #0B2034;
+    -fx-background-radius: 13;
+    -fx-border-color: #183C58;
+    -fx-border-radius: 13;
+    -fx-border-width: 1;
+}
+
+.appointment-section-card:hover {
+    -fx-border-color: #245B80;
+}
+
+.appointment-step-number {
+    -fx-background-color: #0E4E78;
+    -fx-background-radius: 30;
+
+    -fx-text-fill: #67D1FF;
+
+    -fx-font-size: 12px;
+    -fx-font-weight: bold;
+
+    -fx-alignment: CENTER;
+
+    -fx-min-width: 30;
+    -fx-min-height: 30;
+    -fx-max-width: 30;
+    -fx-max-height: 30;
+}
+
+.appointment-section-title {
+    -fx-text-fill: #F3F9FD;
+    -fx-font-size: 14px;
+    -fx-font-weight: bold;
+}
+
+.appointment-section-description {
+    -fx-text-fill: #71899D;
+    -fx-font-size: 9px;
+}
+
+.appointment-security-panel {
+    -fx-background-color: rgba(22, 151, 255, 0.06);
+    -fx-background-radius: 10;
+    -fx-border-color: rgba(22, 151, 255, 0.18);
+    -fx-border-radius: 10;
+    -fx-border-width: 1;
+}
+
+.appointment-security-title {
+    -fx-text-fill: #CFEAFF;
+    -fx-font-size: 11px;
+    -fx-font-weight: bold;
+}
+
+.appointment-security-text {
+    -fx-text-fill: #7792A8;
+    -fx-font-size: 9px;
+}
+
+.appointment-cancel-button {
+    -fx-background-color: transparent;
+    -fx-text-fill: #8FA6B8;
+
+    -fx-border-color: #28465D;
+    -fx-border-width: 1;
+    -fx-border-radius: 8;
+
+    -fx-background-radius: 8;
+
+    -fx-font-size: 11px;
+    -fx-font-weight: bold;
+
+    -fx-cursor: hand;
+}
+
+.appointment-cancel-button:hover {
+    -fx-background-color: #10283B;
+    -fx-text-fill: #FFFFFF;
+    -fx-border-color: #3A6786;
+}
+
+/* Campos del formulario */
+
+.appointment-section-card .combo-box,
+.appointment-section-card .date-picker {
+    -fx-background-color: #10283D;
+    -fx-border-color: #294A64;
+    -fx-border-width: 1;
+    -fx-border-radius: 8;
+    -fx-background-radius: 8;
+}
+
+.appointment-section-card .combo-box:hover,
+.appointment-section-card .date-picker:hover {
+    -fx-border-color: #3484B7;
+}
+
+.appointment-section-card .combo-box:focused,
+.appointment-section-card .date-picker:focused {
+    -fx-border-color: #1597FF;
+}
+
+.appointment-section-card .combo-box .list-cell {
+    -fx-text-fill: #D9E7F1;
+    -fx-background-color: transparent;
+}
+
+.appointment-section-card .combo-box:disabled,
+.appointment-section-card .date-picker:disabled {
+    -fx-opacity: 0.58;
+}
+
+.appointment-text-area {
+    -fx-background-color: #10283D;
+    -fx-text-fill: #D9E7F1;
+    -fx-prompt-text-fill: #657E92;
+    -fx-border-color: #294A64;
+    -fx-border-width: 1;
+    -fx-border-radius: 8;
+    -fx-background-radius: 8;
+    -fx-font-size: 11px;
+}
+
+.appointment-text-area .content {
+    -fx-background-color: #10283D;
+    -fx-background-radius: 8;
+}
+
+.appointment-text-area:focused {
+    -fx-border-color: #1597FF;
+}
+
+/* ================================================================
+      CORRECCIÓN VISUAL - LISTAS DESPLEGABLES DEL PACIENTE
+   ================================================================ */
+
+/*
+ * Campo visible del ComboBox.
+ * Conserva el texto claro porque se encuentra sobre fondo oscuro.
+ */
+.dashboard-root .combo-box > .list-cell {
+    -fx-text-fill: #EAF5FC;
+}
+
+/*
+ * Lista emergente.
+ * JavaFX crea un ListView independiente al desplegar el ComboBox,
+ * por eso necesita estilos propios.
+ */
+.combo-box-popup .list-view {
+    -fx-background-color: #FFFFFF;
+    -fx-border-color: #B9C7D3;
+    -fx-border-width: 1;
+}
+
+.combo-box-popup .list-view .list-cell {
+    -fx-background-color: #FFFFFF;
+    -fx-text-fill: #111827;
+    -fx-font-size: 11px;
+    -fx-padding: 9 12;
+}
+
+/* Elemento señalado con el mouse. */
+.combo-box-popup .list-view .list-cell:hover {
+    -fx-background-color: #E8F3FC;
+    -fx-text-fill: #0A2540;
+}
+
+/* Elemento actualmente seleccionado. */
+.combo-box-popup .list-view .list-cell:selected {
+    -fx-background-color: #D9ECFA;
+    -fx-text-fill: #071525;
+    -fx-font-weight: bold;
+}
+
+/* Evita filas vacías visibles al final del popup. */
+.combo-box-popup .list-view .list-cell:empty {
+    -fx-background-color: #FFFFFF;
+}
+
+/* ================================================================
+                    MIS CITAS - PORTAL PACIENTE
+   ================================================================ */
+
+.appointments-page {
+    -fx-background-color: #071525;
+}
+
+/* ------------------------------------------------
+   HERO
+   ------------------------------------------------ */
+
+.appointments-hero {
+    -fx-background-color: #0B2035;
+    -fx-background-radius: 14px;
+    -fx-border-color: #164B70;
+    -fx-border-radius: 14px;
+    -fx-border-width: 1px;
+}
+
+.section-eyebrow {
+    -fx-font-size: 10px;
+    -fx-font-weight: bold;
+    -fx-text-fill: #16C7FF;
+}
+
+.appointments-title {
+    -fx-font-size: 23px;
+    -fx-font-weight: bold;
+    -fx-text-fill: #FFFFFF;
+}
+
+.appointments-subtitle {
+    -fx-font-size: 12px;
+    -fx-text-fill: #91A4B8;
+}
+
+/* ------------------------------------------------
+   RESUMEN
+   ------------------------------------------------ */
+
+.appointments-summary-card {
+    -fx-background-color: #0B1D31;
+    -fx-background-radius: 12px;
+    -fx-border-color: #173A59;
+    -fx-border-radius: 12px;
+    -fx-border-width: 1px;
+    -fx-padding: 15px 18px;
+}
+
+.summary-label {
+    -fx-font-size: 10px;
+    -fx-font-weight: bold;
+    -fx-text-fill: #7F9AB2;
+}
+
+.summary-number {
+    -fx-font-size: 27px;
+    -fx-font-weight: bold;
+    -fx-text-fill: #16C7FF;
+}
+
+.summary-caption {
+    -fx-font-size: 11px;
+    -fx-text-fill: #91A4B8;
+}
+
+/* ------------------------------------------------
+   FILTROS
+   ------------------------------------------------ */
+
+.appointments-filter-card {
+    -fx-background-color: #0B1D31;
+    -fx-background-radius: 12px;
+    -fx-border-color: #173A59;
+    -fx-border-radius: 12px;
+    -fx-border-width: 1px;
+    -fx-padding: 13px 16px;
+}
+
+.appointments-search-field {
+    -fx-background-color: #10263C;
+    -fx-background-radius: 8px;
+    -fx-border-color: #27455F;
+    -fx-border-radius: 8px;
+    -fx-border-width: 1px;
+    -fx-text-fill: #FFFFFF;
+    -fx-prompt-text-fill: #70869A;
+    -fx-font-size: 12px;
+    -fx-padding: 0 12px;
+}
+
+.appointments-search-field:focused {
+    -fx-border-color: #1597FF;
+}
+
+.appointments-filter-combo {
+    -fx-background-color: #10263C;
+    -fx-background-radius: 8px;
+    -fx-border-color: #27455F;
+    -fx-border-radius: 8px;
+    -fx-border-width: 1px;
+}
+
+.appointments-filter-combo > .list-cell {
+    -fx-text-fill: #FFFFFF;
+    -fx-background-color: transparent;
+}
+
+/* ------------------------------------------------
+   CABECERA DEL LISTADO
+   ------------------------------------------------ */
+
+.appointments-list-title {
+    -fx-font-size: 16px;
+    -fx-font-weight: bold;
+    -fx-text-fill: #FFFFFF;
+}
+
+.appointments-helper {
+    -fx-font-size: 10px;
+    -fx-text-fill: #70869A;
+}
+
+/* ------------------------------------------------
+   SCROLLPANE
+   Soluciona el gran bloque blanco actual.
+   ------------------------------------------------ */
+
+.appointments-scroll {
+    -fx-background-color: transparent;
+    -fx-background: transparent;
+    -fx-border-color: transparent;
+    -fx-padding: 0;
+}
+
+.appointments-scroll > .viewport {
+    -fx-background-color: transparent;
+}
+
+.appointments-scroll .corner {
+    -fx-background-color: transparent;
+}
+
+.appointments-list {
+    -fx-background-color: #071525;
+}
+
+/* Barra vertical */
+.appointments-scroll .scroll-bar:vertical {
+    -fx-background-color: transparent;
+}
+
+.appointments-scroll .scroll-bar:vertical .track {
+    -fx-background-color: #0B1D31;
+    -fx-background-radius: 6px;
+}
+
+.appointments-scroll .scroll-bar:vertical .thumb {
+    -fx-background-color: #274D6B;
+    -fx-background-radius: 6px;
+}
+
+/* ------------------------------------------------
+   MENSAJES
+   ------------------------------------------------ */
+
+.appointments-message {
+    -fx-background-color: rgba(11, 132, 243, 0.10);
+    -fx-background-radius: 8px;
+    -fx-border-color: rgba(21, 151, 255, 0.30);
+    -fx-border-radius: 8px;
+    -fx-padding: 10px 14px;
+    -fx-font-size: 11px;
+    -fx-text-fill: #A9D8FF;
+}
+
+/* ------------------------------------------------
+   TARJETAS GENERADAS POR MisCitasController
+   ------------------------------------------------ */
+
+.appointment-card {
+    -fx-background-color: #0B2035;
+    -fx-background-radius: 12px;
+    -fx-border-color: #173F5F;
+    -fx-border-radius: 12px;
+    -fx-border-width: 1px;
+    -fx-padding: 17px 19px;
+}
+
+.appointment-card:hover {
+    -fx-background-color: #0D263E;
+    -fx-border-color: #21638E;
+}
+
+.card-title {
+    -fx-font-size: 15px;
+    -fx-font-weight: bold;
+    -fx-text-fill: #FFFFFF;
+}
+
+.card-subtitle {
+    -fx-font-size: 13px;
+    -fx-font-weight: bold;
+    -fx-text-fill: #EAF5FC;
+}
+
+.card-description {
+    -fx-font-size: 11px;
+    -fx-text-fill: #91A4B8;
+}
+
+.card-accent {
+    -fx-font-size: 12px;
+    -fx-font-weight: bold;
+    -fx-text-fill: #16C7FF;
+}
+
+/* ------------------------------------------------
+   ESTADOS
+   ------------------------------------------------ */
+
+.appointment-status {
+    -fx-background-radius: 20px;
+    -fx-padding: 5px 10px;
+    -fx-font-size: 10px;
+    -fx-font-weight: bold;
+}
+
+.status-programada {
+    -fx-background-color: rgba(11, 132, 243, 0.16);
+    -fx-text-fill: #5DB7FF;
+}
+
+.status-confirmada {
+    -fx-background-color: rgba(22, 199, 255, 0.15);
+    -fx-text-fill: #16C7FF;
+}
+
+.status-atendida {
+    -fx-background-color: rgba(44, 203, 140, 0.14);
+    -fx-text-fill: #55DDA4;
+}
+
+.status-cancelada {
+    -fx-background-color: rgba(255, 92, 92, 0.13);
+    -fx-text-fill: #FF7777;
+}
+
+.status-no-asistio {
+    -fx-background-color: rgba(255, 181, 71, 0.14);
+    -fx-text-fill: #FFC269;
+}
+
+/* ================================================================
+        AJUSTE DE CONTRASTE - CABECERAS PORTAL DEL PACIENTE
+   ================================================================ */
+
+/* Subtítulo ubicado debajo del nombre de cada pantalla */
+.dashboard-page-subtitle,
+.page-header-subtitle {
+    -fx-text-fill: #9BB1C3;
+    -fx-font-size: 11px;
+}
+
+/* Contexto superior derecho */
+.header-context-label,
+.header-session-label {
+    -fx-text-fill: #7894AA;
+    -fx-font-size: 9px;
+    -fx-font-weight: bold;
+}
+
+/* Valor destacado superior derecho */
+.header-context-value,
+.dashboard-user-role {
+    -fx-text-fill: #29B9FF;
+    -fx-font-size: 11px;
+    -fx-font-weight: bold;
+}
+
+/* Ayudas secundarias */
+.appointments-helper,
+.section-helper-text {
+    -fx-text-fill: #8EA5B7;
+}
+
+/* Texto secundario del hero */
+.appointments-subtitle {
+    -fx-text-fill: #A8BBC9;
+}
+
+/* Descripciones pequeñas */
+.card-description,
+.appointment-section-description {
+    -fx-text-fill: #91A9BA;
+}
+
+/* Tarjeta del paciente en todas las pantallas */
+.sidebar-user-card {
+    -fx-background-color: #0B2236;
+    -fx-background-radius: 10px;
+
+    -fx-border-color: #1B4665;
+    -fx-border-radius: 10px;
+    -fx-border-width: 1px;
+
+    -fx-padding: 13px 14px;
+
+    -fx-min-height: 60px;
+}
+
+.sidebar-user-role {
+    -fx-text-fill: #35B8FF;
+    -fx-font-size: 9px;
+    -fx-font-weight: bold;
+}
+
+.sidebar-user-name {
+    -fx-text-fill: #FFFFFF;
+    -fx-font-size: 12px;
+    -fx-font-weight: bold;
+}
+
+.dashboard-header {
+    -fx-background-color: #091C2E;
+
+    -fx-border-color:
+        transparent
+        transparent
+        #1A405D
+        transparent;
+
+    -fx-border-width: 0 0 1 0;
+}
+
+.dashboard-page-title {
+    -fx-text-fill: #FFFFFF;
+    -fx-font-size: 19px;
+    -fx-font-weight: bold;
+}
+
+/* ================================================================
+                  MI PERFIL - PORTAL DEL PACIENTE
+   ================================================================ */
+
+.profile-scroll {
+    -fx-background-color: transparent;
+    -fx-background: transparent;
+    -fx-border-color: transparent;
+    -fx-padding: 0;
+}
+
+.profile-scroll > .viewport {
+    -fx-background-color: transparent;
+}
+
+.profile-scroll .corner {
+    -fx-background-color: transparent;
+}
+
+.profile-page {
+    -fx-background-color: #071525;
+}
+
+/* ------------------------------------------------
+   PRESENTACIÓN
+   ------------------------------------------------ */
+
+.profile-hero {
+    -fx-background-color:
+        linear-gradient(
+            to right,
+            #0B2841,
+            #0A2238
+        );
+
+    -fx-background-radius: 14;
+    -fx-border-color: #194D70;
+    -fx-border-radius: 14;
+    -fx-border-width: 1;
+}
+
+.profile-avatar {
+    -fx-background-color: #0E4E78;
+    -fx-background-radius: 50;
+
+    -fx-text-fill: #68D2FF;
+
+    -fx-font-size: 20px;
+    -fx-font-weight: bold;
+
+    -fx-alignment: CENTER;
+
+    -fx-min-width: 48;
+    -fx-min-height: 48;
+    -fx-max-width: 48;
+    -fx-max-height: 48;
+}
+
+.profile-title {
+    -fx-text-fill: #FFFFFF;
+    -fx-font-size: 21px;
+    -fx-font-weight: bold;
+}
+
+.profile-subtitle {
+    -fx-text-fill: #A1B5C5;
+    -fx-font-size: 11px;
+}
+
+.profile-active-badge {
+    -fx-background-color: rgba(69, 212, 131, 0.12);
+    -fx-background-radius: 20;
+
+    -fx-border-color: rgba(69, 212, 131, 0.28);
+    -fx-border-radius: 20;
+
+    -fx-text-fill: #55DD91;
+
+    -fx-font-size: 9px;
+    -fx-font-weight: bold;
+
+    -fx-padding: 6 10;
+}
+
+/* ------------------------------------------------
+   TARJETAS
+   ------------------------------------------------ */
+
+.profile-section-card,
+.profile-medical-card {
+    -fx-background-color: #0B2034;
+
+    -fx-background-radius: 13;
+
+    -fx-border-color: #183C58;
+    -fx-border-radius: 13;
+    -fx-border-width: 1;
+}
+
+.profile-section-card:hover {
+    -fx-border-color: #245B80;
+}
+
+.profile-medical-card {
+    -fx-border-color: #17658A;
+}
+
+.profile-section-number {
+    -fx-background-color: #0E4E78;
+    -fx-background-radius: 30;
+
+    -fx-text-fill: #67D1FF;
+
+    -fx-font-size: 10px;
+    -fx-font-weight: bold;
+
+    -fx-alignment: CENTER;
+
+    -fx-min-width: 31;
+    -fx-min-height: 31;
+    -fx-max-width: 31;
+    -fx-max-height: 31;
+}
+
+.profile-section-title {
+    -fx-text-fill: #F4FAFF;
+    -fx-font-size: 14px;
+    -fx-font-weight: bold;
+}
+
+.profile-section-description {
+    -fx-text-fill: #8CA3B5;
+    -fx-font-size: 9px;
+}
+
+.profile-medical-icon {
+    -fx-background-color: rgba(22, 199, 255, 0.13);
+    -fx-background-radius: 30;
+
+    -fx-text-fill: #31C6FF;
+
+    -fx-font-size: 18px;
+    -fx-font-weight: bold;
+
+    -fx-alignment: CENTER;
+
+    -fx-min-width: 31;
+    -fx-min-height: 31;
+    -fx-max-width: 31;
+    -fx-max-height: 31;
+}
+
+.profile-emergency-icon {
+    -fx-background-color: rgba(255, 181, 71, 0.12);
+    -fx-background-radius: 30;
+
+    -fx-text-fill: #FFC269;
+
+    -fx-font-size: 15px;
+    -fx-font-weight: bold;
+
+    -fx-alignment: CENTER;
+
+    -fx-min-width: 31;
+    -fx-min-height: 31;
+    -fx-max-width: 31;
+    -fx-max-height: 31;
+}
+
+/* ------------------------------------------------
+   CAMPOS
+   ------------------------------------------------ */
+
+.profile-field,
+.profile-combo,
+.profile-date-picker {
+    -fx-background-color: #10283D;
+
+    -fx-background-radius: 8;
+
+    -fx-border-color: #294A64;
+    -fx-border-radius: 8;
+    -fx-border-width: 1;
+
+    -fx-text-fill: #E7F1F8;
+    -fx-prompt-text-fill: #657E92;
+
+    -fx-font-size: 11px;
+}
+
+.profile-field {
+    -fx-padding: 0 11;
+}
+
+.profile-field:focused,
+.profile-combo:focused,
+.profile-date-picker:focused {
+    -fx-border-color: #1597FF;
+}
+
+.profile-field-readonly {
+    -fx-background-color: #0B1D2D;
+    -fx-text-fill: #839BAD;
+    -fx-opacity: 1;
+}
+
+/* Valor seleccionado del ComboBox */
+.profile-combo > .list-cell {
+    -fx-background-color: transparent;
+    -fx-text-fill: #E7F1F8;
+}
+
+/* Campo de fecha */
+.profile-date-picker > .text-field {
+    -fx-background-color: transparent;
+    -fx-text-fill: #E7F1F8;
+}
+
+/* ------------------------------------------------
+   TEXT AREA
+   ------------------------------------------------ */
+
+.profile-text-area {
+    -fx-background-color: #10283D;
+
+    -fx-border-color: #294A64;
+    -fx-border-radius: 8;
+    -fx-border-width: 1;
+
+    -fx-background-radius: 8;
+
+    -fx-text-fill: #E7F1F8;
+    -fx-prompt-text-fill: #657E92;
+
+    -fx-font-size: 11px;
+}
+
+.profile-text-area .content {
+    -fx-background-color: #10283D;
+    -fx-background-radius: 8;
+}
+
+.profile-text-area:focused {
+    -fx-border-color: #1597FF;
+}
+
+/* ------------------------------------------------
+   AVISO MÉDICO
+   ------------------------------------------------ */
+
+.profile-medical-notice {
+    -fx-background-color: rgba(22, 199, 255, 0.06);
+
+    -fx-background-radius: 8;
+
+    -fx-border-color: rgba(22, 199, 255, 0.18);
+    -fx-border-radius: 8;
+
+    -fx-padding: 10 11;
+}
+
+.profile-notice-icon {
+    -fx-background-color: #0E4D77;
+    -fx-background-radius: 30;
+
+    -fx-text-fill: #66CEFF;
+
+    -fx-font-weight: bold;
+
+    -fx-alignment: CENTER;
+
+    -fx-min-width: 22;
+    -fx-min-height: 22;
+    -fx-max-width: 22;
+    -fx-max-height: 22;
+}
+
+.profile-notice-text {
+    -fx-text-fill: #8CA7B9;
+    -fx-font-size: 9px;
+}
+
+/* ------------------------------------------------
+   ACCIONES
+   ------------------------------------------------ */
+
+.profile-actions-panel {
+    -fx-background-color: #0B1D31;
+
+    -fx-background-radius: 11;
+
+    -fx-border-color: #173A59;
+    -fx-border-radius: 11;
+
+    -fx-padding: 13 16;
+}
+
+.profile-message {
+    -fx-font-size: 11px;
+}
+
+/* ------------------------------------------------
+   SCROLLBAR
+   ------------------------------------------------ */
+
+.profile-scroll .scroll-bar:vertical {
+    -fx-background-color: transparent;
+}
+
+.profile-scroll .scroll-bar:vertical .track {
+    -fx-background-color: #0B1D31;
+    -fx-background-radius: 6;
+}
+
+.profile-scroll .scroll-bar:vertical .thumb {
+    -fx-background-color: #274D6B;
+    -fx-background-radius: 6;
+}
+
+/* ================================================================
+              HISTORIAL DEL PACIENTE 2.0 - MEDIAPPOINT
+   ================================================================ */
+
+/* ------------------------------------------------
+   CONTENIDO PRINCIPAL
+   ------------------------------------------------ */
+
+.history-v2-page {
+    -fx-background-color: #071525;
+}
+
+/* ------------------------------------------------
+   HERO / RESUMEN
+   ------------------------------------------------ */
+
+.history-v2-hero {
+    -fx-background-color:
+        linear-gradient(
+            to right,
+            #0B2841,
+            #0A2035
+        );
+
+    -fx-background-radius: 14;
+
+    -fx-border-color: #194B6D;
+    -fx-border-radius: 14;
+    -fx-border-width: 1;
+}
+
+.history-v2-hero-icon {
+    -fx-background-color: #0D4C76;
+    -fx-background-radius: 12;
+
+    -fx-min-width: 52;
+    -fx-min-height: 52;
+    -fx-max-width: 52;
+    -fx-max-height: 52;
+}
+
+.history-v2-hero-icon-text {
+    -fx-text-fill: #62D2FF;
+    -fx-font-size: 22px;
+    -fx-font-weight: bold;
+}
+
+.history-v2-hero-title {
+    -fx-text-fill: #FFFFFF;
+    -fx-font-size: 20px;
+    -fx-font-weight: bold;
+}
+
+.history-v2-hero-description {
+    -fx-text-fill: #9CB2C3;
+    -fx-font-size: 11px;
+}
+
+.history-v2-counter {
+    -fx-background-color: rgba(7, 21, 37, 0.48);
+    -fx-background-radius: 11;
+
+    -fx-border-color: #235472;
+    -fx-border-radius: 11;
+    -fx-border-width: 1;
+
+    -fx-padding: 10 15;
+}
+
+.history-v2-counter-number {
+    -fx-text-fill: #37C7FF;
+    -fx-font-size: 25px;
+    -fx-font-weight: bold;
+}
+
+.history-v2-counter-label {
+    -fx-text-fill: #FFFFFF;
+    -fx-font-size: 9px;
+    -fx-font-weight: bold;
+}
+
+.history-v2-counter-detail {
+    -fx-text-fill: #7893A8;
+    -fx-font-size: 8px;
+    -fx-font-weight: bold;
+}
+
+/* ------------------------------------------------
+   PANEL DE FILTROS
+   ------------------------------------------------ */
+
+.history-v2-filter-card {
+    -fx-background-color: #0B1F33;
+
+    -fx-background-radius: 12;
+
+    -fx-border-color: #173B57;
+    -fx-border-radius: 12;
+    -fx-border-width: 1;
+}
+
+.history-v2-filter-title {
+    -fx-text-fill: #F4FAFF;
+    -fx-font-size: 13px;
+    -fx-font-weight: bold;
+}
+
+.history-v2-filter-description {
+    -fx-text-fill: #819AAD;
+    -fx-font-size: 9px;
+}
+
+.history-v2-filter-label {
+    -fx-text-fill: #8097AA;
+    -fx-font-size: 9px;
+    -fx-font-weight: bold;
+}
+
+/* ------------------------------------------------
+   BUSCADOR
+   ------------------------------------------------ */
+
+.history-v2-search {
+    -fx-background-color: #10283D;
+
+    -fx-background-radius: 8;
+
+    -fx-border-color: #294A64;
+    -fx-border-radius: 8;
+    -fx-border-width: 1;
+
+    -fx-text-fill: #EDF6FC;
+    -fx-prompt-text-fill: #698196;
+
+    -fx-font-size: 11px;
+
+    -fx-padding: 0 13;
+}
+
+.history-v2-search:focused {
+    -fx-border-color: #1597FF;
+}
+
+/* ------------------------------------------------
+   COMBOBOX
+   ------------------------------------------------ */
+
+.history-v2-combo {
+    -fx-background-color: #10283D;
+
+    -fx-background-radius: 8;
+
+    -fx-border-color: #294A64;
+    -fx-border-radius: 8;
+    -fx-border-width: 1;
+
+    -fx-font-size: 10px;
+}
+
+.history-v2-combo:focused {
+    -fx-border-color: #1597FF;
+}
+
+.history-v2-combo > .list-cell {
+    -fx-background-color: transparent;
+    -fx-text-fill: #E7F1F8;
+    -fx-padding: 0 10;
+}
+
+.history-v2-combo .arrow-button {
+    -fx-background-color: transparent;
+}
+
+.history-v2-combo .arrow {
+    -fx-background-color: #71A7C8;
+}
+
+/* ------------------------------------------------
+   BOTÓN LIMPIAR
+   ------------------------------------------------ */
+
+.history-v2-clear-button {
+    -fx-background-color: transparent;
+
+    -fx-background-radius: 7;
+
+    -fx-border-color: #2B5877;
+    -fx-border-radius: 7;
+    -fx-border-width: 1;
+
+    -fx-text-fill: #83BEE3;
+
+    -fx-font-size: 10px;
+    -fx-font-weight: bold;
+
+    -fx-padding: 0 13;
+
+    -fx-cursor: hand;
+}
+
+.history-v2-clear-button:hover {
+    -fx-background-color: #102E47;
+    -fx-border-color: #1597FF;
+    -fx-text-fill: #FFFFFF;
+}
+
+/* ------------------------------------------------
+   CABECERA DEL LISTADO
+   ------------------------------------------------ */
+
+.history-v2-section-title {
+    -fx-text-fill: #FFFFFF;
+    -fx-font-size: 15px;
+    -fx-font-weight: bold;
+}
+
+.history-v2-section-description {
+    -fx-text-fill: #8197A9;
+    -fx-font-size: 9px;
+}
+
+.history-v2-attended-indicator {
+    -fx-background-color: rgba(60, 211, 140, 0.08);
+
+    -fx-background-radius: 20;
+
+    -fx-border-color: rgba(60, 211, 140, 0.22);
+    -fx-border-radius: 20;
+
+    -fx-text-fill: #55D992;
+
+    -fx-font-size: 9px;
+    -fx-font-weight: bold;
+
+    -fx-padding: 6 10;
+}
+
+/* ------------------------------------------------
+   MENSAJES
+   ------------------------------------------------ */
+
+.history-v2-message {
+    -fx-background-color: #0B2034;
+
+    -fx-background-radius: 9;
+
+    -fx-border-color: #234966;
+    -fx-border-radius: 9;
+
+    -fx-text-fill: #9EB4C4;
+
+    -fx-font-size: 11px;
+
+    -fx-padding: 12 15;
+}
+
+/* ------------------------------------------------
+   SCROLL DEL HISTORIAL
+   ------------------------------------------------ */
+
+.history-v2-scroll {
+    -fx-background-color: transparent;
+    -fx-background: transparent;
+
+    -fx-border-color: transparent;
+
+    -fx-padding: 0;
+}
+
+.history-v2-scroll > .viewport {
+    -fx-background-color: transparent;
+}
+
+.history-v2-scroll .corner {
+    -fx-background-color: transparent;
+}
+
+.history-v2-scroll .scroll-bar:vertical {
+    -fx-background-color: transparent;
+}
+
+.history-v2-scroll .scroll-bar:vertical .track {
+    -fx-background-color: #0A1B2C;
+    -fx-background-radius: 6;
+}
+
+.history-v2-scroll .scroll-bar:vertical .thumb {
+    -fx-background-color: #28506D;
+    -fx-background-radius: 6;
+}
+
+.history-v2-scroll .scroll-bar:vertical .thumb:hover {
+    -fx-background-color: #376D92;
+}
+
+/* ================================================================
+                       TARJETAS DEL HISTORIAL
+   ================================================================ */
+
+.history-v2-card {
+    -fx-background-color: #0B1F33;
+
+    -fx-background-radius: 13;
+
+    -fx-border-color: #173B57;
+    -fx-border-radius: 13;
+    -fx-border-width: 1;
+
+    -fx-min-height: 190;
+}
+
+.history-v2-card:hover {
+    -fx-background-color: #0D2338;
+    -fx-border-color: #245A7C;
+}
+
+/* ------------------------------------------------
+   COLUMNA DE FECHA
+   ------------------------------------------------ */
+
+.history-v2-date-column {
+    -fx-background-color: #0A2942;
+
+    -fx-background-radius: 13 0 0 13;
+
+    -fx-border-color:
+        transparent
+        #1A4867
+        transparent
+        transparent;
+
+    -fx-border-width: 0 1 0 0;
+
+    -fx-padding: 20 18;
+}
+
+.history-v2-day {
+    -fx-text-fill: #43C8FF;
+    -fx-font-size: 31px;
+    -fx-font-weight: bold;
+}
+
+.history-v2-month {
+    -fx-text-fill: #B8CBD8;
+    -fx-font-size: 10px;
+    -fx-font-weight: bold;
+}
+
+.history-v2-time {
+    -fx-text-fill: #7898AE;
+    -fx-font-size: 10px;
+    -fx-padding: 5 0 0 0;
+}
+
+/* ------------------------------------------------
+   CONTENIDO DE LA TARJETA
+   ------------------------------------------------ */
+
+.history-v2-content {
+    -fx-padding: 18 20;
+}
+
+.history-v2-specialty {
+    -fx-text-fill: #FFFFFF;
+    -fx-font-size: 16px;
+    -fx-font-weight: bold;
+}
+
+.history-v2-type {
+    -fx-text-fill: #8099AB;
+    -fx-font-size: 9px;
+}
+
+/* Estado ATENDIDA */
+
+.history-v2-status {
+    -fx-background-color: rgba(61, 211, 140, 0.10);
+
+    -fx-background-radius: 20;
+
+    -fx-border-color: rgba(61, 211, 140, 0.28);
+    -fx-border-radius: 20;
+
+    -fx-text-fill: #57DD96;
+
+    -fx-font-size: 9px;
+    -fx-font-weight: bold;
+
+    -fx-padding: 6 10;
+}
+
+/* ------------------------------------------------
+   INFORMACIÓN
+   ------------------------------------------------ */
+
+.history-v2-info-label {
+    -fx-text-fill: #68869B;
+    -fx-font-size: 8px;
+    -fx-font-weight: bold;
+}
+
+.history-v2-info-value {
+    -fx-text-fill: #D9E7F0;
+    -fx-font-size: 11px;
+}
+
+/* ------------------------------------------------
+   OBSERVACIÓN MÉDICA
+   ------------------------------------------------ */
+
+.history-v2-observation {
+    -fx-background-color: #0A2A40;
+
+    -fx-background-radius: 8;
+
+    -fx-border-color: #174762;
+    -fx-border-radius: 8;
+
+    -fx-padding: 10 12;
+}
+
+.history-v2-observation-label {
+    -fx-text-fill: #44BFEF;
+    -fx-font-size: 8px;
+    -fx-font-weight: bold;
+}
+
+.history-v2-observation-value {
+    -fx-text-fill: #AEC3D1;
+    -fx-font-size: 10px;
+}
+
+/* ================================================================
+              AJUSTES DE POPUP PARA FILTROS HISTORIAL
+   ================================================================ */
+
+.combo-box-popup .list-view {
+    -fx-background-color: #FFFFFF;
+    -fx-border-color: #B9C7D3;
+}
+
+.combo-box-popup .list-view .list-cell {
+    -fx-background-color: #FFFFFF;
+    -fx-text-fill: #111827;
+
+    -fx-font-size: 11px;
+
+    -fx-padding: 9 12;
+}
+
+.combo-box-popup .list-view .list-cell:hover {
+    -fx-background-color: #E8F3FC;
+    -fx-text-fill: #0A2540;
+}
+
+.combo-box-popup .list-view .list-cell:selected {
+    -fx-background-color: #D9ECFA;
+    -fx-text-fill: #071525;
+    -fx-font-weight: bold;
+}

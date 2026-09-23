@@ -12,7 +12,9 @@ import javafx.fxml.FXMLLoader;
 import javafx.geometry.Insets;
 import javafx.geometry.Pos;
 import javafx.scene.Scene;
+import javafx.scene.control.ComboBox;
 import javafx.scene.control.Label;
+import javafx.scene.control.TextField;
 import javafx.scene.layout.HBox;
 import javafx.scene.layout.Priority;
 import javafx.scene.layout.Region;
@@ -21,7 +23,10 @@ import javafx.stage.Stage;
 
 import java.io.IOException;
 import java.sql.SQLException;
+import java.time.LocalDate;
 import java.time.format.DateTimeFormatter;
+import java.util.ArrayList;
+import java.util.Comparator;
 import java.util.List;
 import java.util.Locale;
 
@@ -30,15 +35,19 @@ import java.util.Locale;
  *              CONTROLLER - HISTORIAL DEL PACIENTE
  * ================================================================
  *
- * Gestiona la consulta del historial de atenciones médicas
- * pertenecientes al paciente autenticado.
+ * Gestiona la consulta, búsqueda, filtrado y visualización
+ * del historial de atenciones médicas del paciente autenticado.
  *
  * El historial muestra únicamente citas con estado ATENDIDA.
  *
  * @author Equipo de Ingeniería de Software II
- * @version 1.0
+ * @version 2.0
  */
 public class HistorialPacienteController {
+
+    /* ============================================================
+                            CONTROLES FXML
+       ============================================================ */
 
     @FXML
     private Label lblNombreUsuario;
@@ -52,10 +61,33 @@ public class HistorialPacienteController {
     @FXML
     private VBox contenedorHistorial;
 
+    @FXML
+    private TextField txtBuscarHistorial;
+
+    @FXML
+    private ComboBox<String> cmbEspecialidadHistorial;
+
+    @FXML
+    private ComboBox<String> cmbFechaHistorial;
+
+    @FXML
+    private ComboBox<String> cmbOrdenHistorial;
+
+    /* ============================================================
+                              SERVICIOS
+       ============================================================ */
+
     private final PacienteDAO pacienteDAO;
     private final CitaService citaService;
 
     private Usuario usuarioActual;
+
+    /**
+     * Historial completo recuperado desde MySQL.
+     * Los filtros trabajan sobre esta colección.
+     */
+    private List<Cita> historialPaciente =
+            new ArrayList<>();
 
     private final DateTimeFormatter formatoFecha =
             DateTimeFormatter.ofPattern(
@@ -64,13 +96,8 @@ public class HistorialPacienteController {
             );
 
     private final DateTimeFormatter formatoHora =
-            DateTimeFormatter.ofPattern(
-                    "HH:mm"
-            );
+            DateTimeFormatter.ofPattern("HH:mm");
 
-    /**
-     * Constructor principal.
-     */
     public HistorialPacienteController() {
 
         this.pacienteDAO =
@@ -81,17 +108,71 @@ public class HistorialPacienteController {
     }
 
     /**
-     * Recibe el usuario autenticado y carga
-     * automáticamente su historial de atenciones.
-     *
-     * @param usuario usuario autenticado.
+     * Configura filtros y listeners al cargar el FXML.
+     */
+    @FXML
+    private void initialize() {
+
+        cmbEspecialidadHistorial
+                .getItems()
+                .setAll("Todas las especialidades");
+
+        cmbEspecialidadHistorial.setValue(
+                "Todas las especialidades"
+        );
+
+        cmbFechaHistorial
+                .getItems()
+                .setAll(
+                        "Todas las fechas",
+                        "Últimos 30 días",
+                        "Últimos 6 meses",
+                        "Último año"
+                );
+
+        cmbFechaHistorial.setValue(
+                "Todas las fechas"
+        );
+
+        cmbOrdenHistorial
+                .getItems()
+                .setAll(
+                        "Más recientes",
+                        "Más antiguas"
+                );
+
+        cmbOrdenHistorial.setValue(
+                "Más recientes"
+        );
+
+        txtBuscarHistorial
+                .textProperty()
+                .addListener(
+                        (observable, anterior, nuevo) ->
+                                aplicarFiltros()
+                );
+
+        cmbEspecialidadHistorial.setOnAction(
+                event -> aplicarFiltros()
+        );
+
+        cmbFechaHistorial.setOnAction(
+                event -> aplicarFiltros()
+        );
+
+        cmbOrdenHistorial.setOnAction(
+                event -> aplicarFiltros()
+        );
+    }
+
+    /**
+     * Recibe el usuario autenticado.
      */
     public void setUsuario(
             Usuario usuario
     ) {
 
-        this.usuarioActual =
-                usuario;
+        this.usuarioActual = usuario;
 
         if (usuarioActual == null) {
 
@@ -110,22 +191,16 @@ public class HistorialPacienteController {
     }
 
     /**
-     * Consulta el perfil del paciente autenticado
-     * y recupera sus atenciones realizadas.
+     * Recupera el historial del paciente desde
+     * la capa de servicio.
      */
     private void cargarHistorial() {
-
-        contenedorHistorial
-                .getChildren()
-                .clear();
 
         limpiarMensaje();
 
         if (usuarioActual == null) {
 
-            lblCantidadAtenciones.setText(
-                    "0"
-            );
+            lblCantidadAtenciones.setText("0");
 
             mostrarMensaje(
                     "No existe un usuario autenticado."
@@ -143,9 +218,7 @@ public class HistorialPacienteController {
 
             if (paciente == null) {
 
-                lblCantidadAtenciones.setText(
-                        "0"
-                );
+                lblCantidadAtenciones.setText("0");
 
                 mostrarMensaje(
                         "No se encontró el perfil del paciente."
@@ -154,20 +227,20 @@ public class HistorialPacienteController {
                 return;
             }
 
-            List<Cita> historial =
-                    citaService.listarHistorialPaciente(
-                            paciente.getIdPaciente()
+            historialPaciente =
+                    new ArrayList<>(
+                            citaService.listarHistorialPaciente(
+                                    paciente.getIdPaciente()
+                            )
                     );
 
-            mostrarHistorial(
-                    historial
-            );
+            cargarEspecialidades();
+
+            aplicarFiltros();
 
         } catch (SQLException e) {
 
-            lblCantidadAtenciones.setText(
-                    "0"
-            );
+            lblCantidadAtenciones.setText("0");
 
             mostrarMensaje(
                     "No fue posible cargar el historial de atenciones."
@@ -177,14 +250,283 @@ public class HistorialPacienteController {
                     "Error al cargar historial del paciente: "
                             + e.getMessage()
             );
+
+            e.printStackTrace();
         }
     }
 
     /**
-     * Muestra las atenciones recuperadas desde
-     * la capa de servicio.
-     *
-     * @param historial atenciones realizadas.
+     * Genera dinámicamente el filtro de especialidades
+     * utilizando únicamente las presentes en el historial.
+     */
+    private void cargarEspecialidades() {
+
+        String seleccionActual =
+                cmbEspecialidadHistorial.getValue();
+
+        List<String> especialidades =
+                historialPaciente.stream()
+                        .map(Cita::getNombreEspecialidad)
+                        .filter(valor ->
+                                valor != null
+                                        && !valor.isBlank()
+                        )
+                        .distinct()
+                        .sorted(
+                                String.CASE_INSENSITIVE_ORDER
+                        )
+                        .toList();
+
+        cmbEspecialidadHistorial
+                .getItems()
+                .setAll("Todas las especialidades");
+
+        cmbEspecialidadHistorial
+                .getItems()
+                .addAll(especialidades);
+
+        if (
+                seleccionActual != null
+                        && cmbEspecialidadHistorial
+                                .getItems()
+                                .contains(seleccionActual)
+        ) {
+
+            cmbEspecialidadHistorial.setValue(
+                    seleccionActual
+            );
+
+        } else {
+
+            cmbEspecialidadHistorial.setValue(
+                    "Todas las especialidades"
+            );
+        }
+    }
+
+    /**
+     * Aplica búsqueda, especialidad, período y orden.
+     */
+    @FXML
+    private void aplicarFiltros() {
+
+        if (contenedorHistorial == null) {
+            return;
+        }
+
+        String texto =
+                txtBuscarHistorial == null
+                        || txtBuscarHistorial.getText() == null
+                        ? ""
+                        : txtBuscarHistorial
+                                .getText()
+                                .trim()
+                                .toLowerCase(Locale.ROOT);
+
+        String especialidad =
+                cmbEspecialidadHistorial == null
+                        ? null
+                        : cmbEspecialidadHistorial.getValue();
+
+        String periodo =
+                cmbFechaHistorial == null
+                        ? null
+                        : cmbFechaHistorial.getValue();
+
+        String orden =
+                cmbOrdenHistorial == null
+                        ? null
+                        : cmbOrdenHistorial.getValue();
+
+        List<Cita> resultado =
+                historialPaciente.stream()
+
+                        .filter(cita ->
+                                coincideBusqueda(
+                                        cita,
+                                        texto
+                                )
+                        )
+
+                        .filter(cita ->
+                                coincideEspecialidad(
+                                        cita,
+                                        especialidad
+                                )
+                        )
+
+                        .filter(cita ->
+                                coincidePeriodo(
+                                        cita,
+                                        periodo
+                                )
+                        )
+
+                        .sorted(
+                                obtenerComparador(
+                                        orden
+                                )
+                        )
+
+                        .toList();
+
+        mostrarHistorial(resultado);
+    }
+
+    /**
+     * Busca en los principales datos visibles
+     * de una atención.
+     */
+    private boolean coincideBusqueda(
+            Cita cita,
+            String texto
+    ) {
+
+        if (texto == null || texto.isBlank()) {
+            return true;
+        }
+
+        return contieneTexto(
+                cita.getNombreEspecialidad(),
+                texto
+        )
+                || contieneTexto(
+                        cita.getNombreMedico(),
+                        texto
+                )
+                || contieneTexto(
+                        cita.getNombreEstablecimiento(),
+                        texto
+                )
+                || contieneTexto(
+                        cita.getMotivoConsulta(),
+                        texto
+                )
+                || contieneTexto(
+                        cita.getObservacion(),
+                        texto
+                );
+    }
+
+    private boolean coincideEspecialidad(
+            Cita cita,
+            String especialidad
+    ) {
+
+        if (
+                especialidad == null
+                        || "Todas las especialidades"
+                                .equals(especialidad)
+        ) {
+            return true;
+        }
+
+        return especialidad.equalsIgnoreCase(
+                cita.getNombreEspecialidad()
+        );
+    }
+
+    /**
+     * Filtra por períodos relativos a la fecha actual.
+     */
+    private boolean coincidePeriodo(
+            Cita cita,
+            String periodo
+    ) {
+
+        if (
+                periodo == null
+                        || "Todas las fechas".equals(periodo)
+        ) {
+            return true;
+        }
+
+        if (cita.getFechaCita() == null) {
+            return false;
+        }
+
+        LocalDate hoy =
+                LocalDate.now();
+
+        LocalDate limite;
+
+        switch (periodo) {
+
+            case "Últimos 30 días" ->
+                    limite = hoy.minusDays(30);
+
+            case "Últimos 6 meses" ->
+                    limite = hoy.minusMonths(6);
+
+            case "Último año" ->
+                    limite = hoy.minusYears(1);
+
+            default -> {
+                return true;
+            }
+        }
+
+        return !cita.getFechaCita().isBefore(limite)
+                && !cita.getFechaCita().isAfter(hoy);
+    }
+
+    /**
+     * Define el orden cronológico seleccionado.
+     */
+    private Comparator<Cita> obtenerComparador(
+            String orden
+    ) {
+
+        Comparator<Cita> comparador =
+                Comparator.comparing(
+                        Cita::getFechaCita,
+                        Comparator.nullsLast(
+                                Comparator.naturalOrder()
+                        )
+                );
+
+        if (!"Más antiguas".equals(orden)) {
+            comparador = comparador.reversed();
+        }
+
+        return comparador;
+    }
+
+    private boolean contieneTexto(
+            String valor,
+            String texto
+    ) {
+
+        return valor != null
+                && valor.toLowerCase(Locale.ROOT)
+                        .contains(texto);
+    }
+
+    /**
+     * Restablece todos los filtros.
+     */
+    @FXML
+    private void limpiarFiltros() {
+
+        txtBuscarHistorial.clear();
+
+        cmbEspecialidadHistorial.setValue(
+                "Todas las especialidades"
+        );
+
+        cmbFechaHistorial.setValue(
+                "Todas las fechas"
+        );
+
+        cmbOrdenHistorial.setValue(
+                "Más recientes"
+        );
+
+        aplicarFiltros();
+    }
+
+    /**
+     * Renderiza las atenciones filtradas.
      */
     private void mostrarHistorial(
             List<Cita> historial
@@ -211,7 +553,9 @@ public class HistorialPacienteController {
         ) {
 
             mostrarMensaje(
-                    "Todavía no existen atenciones médicas registradas."
+                    historialPaciente.isEmpty()
+                            ? "Todavía no existen atenciones médicas registradas."
+                            : "No encontramos atenciones que coincidan con los filtros seleccionados."
             );
 
             return;
@@ -222,83 +566,152 @@ public class HistorialPacienteController {
             contenedorHistorial
                     .getChildren()
                     .add(
-                            crearTarjetaHistorial(
-                                    cita
-                            )
+                            crearTarjetaHistorial(cita)
                     );
         }
     }
 
     /**
-     * Construye la tarjeta visual correspondiente
-     * a una atención médica realizada.
-     *
-     * @param cita cita atendida.
-     * @return tarjeta visual.
+     * Construye una tarjeta visual para cada
+     * atención médica realizada.
      */
-    private VBox crearTarjetaHistorial(
+    private HBox crearTarjetaHistorial(
             Cita cita
     ) {
 
-        VBox tarjeta =
-                new VBox(14);
+        HBox tarjeta =
+                new HBox(0);
 
         tarjeta.getStyleClass().add(
-                "history-card"
-        );
-
-        tarjeta.setPadding(
-                new Insets(
-                        18,
-                        20,
-                        18,
-                        20
-                )
+                "history-v2-card"
         );
 
         /*
          * ========================================================
-         * ENCABEZADO
+         * COLUMNA DE FECHA
          * ========================================================
          */
 
-        HBox encabezado =
-                new HBox(12);
+        VBox bloqueFecha =
+                new VBox(5);
 
-        encabezado.setAlignment(
-                Pos.CENTER_LEFT
+        bloqueFecha.setAlignment(
+                Pos.TOP_LEFT
         );
 
-        VBox fechaHora =
-                new VBox(3);
+        bloqueFecha.setPrefWidth(145);
 
-        Label lblFecha =
+        bloqueFecha.getStyleClass().add(
+                "history-v2-date-column"
+        );
+
+        Label lblDia =
+                new Label(
+                        cita.getFechaCita() == null
+                                ? "--"
+                                : String.format(
+                                        "%02d",
+                                        cita.getFechaCita()
+                                                .getDayOfMonth()
+                                )
+                );
+
+        lblDia.getStyleClass().add(
+                "history-v2-day"
+        );
+
+        Label lblMesAnio =
                 new Label(
                         cita.getFechaCita() == null
                                 ? "FECHA NO DISPONIBLE"
                                 : cita.getFechaCita()
-                                        .format(formatoFecha)
+                                        .format(
+                                                DateTimeFormatter.ofPattern(
+                                                        "MMM yyyy",
+                                                        new Locale(
+                                                                "es",
+                                                                "EC"
+                                                        )
+                                                )
+                                        )
                                         .toUpperCase()
                 );
 
-        lblFecha.getStyleClass().add(
-                "history-date"
+        lblMesAnio.getStyleClass().add(
+                "history-v2-month"
         );
 
         Label lblHora =
                 new Label(
-                        obtenerHorario(
-                                cita
-                        )
+                        obtenerHorario(cita)
                 );
 
         lblHora.getStyleClass().add(
-                "history-time"
+                "history-v2-time"
         );
 
-        fechaHora.getChildren().addAll(
-                lblFecha,
+        bloqueFecha.getChildren().addAll(
+                lblDia,
+                lblMesAnio,
                 lblHora
+        );
+
+        /*
+         * ========================================================
+         * CONTENIDO PRINCIPAL
+         * ========================================================
+         */
+
+        VBox contenido =
+                new VBox(13);
+
+        contenido.getStyleClass().add(
+                "history-v2-content"
+        );
+
+        HBox.setHgrow(
+                contenido,
+                Priority.ALWAYS
+        );
+
+        HBox cabecera =
+                new HBox(12);
+
+        cabecera.setAlignment(
+                Pos.CENTER_LEFT
+        );
+
+        VBox titulo =
+                new VBox(3);
+
+        HBox.setHgrow(
+                titulo,
+                Priority.ALWAYS
+        );
+
+        Label lblEspecialidad =
+                new Label(
+                        valorSeguro(
+                                cita.getNombreEspecialidad()
+                        )
+                );
+
+        lblEspecialidad.getStyleClass().add(
+                "history-v2-specialty"
+        );
+
+        Label lblTipo =
+                new Label(
+                        "Atención médica realizada"
+                );
+
+        lblTipo.getStyleClass().add(
+                "history-v2-type"
+        );
+
+        titulo.getChildren().addAll(
+                lblEspecialidad,
+                lblTipo
         );
 
         Region espacio =
@@ -310,114 +723,121 @@ public class HistorialPacienteController {
         );
 
         Label lblEstado =
-                new Label(
-                        "ATENDIDA"
-                );
+                new Label("✓  ATENDIDA");
 
-        lblEstado.getStyleClass().addAll(
-                "appointment-status",
-                "status-atendida"
+        lblEstado.getStyleClass().add(
+                "history-v2-status"
         );
 
-        encabezado.getChildren().addAll(
-                fechaHora,
+        cabecera.getChildren().addAll(
+                titulo,
                 espacio,
                 lblEstado
         );
 
         /*
-         * ========================================================
-         * ESPECIALIDAD
-         * ========================================================
+         * Médico y establecimiento.
          */
 
-        Label lblEspecialidad =
-                new Label(
-                        valorSeguro(
-                                cita.getNombreEspecialidad()
-                        )
-                );
+        HBox informacion =
+                new HBox(35);
 
-        lblEspecialidad.getStyleClass().add(
-                "history-specialty"
+        informacion.setAlignment(
+                Pos.TOP_LEFT
         );
 
-        /*
-         * ========================================================
-         * MÉDICO Y ESTABLECIMIENTO
-         * ========================================================
-         */
-
-        VBox bloqueMedico =
+        VBox medico =
                 crearBloqueInformacion(
                         "MÉDICO",
                         cita.getNombreMedico()
                 );
 
-        VBox bloqueEstablecimiento =
+        VBox establecimiento =
                 crearBloqueInformacion(
                         "ESTABLECIMIENTO",
                         cita.getNombreEstablecimiento()
                 );
 
-        HBox informacion =
-                new HBox(30);
-
-        informacion.setAlignment(
-                Pos.CENTER_LEFT
+        HBox.setHgrow(
+                medico,
+                Priority.ALWAYS
         );
 
         HBox.setHgrow(
-                bloqueEstablecimiento,
+                establecimiento,
                 Priority.ALWAYS
         );
 
         informacion.getChildren().addAll(
-                bloqueMedico,
-                bloqueEstablecimiento
+                medico,
+                establecimiento
         );
 
         /*
-         * ========================================================
-         * MOTIVO DE CONSULTA
-         * ========================================================
+         * Motivo.
          */
 
-        VBox bloqueMotivo =
+        VBox motivo =
                 crearBloqueInformacion(
                         "MOTIVO DE CONSULTA",
                         cita.getMotivoConsulta()
                 );
 
         /*
-         * ========================================================
-         * OBSERVACIÓN DE LA ATENCIÓN
-         * ========================================================
+         * Observación médica.
          */
 
-        VBox bloqueObservacion =
-                crearBloqueInformacion(
-                        "OBSERVACIÓN DE ATENCIÓN",
-                        cita.getObservacion()
+        VBox observacion =
+                new VBox(5);
+
+        observacion.getStyleClass().add(
+                "history-v2-observation"
+        );
+
+        Label lblObservacionTitulo =
+                new Label(
+                        "OBSERVACIÓN DE LA ATENCIÓN"
                 );
 
-        bloqueObservacion.getStyleClass().add(
-                "history-observation"
+        lblObservacionTitulo.getStyleClass().add(
+                "history-v2-observation-label"
+        );
+
+        Label lblObservacion =
+                new Label(
+                        valorSeguro(
+                                cita.getObservacion()
+                        )
+                );
+
+        lblObservacion.setWrapText(true);
+
+        lblObservacion.getStyleClass().add(
+                "history-v2-observation-value"
+        );
+
+        observacion.getChildren().addAll(
+                lblObservacionTitulo,
+                lblObservacion
+        );
+
+        contenido.getChildren().addAll(
+                cabecera,
+                informacion,
+                motivo,
+                observacion
         );
 
         tarjeta.getChildren().addAll(
-                encabezado,
-                lblEspecialidad,
-                informacion,
-                bloqueMotivo,
-                bloqueObservacion
+                bloqueFecha,
+                contenido
         );
 
         return tarjeta;
     }
 
     /**
-     * Construye un bloque de información.
+     * Crea un bloque de etiqueta + valor.
      */
     private VBox crearBloqueInformacion(
             String titulo,
@@ -428,27 +848,21 @@ public class HistorialPacienteController {
                 new VBox(4);
 
         Label lblTitulo =
-                new Label(
-                        titulo
-                );
+                new Label(titulo);
 
         lblTitulo.getStyleClass().add(
-                "history-info-label"
+                "history-v2-info-label"
         );
 
         Label lblValor =
                 new Label(
-                        valorSeguro(
-                                valor
-                        )
+                        valorSeguro(valor)
                 );
 
-        lblValor.getStyleClass().add(
-                "history-info-value"
-        );
+        lblValor.setWrapText(true);
 
-        lblValor.setWrapText(
-                true
+        lblValor.getStyleClass().add(
+                "history-v2-info-value"
         );
 
         bloque.getChildren().addAll(
@@ -459,9 +873,6 @@ public class HistorialPacienteController {
         return bloque;
     }
 
-    /**
-     * Construye el horario de la atención.
-     */
     private String obtenerHorario(
             Cita cita
     ) {
@@ -476,14 +887,11 @@ public class HistorialPacienteController {
 
         return cita.getHoraInicio()
                 .format(formatoHora)
-                + " — "
+                + "  —  "
                 + cita.getHoraFin()
                         .format(formatoHora);
     }
 
-    /**
-     * Evita mostrar valores nulos o vacíos.
-     */
     private String valorSeguro(
             String valor
     ) {
@@ -492,16 +900,16 @@ public class HistorialPacienteController {
                 valor == null
                         || valor.isBlank()
         ) {
-
             return "No especificado";
         }
 
         return valor;
     }
 
-    /**
-     * Regresa al panel principal del paciente.
-     */
+    /* ============================================================
+                              NAVEGACIÓN
+       ============================================================ */
+
     @FXML
     private void abrirInicio() {
 
@@ -511,9 +919,6 @@ public class HistorialPacienteController {
         );
     }
 
-    /**
-     * Abre la pantalla para agendar una cita.
-     */
     @FXML
     private void abrirAgendarCita() {
 
@@ -523,9 +928,6 @@ public class HistorialPacienteController {
         );
     }
 
-    /**
-     * Abre la pantalla Mis citas.
-     */
     @FXML
     private void abrirMisCitas() {
 
@@ -535,18 +937,12 @@ public class HistorialPacienteController {
         );
     }
 
-    /**
-     * Recarga el historial actual.
-     */
     @FXML
     private void abrirHistorial() {
 
         cargarHistorial();
     }
 
-    /**
-     * Abre el perfil del paciente.
-     */
     @FXML
     private void abrirPerfil() {
 
@@ -556,13 +952,6 @@ public class HistorialPacienteController {
         );
     }
 
-    /**
-     * Gestiona la navegación entre las pantallas
-     * del paciente conservando el usuario autenticado.
-     *
-     * @param ruta ruta del archivo FXML.
-     * @param titulo título de la ventana.
-     */
     private void cambiarPantalla(
             String ruta,
             String titulo
@@ -581,9 +970,7 @@ public class HistorialPacienteController {
 
             FXMLLoader loader =
                     new FXMLLoader(
-                            getClass().getResource(
-                                    ruta
-                            )
+                            getClass().getResource(ruta)
                     );
 
             Scene scene =
@@ -645,21 +1032,11 @@ public class HistorialPacienteController {
                             .getScene()
                             .getWindow();
 
-            stage.setScene(
-                    scene
-            );
+            stage.setScene(scene);
+            stage.setTitle(titulo);
 
-            stage.setTitle(
-                    titulo
-            );
-
-            stage.setMinWidth(
-                    950
-            );
-
-            stage.setMinHeight(
-                    620
-            );
+            stage.setMinWidth(1050);
+            stage.setMinHeight(680);
 
             stage.centerOnScreen();
 
@@ -673,12 +1050,39 @@ public class HistorialPacienteController {
                     "Error al cambiar de pantalla: "
                             + e.getMessage()
             );
+
+            e.printStackTrace();
         }
     }
 
-    /**
-     * Cierra la sesión actual.
-     */
+    /* ============================================================
+                              MENSAJES
+       ============================================================ */
+
+    private void mostrarMensaje(
+            String mensaje
+    ) {
+
+        if (lblMensaje == null) {
+            return;
+        }
+
+        lblMensaje.setText(mensaje);
+        lblMensaje.setVisible(true);
+        lblMensaje.setManaged(true);
+    }
+
+    private void limpiarMensaje() {
+
+        if (lblMensaje == null) {
+            return;
+        }
+
+        lblMensaje.setText("");
+        lblMensaje.setVisible(false);
+        lblMensaje.setManaged(false);
+    }
+
     @FXML
     private void cerrarSesion() {
 
@@ -689,9 +1093,10 @@ public class HistorialPacienteController {
                             .getScene()
                             .getWindow();
 
-            SesionUtil.cerrarSesion(
-                    stage
-            );
+            usuarioActual = null;
+            historialPaciente.clear();
+
+            SesionUtil.cerrarSesion(stage);
 
         } catch (Exception e) {
 
@@ -703,48 +1108,8 @@ public class HistorialPacienteController {
                     "Error al cerrar sesión: "
                             + e.getMessage()
             );
-        }
-    }
 
-    /**
-     * Muestra un mensaje informativo.
-     */
-    private void mostrarMensaje(
-            String mensaje
-    ) {
-
-        if (lblMensaje != null) {
-
-            lblMensaje.setText(
-                    mensaje
-            );
-
-            lblMensaje.setVisible(
-                    true
-            );
-
-            lblMensaje.setManaged(
-                    true
-            );
-        }
-    }
-
-    /**
-     * Oculta el mensaje actual.
-     */
-    private void limpiarMensaje() {
-
-        if (lblMensaje != null) {
-
-            lblMensaje.setText("");
-
-            lblMensaje.setVisible(
-                    false
-            );
-
-            lblMensaje.setManaged(
-                    false
-            );
+            e.printStackTrace();
         }
     }
 }

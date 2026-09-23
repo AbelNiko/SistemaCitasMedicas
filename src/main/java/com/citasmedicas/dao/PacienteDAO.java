@@ -149,17 +149,20 @@ public class PacienteDAO {
     ) throws SQLException {
 
         String sql =
-                """
-                SELECT
-                    id_paciente,
-                    fecha_nacimiento,
-                    direccion,
-                    sexo,
-                    contacto_emergencia,
-                    telefono_emergencia
-                FROM pacientes
-                WHERE id_usuario = ?
-                """;
+        """
+        SELECT
+            id_paciente,
+            fecha_nacimiento,
+            direccion,
+            sexo,
+            tipo_sangre,
+            alergias,
+            condiciones_medicas,
+            contacto_emergencia,
+            telefono_emergencia
+        FROM pacientes
+        WHERE id_usuario = ?
+        """;
 
         try (
                 Connection conexion =
@@ -215,6 +218,24 @@ public class PacienteDAO {
                                 "sexo"
                         )
                 );
+
+                paciente.setTipoSangre(
+        resultado.getString(
+                "tipo_sangre"
+        )
+);
+
+paciente.setAlergias(
+        resultado.getString(
+                "alergias"
+        )
+);
+
+paciente.setCondicionesMedicas(
+        resultado.getString(
+                "condiciones_medicas"
+        )
+);
 
                 paciente.setContactoEmergencia(
                         resultado.getString(

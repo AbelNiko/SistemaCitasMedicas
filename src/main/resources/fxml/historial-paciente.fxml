@@ -2,10 +2,13 @@
 
 <?import javafx.geometry.Insets?>
 <?import javafx.scene.control.Button?>
+<?import javafx.scene.control.ComboBox?>
 <?import javafx.scene.control.Label?>
 <?import javafx.scene.control.ScrollPane?>
+<?import javafx.scene.control.TextField?>
 <?import javafx.scene.layout.BorderPane?>
 <?import javafx.scene.layout.HBox?>
+<?import javafx.scene.layout.Priority?>
 <?import javafx.scene.layout.Region?>
 <?import javafx.scene.layout.VBox?>
 
@@ -13,90 +16,96 @@
         xmlns="http://javafx.com/javafx/21"
         xmlns:fx="http://javafx.com/fxml/1"
         fx:controller="com.citasmedicas.controller.HistorialPacienteController"
-        prefWidth="1180.0"
-        prefHeight="720.0"
         stylesheets="@../css/mediappoint.css"
-        styleClass="dashboard-root">
+        styleClass="dashboard-root"
+        prefWidth="1180"
+        prefHeight="720">
 
     <!-- =========================================================
-                         BARRA LATERAL
+                         MENÚ LATERAL
          ========================================================= -->
+
     <left>
 
         <VBox
-                prefWidth="230.0"
-                spacing="10.0"
-                styleClass="dashboard-sidebar">
+                prefWidth="235"
+                spacing="7"
+                styleClass="sidebar">
 
             <padding>
                 <Insets
-                        top="28.0"
-                        right="18.0"
-                        bottom="24.0"
-                        left="18.0"/>
+                        top="30"
+                        right="18"
+                        bottom="22"
+                        left="18"/>
             </padding>
 
             <!-- Marca -->
-            <VBox spacing="2.0">
+
+            <VBox spacing="3">
 
                 <Label
                         text="MediAppoint"
                         styleClass="sidebar-brand"/>
 
                 <Label
-                        text="Gestión de citas médicas"
+                        text="PORTAL DEL PACIENTE"
                         styleClass="sidebar-subtitle"/>
 
             </VBox>
 
-            <Region prefHeight="25.0"/>
+            <Region prefHeight="28"/>
 
             <!-- Navegación -->
+
             <Label
                     text="NAVEGACIÓN"
                     styleClass="sidebar-section-label"/>
 
-            <Button
-                    text="Inicio"
-                    maxWidth="Infinity"
-                    alignment="CENTER_LEFT"
-                    onAction="#abrirInicio"
-                    styleClass="sidebar-button"/>
+            <Region prefHeight="4"/>
 
             <Button
-                    text="Agendar cita"
+                    text="⌂   Inicio"
                     maxWidth="Infinity"
-                    alignment="CENTER_LEFT"
-                    onAction="#abrirAgendarCita"
-                    styleClass="sidebar-button"/>
+                    prefHeight="44"
+                    styleClass="sidebar-button"
+                    onAction="#abrirInicio"/>
 
             <Button
-                    text="Mis citas"
+                    text="+   Agendar cita"
                     maxWidth="Infinity"
-                    alignment="CENTER_LEFT"
-                    onAction="#abrirMisCitas"
-                    styleClass="sidebar-button"/>
+                    prefHeight="44"
+                    styleClass="sidebar-button"
+                    onAction="#abrirAgendarCita"/>
 
             <Button
-                    text="Historial"
+                    text="▣   Mis citas"
                     maxWidth="Infinity"
-                    alignment="CENTER_LEFT"
-                    onAction="#abrirHistorial"
-                    styleClass="sidebar-button-active"/>
+                    prefHeight="44"
+                    styleClass="sidebar-button"
+                    onAction="#abrirMisCitas"/>
 
             <Button
-                    text="Mi perfil"
+                    text="◷   Historial"
                     maxWidth="Infinity"
-                    alignment="CENTER_LEFT"
-                    onAction="#abrirPerfil"
-                    styleClass="sidebar-button"/>
+                    prefHeight="44"
+                    styleClass="sidebar-button-active"
+                    onAction="#abrirHistorial"/>
 
-            <!-- Empuja la sesión hacia abajo -->
+            <Button
+                    text="●   Mi perfil"
+                    maxWidth="Infinity"
+                    prefHeight="44"
+                    styleClass="sidebar-button"
+                    onAction="#abrirPerfil"/>
+
             <Region VBox.vgrow="ALWAYS"/>
 
+            <!-- Usuario -->
+
             <VBox
-                    spacing="4.0"
-                    styleClass="sidebar-user-box">
+                    spacing="4"
+                    styleClass="sidebar-user-card">
 
                 <Label
                         text="PACIENTE"
@@ -110,142 +119,334 @@
 
             </VBox>
 
+            <Region prefHeight="5"/>
+
             <Button
-                    text="Cerrar sesión"
+                    text="↪   Cerrar sesión"
                     maxWidth="Infinity"
-                    alignment="CENTER_LEFT"
-                    onAction="#cerrarSesion"
-                    styleClass="sidebar-logout-button"/>
+                    prefHeight="42"
+                    styleClass="logout-button"
+                    onAction="#cerrarSesion"/>
 
         </VBox>
 
     </left>
 
     <!-- =========================================================
-                         CONTENIDO PRINCIPAL
+                             CABECERA
          ========================================================= -->
-    <center>
 
-        <VBox
-                spacing="22.0"
-                styleClass="dashboard-content">
+    <top>
+
+        <HBox
+                alignment="CENTER_LEFT"
+                prefHeight="76"
+                spacing="15"
+                styleClass="dashboard-header">
 
             <padding>
                 <Insets
-                        top="32.0"
-                        right="38.0"
-                        bottom="32.0"
-                        left="38.0"/>
+                        top="14"
+                        right="32"
+                        bottom="14"
+                        left="32"/>
             </padding>
 
-            <!-- Encabezado -->
+            <VBox spacing="2">
+
+                <Label
+                        text="Historial de atenciones"
+                        styleClass="dashboard-page-title"/>
+
+                <Label
+                        text="Consulta y revisa tus atenciones médicas realizadas"
+                        styleClass="dashboard-page-subtitle"/>
+
+            </VBox>
+
+            <Region HBox.hgrow="ALWAYS"/>
+
+            <VBox
+                    alignment="CENTER_RIGHT"
+                    spacing="3">
+
+                <Label
+                        text="HISTORIAL MÉDICO"
+                        styleClass="header-context-label"/>
+
+                <Label
+                        text="ATENCIONES REALIZADAS"
+                        styleClass="header-context-value"/>
+
+            </VBox>
+
+        </HBox>
+
+    </top>
+
+    <!-- =========================================================
+                         CONTENIDO PRINCIPAL
+         ========================================================= -->
+
+    <center>
+
+        <VBox
+                spacing="17"
+                styleClass="history-v2-page">
+
+            <padding>
+                <Insets
+                        top="24"
+                        right="32"
+                        bottom="27"
+                        left="32"/>
+            </padding>
+
+            <!-- =================================================
+                            HERO / RESUMEN
+                 ================================================= -->
+
             <HBox
                     alignment="CENTER_LEFT"
-                    spacing="18.0">
+                    spacing="18"
+                    styleClass="history-v2-hero">
 
-                <VBox spacing="5.0">
+                <padding>
+                    <Insets
+                            top="19"
+                            right="21"
+                            bottom="19"
+                            left="21"/>
+                </padding>
+
+                <VBox
+                        alignment="CENTER"
+                        styleClass="history-v2-hero-icon">
 
                     <Label
-                            text="Historial de atenciones"
-                            styleClass="dashboard-title"/>
-
-                    <Label
-                            text="Consulta las atenciones médicas que ya fueron realizadas."
-                            styleClass="dashboard-description"/>
+                            text="✚"
+                            styleClass="history-v2-hero-icon-text"/>
 
                 </VBox>
 
-                <Region HBox.hgrow="ALWAYS"/>
+                <VBox
+                        spacing="4"
+                        HBox.hgrow="ALWAYS">
 
-                <!-- Contador -->
+                    <Label
+                            text="TU HISTORIAL"
+                            styleClass="section-eyebrow"/>
+
+                    <Label
+                            text="Atenciones médicas realizadas"
+                            styleClass="history-v2-hero-title"/>
+
+                    <Label
+                            text="Revisa de forma organizada las consultas que fueron registradas como atendidas por el personal médico."
+                            wrapText="true"
+                            styleClass="history-v2-hero-description"/>
+
+                </VBox>
+
                 <VBox
                         alignment="CENTER"
-                        spacing="2.0"
-                        minWidth="125.0"
-                        styleClass="history-counter-card">
+                        spacing="1"
+                        minWidth="108"
+                        styleClass="history-v2-counter">
 
                     <Label
                             fx:id="lblCantidadAtenciones"
                             text="0"
-                            styleClass="history-counter-number"/>
+                            styleClass="history-v2-counter-number"/>
 
                     <Label
                             text="ATENCIONES"
-                            styleClass="history-counter-label"/>
-
-                </VBox>
-
-            </HBox>
-
-            <!-- Mensaje -->
-            <Label
-                    fx:id="lblMensaje"
-                    text=""
-                    visible="false"
-                    managed="false"
-                    wrapText="true"
-                    styleClass="dashboard-message"/>
-
-            <!-- Información -->
-            <HBox
-                    spacing="12.0"
-                    alignment="CENTER_LEFT"
-                    styleClass="history-info-banner">
-
-                <VBox spacing="3.0">
+                            styleClass="history-v2-counter-label"/>
 
                     <Label
-                            text="Historial médico básico"
-                            styleClass="history-banner-title"/>
-
-                    <Label
-                            text="Aquí se muestran únicamente las citas que fueron registradas como atendidas por el personal médico."
-                            wrapText="true"
-                            styleClass="history-banner-text"/>
-
-                </VBox>
-
-            </HBox>
-
-            <!-- Título de sección -->
-            <HBox alignment="CENTER_LEFT">
-
-                <VBox spacing="3.0">
-
-                    <Label
-                            text="Atenciones realizadas"
-                            styleClass="history-section-title"/>
-
-                    <Label
-                            text="Las atenciones más recientes aparecen primero."
-                            styleClass="history-section-subtitle"/>
+                            text="REGISTRADAS"
+                            styleClass="history-v2-counter-detail"/>
 
                 </VBox>
 
             </HBox>
 
             <!-- =================================================
-                              LISTADO DE HISTORIAL
+                               FILTROS
                  ================================================= -->
+
+            <VBox
+                    spacing="13"
+                    styleClass="history-v2-filter-card">
+
+                <padding>
+                    <Insets
+                            top="16"
+                            right="18"
+                            bottom="17"
+                            left="18"/>
+                </padding>
+
+                <HBox
+                        alignment="CENTER_LEFT"
+                        spacing="10">
+
+                    <VBox spacing="2">
+
+                        <Label
+                                text="Buscar en el historial"
+                                styleClass="history-v2-filter-title"/>
+
+                        <Label
+                                text="Localiza rápidamente una atención médica."
+                                styleClass="history-v2-filter-description"/>
+
+                    </VBox>
+
+                    <Region HBox.hgrow="ALWAYS"/>
+
+                    <Button
+                            text="Limpiar filtros"
+                            prefHeight="34"
+                            styleClass="history-v2-clear-button"
+                            onAction="#limpiarFiltros"/>
+
+                </HBox>
+
+                <!-- Buscador -->
+
+                <TextField
+                        fx:id="txtBuscarHistorial"
+                        promptText="Buscar por médico, especialidad, establecimiento, motivo u observación..."
+                        prefHeight="42"
+                        maxWidth="Infinity"
+                        styleClass="history-v2-search"/>
+
+                <!-- Selectores -->
+
+                <HBox
+                        spacing="12"
+                        alignment="BOTTOM_LEFT">
+
+                    <VBox
+                            spacing="6"
+                            HBox.hgrow="ALWAYS">
+
+                        <Label
+                                text="ESPECIALIDAD"
+                                styleClass="history-v2-filter-label"/>
+
+                        <ComboBox
+                                fx:id="cmbEspecialidadHistorial"
+                                promptText="Todas las especialidades"
+                                prefHeight="40"
+                                maxWidth="Infinity"
+                                styleClass="history-v2-combo"/>
+
+                    </VBox>
+
+                    <VBox
+                            spacing="6"
+                            HBox.hgrow="ALWAYS">
+
+                        <Label
+                                text="PERÍODO"
+                                styleClass="history-v2-filter-label"/>
+
+                        <ComboBox
+                                fx:id="cmbFechaHistorial"
+                                promptText="Todas las fechas"
+                                prefHeight="40"
+                                maxWidth="Infinity"
+                                styleClass="history-v2-combo"/>
+
+                    </VBox>
+
+                    <VBox
+                            spacing="6"
+                            HBox.hgrow="ALWAYS">
+
+                        <Label
+                                text="ORDEN"
+                                styleClass="history-v2-filter-label"/>
+
+                        <ComboBox
+                                fx:id="cmbOrdenHistorial"
+                                promptText="Más recientes"
+                                prefHeight="40"
+                                maxWidth="Infinity"
+                                styleClass="history-v2-combo"/>
+
+                    </VBox>
+
+                </HBox>
+
+            </VBox>
+
+            <!-- =================================================
+                           CABECERA RESULTADOS
+                 ================================================= -->
+
+            <HBox
+                    alignment="CENTER_LEFT"
+                    spacing="12">
+
+                <VBox spacing="3">
+
+                    <Label
+                            text="Registro de atenciones"
+                            styleClass="history-v2-section-title"/>
+
+                    <Label
+                            text="Información de tus consultas médicas finalizadas."
+                            styleClass="history-v2-section-description"/>
+
+                </VBox>
+
+                <Region HBox.hgrow="ALWAYS"/>
+
+                <Label
+                        text="Solo se muestran citas ATENDIDAS"
+                        styleClass="history-v2-attended-indicator"/>
+
+            </HBox>
+
+            <!-- =================================================
+                                MENSAJE
+                 ================================================= -->
+
+            <Label
+                    fx:id="lblMensaje"
+                    text=""
+                    visible="false"
+                    managed="false"
+                    wrapText="true"
+                    maxWidth="Infinity"
+                    styleClass="history-v2-message"/>
+
+            <!-- =================================================
+                          LISTADO DEL HISTORIAL
+                 ================================================= -->
+
             <ScrollPane
                     fitToWidth="true"
-                    VBox.vgrow="ALWAYS"
                     hbarPolicy="NEVER"
-                    styleClass="history-scroll-pane">
+                    VBox.vgrow="ALWAYS"
+                    styleClass="history-v2-scroll">
 
                 <content>
 
                     <VBox
                             fx:id="contenedorHistorial"
-                            spacing="16.0"
+                            spacing="14"
                             fillWidth="true">
 
                         <padding>
                             <Insets
-                                    top="4.0"
-                                    right="8.0"
-                                    bottom="20.0"
-                                    left="4.0"/>
+                                    top="3"
+                                    right="7"
+                                    bottom="18"
+                                    left="3"/>
                         </padding>
 
                     </VBox>

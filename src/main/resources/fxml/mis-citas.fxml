@@ -18,8 +18,8 @@
         fx:controller="com.citasmedicas.controller.MisCitasController"
         stylesheets="@../css/mediappoint.css"
         styleClass="dashboard-root"
-        prefWidth="1050"
-        prefHeight="680">
+        prefWidth="1180"
+        prefHeight="720">
 
     <!-- =========================================================
                          MENÚ LATERAL
@@ -28,13 +28,13 @@
     <left>
 
         <VBox
-                prefWidth="220"
+                prefWidth="235"
                 spacing="8"
                 styleClass="sidebar">
 
             <padding>
                 <Insets
-                        top="28"
+                        top="32"
                         right="18"
                         bottom="22"
                         left="18"/>
@@ -45,45 +45,69 @@
                     styleClass="sidebar-brand"/>
 
             <Label
-                    text="GESTIÓN DE CITAS MÉDICAS"
+                    text="PORTAL DEL PACIENTE"
                     styleClass="sidebar-subtitle"/>
 
-            <Region prefHeight="25"/>
+            <Region prefHeight="28"/>
+
+            <Label
+                    text="NAVEGACIÓN"
+                    styleClass="sidebar-section-label"/>
+
+            <Region prefHeight="8"/>
 
             <Button
-                    text="Inicio"
+                    text="⌂   Inicio"
                     maxWidth="Infinity"
-                    prefHeight="42"
+                    prefHeight="44"
                     styleClass="sidebar-button"
                     onAction="#volverDashboard"/>
 
             <Button
-                    text="Agendar cita"
+                    text="+   Agendar cita"
                     maxWidth="Infinity"
-                    prefHeight="42"
+                    prefHeight="44"
                     styleClass="sidebar-button"
                     onAction="#abrirAgendarCita"/>
 
             <Button
-                    text="Mis citas"
+                    text="≡   Mis citas"
                     maxWidth="Infinity"
-                    prefHeight="42"
+                    prefHeight="44"
                     styleClass="sidebar-button-active"
                     onAction="#abrirMisCitas"/>
 
             <Button
-                    text="Mi perfil"
+                    text="●   Mi perfil"
                     maxWidth="Infinity"
-                    prefHeight="42"
+                    prefHeight="44"
                     styleClass="sidebar-button"
                     onAction="#abrirPerfil"/>
 
             <Region VBox.vgrow="ALWAYS"/>
 
+            <VBox
+                    spacing="3"
+                    styleClass="sidebar-user-card">
+
+                <Label
+                        text="PACIENTE"
+                        styleClass="sidebar-user-role"/>
+
+                <Label
+                        fx:id="lblNombreUsuario"
+                        text="Usuario"
+                        wrapText="true"
+                        styleClass="sidebar-user-name"/>
+
+            </VBox>
+
+            <Region prefHeight="10"/>
+
             <Separator/>
 
             <Button
-                    text="Cerrar sesión"
+                    text="↪   Cerrar sesión"
                     maxWidth="Infinity"
                     prefHeight="42"
                     styleClass="logout-button"
@@ -94,7 +118,7 @@
     </left>
 
     <!-- =========================================================
-                            CABECERA
+                              CABECERA
          ========================================================= -->
 
     <top>
@@ -108,14 +132,22 @@
             <padding>
                 <Insets
                         top="15"
-                        right="28"
+                        right="30"
                         bottom="15"
-                        left="28"/>
+                        left="32"/>
             </padding>
 
-            <Label
-                    text="Mis citas"
-                    styleClass="dashboard-page-title"/>
+            <VBox spacing="3">
+
+                <Label
+                        text="Mis citas"
+                        styleClass="dashboard-page-title"/>
+
+                <Label
+                        text="Consulta y administra tus atenciones médicas"
+                        styleClass="dashboard-page-subtitle"/>
+
+            </VBox>
 
             <Region HBox.hgrow="ALWAYS"/>
 
@@ -124,13 +156,12 @@
                     spacing="3">
 
                 <Label
-                        fx:id="lblNombreUsuario"
-                        text="Usuario"
-                        styleClass="dashboard-user-name"/>
+                        text="GESTIÓN PERSONAL"
+                        styleClass="header-context-label"/>
 
                 <Label
-                        text="PACIENTE"
-                        styleClass="dashboard-user-role"/>
+                        text="CITAS MÉDICAS"
+                        styleClass="header-context-value"/>
 
             </VBox>
 
@@ -139,111 +170,188 @@
     </top>
 
     <!-- =========================================================
-                           CONTENIDO PRINCIPAL
+                         CONTENIDO PRINCIPAL
          ========================================================= -->
 
     <center>
 
         <VBox
-                spacing="20"
-                styleClass="dashboard-content">
+                spacing="18"
+                styleClass="appointments-page">
 
             <padding>
                 <Insets
-                        top="30"
-                        right="35"
-                        bottom="30"
-                        left="35"/>
+                        top="26"
+                        right="34"
+                        bottom="28"
+                        left="34"/>
             </padding>
 
             <!-- =================================================
-                         TÍTULO DE LA SECCIÓN
-                 ================================================= -->
-
-            <VBox spacing="5">
-
-                <Label
-                        text="Tus citas médicas"
-                        styleClass="welcome-title"/>
-
-                <Label
-                        text="Consulta, busca y filtra el detalle y estado de tus citas registradas."
-                        styleClass="welcome-subtitle"/>
-
-            </VBox>
-
-            <!-- =================================================
-                       CONTADOR Y NUEVA CITA
+                            HERO / INTRODUCCIÓN
                  ================================================= -->
 
             <HBox
                     alignment="CENTER_LEFT"
-                    spacing="10">
+                    spacing="20"
+                    styleClass="appointments-hero">
 
-                <Label
-                        text="Citas mostradas:"
-                        styleClass="card-description"/>
+                <padding>
+                    <Insets
+                            top="20"
+                            right="22"
+                            bottom="20"
+                            left="22"/>
+                </padding>
 
-                <Label
-                        fx:id="lblCantidadCitas"
-                        text="0"
-                        styleClass="card-accent"/>
+                <VBox spacing="6">
+
+                    <Label
+                            text="GESTIÓN DE ATENCIONES"
+                            styleClass="section-eyebrow"/>
+
+                    <Label
+                            text="Tus citas médicas"
+                            styleClass="appointments-title"/>
+
+                    <Label
+                            text="Revisa el estado, fecha, profesional y establecimiento de cada cita registrada."
+                            wrapText="true"
+                            styleClass="appointments-subtitle"/>
+
+                </VBox>
 
                 <Region HBox.hgrow="ALWAYS"/>
 
                 <Button
-                        text="Agendar nueva cita"
-                        prefHeight="40"
+                        text="+  Agendar nueva cita"
+                        prefHeight="42"
                         styleClass="primary-button"
                         onAction="#abrirAgendarCita"/>
 
             </HBox>
 
             <!-- =================================================
-                        BÚSQUEDA Y FILTROS
+                           RESUMEN Y FILTROS
                  ================================================= -->
 
             <HBox
-                    alignment="CENTER_LEFT"
-                    spacing="12">
+                    spacing="14"
+                    alignment="CENTER_LEFT">
 
-                <TextField
-                        fx:id="txtBuscarCita"
-                        promptText="Buscar por especialidad, médico, establecimiento o motivo..."
-                        prefWidth="420"
-                        prefHeight="40"
-                        styleClass="auth-field"/>
-
-                <ComboBox
-                        fx:id="cmbEstado"
-                        promptText="Estado"
+                <VBox
                         prefWidth="180"
-                        prefHeight="40"/>
+                        spacing="5"
+                        styleClass="appointments-summary-card">
 
-                <Button
-                        text="Limpiar"
-                        prefHeight="40"
-                        styleClass="secondary-button"
-                        onAction="#limpiarFiltros"/>
+                    <Label
+                            text="CITAS MOSTRADAS"
+                            styleClass="summary-label"/>
+
+                    <HBox
+                            spacing="8"
+                            alignment="CENTER_LEFT">
+
+                        <Label
+                                fx:id="lblCantidadCitas"
+                                text="0"
+                                styleClass="summary-number"/>
+
+                        <Label
+                                text="registros"
+                                styleClass="summary-caption"/>
+
+                    </HBox>
+
+                </VBox>
+
+                <VBox
+                        spacing="8"
+                        HBox.hgrow="ALWAYS"
+                        styleClass="appointments-filter-card">
+
+                    <Label
+                            text="BUSCAR Y FILTRAR"
+                            styleClass="summary-label"/>
+
+                    <HBox
+                            alignment="CENTER_LEFT"
+                            spacing="10">
+
+                        <TextField
+                                fx:id="txtBuscarCita"
+                                promptText="Buscar por especialidad, médico, establecimiento o motivo..."
+                                prefHeight="40"
+                                HBox.hgrow="ALWAYS"
+                                styleClass="appointments-search-field"/>
+
+                        <ComboBox
+                                fx:id="cmbEstado"
+                                promptText="Estado"
+                                prefWidth="175"
+                                prefHeight="40"
+                                styleClass="appointments-filter-combo"/>
+
+                        <Button
+                                text="Limpiar"
+                                prefHeight="40"
+                                styleClass="secondary-button"
+                                onAction="#limpiarFiltros"/>
+
+                    </HBox>
+
+                </VBox>
 
             </HBox>
 
             <!-- =================================================
-                             MENSAJES
+                              MENSAJES
                  ================================================= -->
 
             <Label
                     fx:id="lblMensaje"
                     text=""
+                    visible="false"
+                    managed="false"
                     wrapText="true"
-                    styleClass="card-description"/>
+                    styleClass="appointments-message"/>
 
             <!-- =================================================
-                           LISTADO DE CITAS
+                           ENCABEZADO LISTADO
+                 ================================================= -->
+
+            <HBox
+                    alignment="CENTER_LEFT"
+                    spacing="10">
+
+                <VBox spacing="3">
+
+                    <Label
+                            text="CITAS REGISTRADAS"
+                            styleClass="section-eyebrow"/>
+
+                    <Label
+                            text="Detalle de tus solicitudes y atenciones"
+                            styleClass="appointments-list-title"/>
+
+                </VBox>
+
+                <Region HBox.hgrow="ALWAYS"/>
+
+                <Label
+                        text="Los estados se actualizan según el proceso de atención."
+                        styleClass="appointments-helper"/>
+
+            </HBox>
+
+            <!-- =================================================
+                            LISTADO DE CITAS
                  ================================================= -->
 
             <ScrollPane
                     fitToWidth="true"
+                    fitToHeight="false"
+                    pannable="true"
                     VBox.vgrow="ALWAYS"
                     styleClass="appointments-scroll">
 
@@ -251,14 +359,16 @@
 
                     <VBox
                             fx:id="contenedorCitas"
-                            spacing="14">
+                            spacing="14"
+                            fillWidth="true"
+                            styleClass="appointments-list">
 
                         <padding>
                             <Insets
-                                    top="5"
-                                    right="5"
-                                    bottom="5"
-                                    left="5"/>
+                                    top="4"
+                                    right="6"
+                                    bottom="16"
+                                    left="4"/>
                         </padding>
 
                     </VBox>

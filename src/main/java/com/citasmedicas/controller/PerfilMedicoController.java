@@ -42,7 +42,7 @@ import java.util.Locale;
  * bloquear el JavaFX Application Thread.
  *
  * @author Equipo de Ingeniería de Software II
- * @version 1.2
+ * @version 1.3
  */
 public class PerfilMedicoController {
 
@@ -148,7 +148,7 @@ public class PerfilMedicoController {
 
         /*
          * Mostramos inmediatamente la información
-         * disponible en la sesión, sin esperar MySQL.
+         * disponible en la sesión.
          */
         lblNombreMedico.setText(
                 nombre
@@ -202,10 +202,6 @@ public class PerfilMedicoController {
         int idUsuario =
                 usuarioActual.getIdUsuario();
 
-        /*
-         * La consulta completa del perfil se ejecuta
-         * fuera del hilo gráfico de JavaFX.
-         */
         Task<DatosPerfilMedico> tarea =
                 new Task<>() {
 
@@ -218,10 +214,6 @@ public class PerfilMedicoController {
                                         idUsuario
                                 );
 
-                        /*
-                         * Si no existe perfil médico, se devuelve
-                         * un resultado vacío controlado.
-                         */
                         if (medico == null) {
 
                             return new DatosPerfilMedico(
@@ -232,16 +224,14 @@ public class PerfilMedicoController {
                         }
 
                         List<String> especialidades =
-                                medicoDAO
-                                        .listarEspecialidadesPorMedico(
-                                                medico.getIdMedico()
-                                        );
+                                medicoDAO.listarEspecialidadesPorMedico(
+                                        medico.getIdMedico()
+                                );
 
                         List<String> establecimientos =
-                                medicoDAO
-                                        .listarEstablecimientosPorMedico(
-                                                medico.getIdMedico()
-                                        );
+                                medicoDAO.listarEstablecimientosPorMedico(
+                                        medico.getIdMedico()
+                                );
 
                         return new DatosPerfilMedico(
                                 medico,
@@ -251,10 +241,6 @@ public class PerfilMedicoController {
                     }
                 };
 
-        /*
-         * Cuando todas las consultas terminan correctamente,
-         * JavaFX vuelve automáticamente al hilo gráfico.
-         */
         tarea.setOnSucceeded(
                 evento -> {
 
@@ -287,10 +273,6 @@ public class PerfilMedicoController {
                 }
         );
 
-        /*
-         * Manejo de errores producido durante cualquiera
-         * de las consultas realizadas en segundo plano.
-         */
         tarea.setOnFailed(
                 evento -> {
 
@@ -336,10 +318,6 @@ public class PerfilMedicoController {
         Usuario usuario =
                 medicoActual.getUsuario();
 
-        /*
-         * Si el DAO no devolviera el objeto Usuario,
-         * utilizamos la información de la sesión.
-         */
         if (usuario == null) {
 
             usuario =
@@ -359,9 +337,6 @@ public class PerfilMedicoController {
                 nombreCompleto
         );
 
-        /*
-         * Nombre principal utilizado en el hero.
-         */
         if (lblNombreHero != null) {
 
             lblNombreHero.setText(
@@ -369,10 +344,6 @@ public class PerfilMedicoController {
             );
         }
 
-        /*
-         * Avatar generado automáticamente.
-         * Ejemplo: Carlos Mendoza -> CM
-         */
         if (lblIniciales != null) {
 
             lblIniciales.setText(
@@ -382,10 +353,6 @@ public class PerfilMedicoController {
             );
         }
 
-        /*
-         * También actualizamos el nombre
-         * mostrado en el menú lateral.
-         */
         lblNombreMedico.setText(
                 nombreCompleto
         );
@@ -489,10 +456,6 @@ public class PerfilMedicoController {
     /**
      * Convierte una lista de valores en texto
      * legible para la interfaz.
-     *
-     * @param valores lista de valores.
-     * @param valorVacio texto mostrado si la lista está vacía.
-     * @return texto preparado para mostrar.
      */
     private String convertirLista(
             List<String> valores,
@@ -514,15 +477,8 @@ public class PerfilMedicoController {
     }
 
     /**
-     * Obtiene las iniciales que se muestran
-     * dentro del avatar profesional.
-     *
-     * Ejemplos:
-     * Carlos Mendoza -> CM
-     * Ana -> A
-     *
-     * @param nombreCompleto nombre del médico.
-     * @return iniciales correspondientes.
+     * Obtiene las iniciales del médico
+     * para el avatar profesional.
      */
     private String obtenerIniciales(
             String nombreCompleto
@@ -544,10 +500,6 @@ public class PerfilMedicoController {
                         .trim()
                         .split("\\s+");
 
-        /*
-         * Si solamente existe un nombre,
-         * utilizamos la primera letra.
-         */
         if (partes.length == 1) {
 
             return partes[0]
@@ -560,10 +512,6 @@ public class PerfilMedicoController {
                     );
         }
 
-        /*
-         * Utilizamos la primera letra del primer
-         * nombre y la primera letra del último apellido.
-         */
         String primera =
                 partes[0]
                         .substring(
@@ -590,9 +538,6 @@ public class PerfilMedicoController {
 
     /**
      * Evita mostrar valores nulos o vacíos.
-     *
-     * @param valor valor recibido.
-     * @return valor válido para mostrar.
      */
     private String valorSeguro(
             String valor
@@ -614,13 +559,25 @@ public class PerfilMedicoController {
        ============================================================ */
 
     /**
-     * Regresa a la agenda principal del médico.
+     * Abre la agenda principal del médico.
      */
     @FXML
     private void abrirAgenda() {
 
         cambiarPantalla(
                 "/fxml/dashboard-medico.fxml"
+        );
+    }
+
+    /**
+     * Abre el historial de atenciones
+     * del médico autenticado.
+     */
+    @FXML
+    private void abrirHistorial() {
+
+        cambiarPantalla(
+                "/fxml/historial-atenciones-medico.fxml"
         );
     }
 
@@ -634,8 +591,7 @@ public class PerfilMedicoController {
     }
 
     /**
-     * Finaliza la sesión actual y regresa
-     * a la pantalla de inicio de sesión.
+     * Finaliza la sesión actual.
      */
     @FXML
     private void cerrarSesion() {
@@ -675,7 +631,7 @@ public class PerfilMedicoController {
 
     /**
      * Cambia entre las pantallas pertenecientes
-     * al Portal Médico.
+     * al Portal Médico conservando la sesión.
      *
      * @param rutaFXML ruta de la pantalla.
      */
@@ -708,8 +664,8 @@ public class PerfilMedicoController {
                     loader.getController();
 
             /*
-             * Conserva la sesión cuando se cambia
-             * entre Mi agenda y Mi perfil.
+             * Transferencia del usuario autenticado
+             * al controlador de la pantalla destino.
              */
             if (
                     controlador
@@ -726,6 +682,15 @@ public class PerfilMedicoController {
             ) {
 
                 perfil.setUsuario(
+                        usuarioActual
+                );
+
+            } else if (
+                    controlador
+                            instanceof HistorialAtencionesMedicoController historial
+            ) {
+
+                historial.setUsuario(
                         usuarioActual
                 );
             }
@@ -778,10 +743,7 @@ public class PerfilMedicoController {
     }
 
     /**
-     * Obtiene la ventana actual mediante
-     * uno de los controles visibles.
-     *
-     * @return ventana actual o null.
+     * Obtiene la ventana actual.
      */
     private Stage obtenerStage() {
 
@@ -806,12 +768,6 @@ public class PerfilMedicoController {
     /**
      * Ejecuta una tarea JavaFX utilizando
      * un hilo secundario.
-     *
-     * Esto evita que las consultas MySQL bloqueen
-     * la interfaz gráfica.
-     *
-     * @param tarea tarea JavaFX.
-     * @param nombreHilo nombre descriptivo del hilo.
      */
     private void ejecutarTarea(
             Task<?> tarea,
@@ -824,10 +780,6 @@ public class PerfilMedicoController {
                         nombreHilo
                 );
 
-        /*
-         * El hilo no impedirá que la aplicación
-         * pueda cerrarse normalmente.
-         */
         hilo.setDaemon(
                 true
         );
@@ -841,8 +793,6 @@ public class PerfilMedicoController {
 
     /**
      * Muestra un mensaje dentro de la interfaz.
-     *
-     * @param mensaje texto mostrado.
      */
     private void mostrarMensaje(
             String mensaje
@@ -892,12 +842,7 @@ public class PerfilMedicoController {
        ============================================================ */
 
     /**
-     * Agrupa temporalmente toda la información
-     * obtenida desde MySQL antes de actualizar JavaFX.
-     *
-     * @param medico perfil médico.
-     * @param especialidades especialidades asignadas.
-     * @param establecimientos establecimientos asignados.
+     * Agrupa la información obtenida desde MySQL.
      */
     private record DatosPerfilMedico(
             Medico medico,

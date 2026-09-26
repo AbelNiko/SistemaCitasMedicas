@@ -1,0 +1,397 @@
+<?xml version="1.0" encoding="UTF-8"?>
+
+<?import javafx.geometry.Insets?>
+<?import javafx.scene.control.Button?>
+<?import javafx.scene.control.ComboBox?>
+<?import javafx.scene.control.Label?>
+<?import javafx.scene.control.ScrollPane?>
+<?import javafx.scene.control.Separator?>
+<?import javafx.scene.control.TextField?>
+<?import javafx.scene.layout.BorderPane?>
+<?import javafx.scene.layout.HBox?>
+<?import javafx.scene.layout.Region?>
+<?import javafx.scene.layout.VBox?>
+
+<BorderPane
+        xmlns="http://javafx.com/javafx"
+        xmlns:fx="http://javafx.com/fxml"
+        fx:controller="com.citasmedicas.controller.HistorialAtencionesMedicoController"
+        prefWidth="1280"
+        prefHeight="780"
+        styleClass="doctor-root"
+        stylesheets="@../css/mediappoint.css">
+
+    <!-- =====================================================
+                         MENÚ LATERAL
+         ===================================================== -->
+
+    <left>
+
+        <VBox
+                prefWidth="235"
+                spacing="12"
+                styleClass="doctor-sidebar">
+
+            <padding>
+                <Insets top="28" right="18" bottom="24" left="18"/>
+            </padding>
+
+            <VBox spacing="2">
+
+                <Label
+                        text="MediAppoint"
+                        styleClass="doctor-brand"/>
+
+                <Label
+                        text="PORTAL MÉDICO"
+                        styleClass="doctor-portal-label"/>
+
+            </VBox>
+
+            <Separator styleClass="doctor-separator"/>
+
+            <Label
+                    text="GESTIÓN CLÍNICA"
+                    styleClass="doctor-menu-label"/>
+
+            <Button
+                    text="●   Mi agenda"
+                    maxWidth="Infinity"
+                    prefHeight="42"
+                    styleClass="doctor-sidebar-button"
+                    onAction="#abrirAgenda"/>
+
+            <Button
+                    text="●   Historial de atenciones"
+                    maxWidth="Infinity"
+                    prefHeight="42"
+                    styleClass="doctor-sidebar-button-active"
+                    onAction="#cargarHistorial"/>
+
+            <Button
+                    text="●   Mi perfil"
+                    maxWidth="Infinity"
+                    prefHeight="42"
+                    styleClass="doctor-sidebar-button"
+                    onAction="#abrirPerfil"/>
+
+            <VBox
+                    spacing="7"
+                    styleClass="doctor-sidebar-info">
+
+                <Label
+                        text="HISTORIAL CLÍNICO"
+                        styleClass="doctor-sidebar-info-title"/>
+
+                <Label
+                        text="Consulta las atenciones finalizadas y las observaciones registradas durante cada consulta."
+                        wrapText="true"
+                        styleClass="doctor-sidebar-info-text"/>
+
+            </VBox>
+
+            <Region VBox.vgrow="ALWAYS"/>
+
+            <VBox
+                    spacing="5"
+                    styleClass="doctor-sidebar-profile">
+
+                <padding>
+                    <Insets top="13" right="13" bottom="13" left="13"/>
+                </padding>
+
+                <Label
+                        text="MÉDICO AUTENTICADO"
+                        styleClass="doctor-sidebar-role"/>
+
+                <Label
+                        fx:id="lblNombreMedico"
+                        text="Médico"
+                        wrapText="true"
+                        styleClass="doctor-sidebar-name"/>
+
+                <HBox spacing="5">
+
+                    <Label
+                            text="Registro:"
+                            styleClass="doctor-sidebar-detail"/>
+
+                    <Label
+                            fx:id="lblCedulaProfesional"
+                            text="-"
+                            styleClass="doctor-sidebar-detail-value"/>
+
+                </HBox>
+
+            </VBox>
+
+            <Button
+                    text="Cerrar sesión"
+                    maxWidth="Infinity"
+                    prefHeight="39"
+                    styleClass="doctor-logout-button"
+                    onAction="#cerrarSesion"/>
+
+        </VBox>
+
+    </left>
+
+    <!-- =====================================================
+                        CONTENIDO PRINCIPAL
+         ===================================================== -->
+
+    <center>
+
+        <VBox styleClass="doctor-main-area">
+
+            <!-- HEADER -->
+
+            <HBox
+                    alignment="CENTER_LEFT"
+                    spacing="16"
+                    styleClass="doctor-top-header">
+
+                <padding>
+                    <Insets top="19" right="34" bottom="19" left="34"/>
+                </padding>
+
+                <VBox spacing="3">
+
+                    <Label
+                            text="Historial de atenciones"
+                            styleClass="doctor-page-title"/>
+
+                    <Label
+                            text="Consulta las atenciones médicas que ya fueron finalizadas"
+                            styleClass="doctor-page-subtitle"/>
+
+                </VBox>
+
+                <Region HBox.hgrow="ALWAYS"/>
+
+                <VBox
+                        spacing="2"
+                        alignment="CENTER_RIGHT">
+
+                    <Label
+                            text="PORTAL PROFESIONAL"
+                            styleClass="doctor-header-context-label"/>
+
+                    <Label
+                            text="Historial clínico"
+                            styleClass="doctor-header-context-value"/>
+
+                </VBox>
+
+            </HBox>
+
+            <!-- SCROLL PRINCIPAL -->
+
+            <ScrollPane
+                    fitToWidth="true"
+                    VBox.vgrow="ALWAYS"
+                    styleClass="doctor-main-scroll">
+
+                <content>
+
+                    <VBox
+                            spacing="20"
+                            styleClass="doctor-content">
+
+                        <padding>
+                            <Insets top="26" right="34" bottom="34" left="34"/>
+                        </padding>
+
+                        <!-- HERO -->
+
+                        <HBox
+                                spacing="18"
+                                alignment="CENTER_LEFT"
+                                styleClass="doctor-history-hero">
+
+                            <padding>
+                                <Insets top="21" right="24" bottom="21" left="24"/>
+                            </padding>
+
+                            <VBox
+                                    alignment="CENTER"
+                                    styleClass="doctor-history-hero-icon">
+
+                                <Label
+                                        text="✓"
+                                        styleClass="doctor-history-hero-icon-text"/>
+
+                            </VBox>
+
+                            <VBox
+                                    spacing="5"
+                                    HBox.hgrow="ALWAYS">
+
+                                <Label
+                                        text="ATENCIONES FINALIZADAS"
+                                        styleClass="doctor-history-eyebrow"/>
+
+                                <Label
+                                        text="Registro de actividad médica"
+                                        styleClass="doctor-history-hero-title"/>
+
+                                <Label
+                                        text="Revisa pacientes atendidos, motivos de consulta y observaciones registradas."
+                                        wrapText="true"
+                                        styleClass="doctor-history-hero-description"/>
+
+                            </VBox>
+
+                            <VBox
+                                    alignment="CENTER"
+                                    spacing="3"
+                                    styleClass="doctor-history-counter">
+
+                                <Label
+                                        fx:id="lblTotalAtenciones"
+                                        text="0"
+                                        styleClass="doctor-history-counter-value"/>
+
+                                <Label
+                                        text="ATENCIONES"
+                                        styleClass="doctor-history-counter-label"/>
+
+                            </VBox>
+
+                        </HBox>
+
+                        <!-- MENSAJE -->
+
+                        <Label
+                                fx:id="lblMensaje"
+                                text=""
+                                visible="false"
+                                managed="false"
+                                wrapText="true"
+                                styleClass="doctor-message"/>
+
+                        <!-- FILTROS -->
+
+                        <VBox
+                                spacing="14"
+                                styleClass="doctor-history-filter-panel">
+
+                            <padding>
+                                <Insets top="18" right="20" bottom="18" left="20"/>
+                            </padding>
+
+                            <HBox alignment="CENTER_LEFT">
+
+                                <VBox spacing="3">
+
+                                    <Label
+                                            text="Buscar y filtrar historial"
+                                            styleClass="doctor-history-filter-title"/>
+
+                                    <Label
+                                            text="Encuentra una atención por paciente, especialidad, establecimiento, motivo u observación."
+                                            styleClass="doctor-history-filter-description"/>
+
+                                </VBox>
+
+                                <Region HBox.hgrow="ALWAYS"/>
+
+                                <Label
+                                        text="FILTROS DE HISTORIAL"
+                                        styleClass="doctor-history-filter-badge"/>
+
+                            </HBox>
+
+                            <HBox
+                                    spacing="12"
+                                    alignment="CENTER_LEFT">
+
+                                <TextField
+                                        fx:id="txtBuscar"
+                                        promptText="Buscar paciente, especialidad, establecimiento, motivo..."
+                                        prefHeight="42"
+                                        HBox.hgrow="ALWAYS"
+                                        styleClass="doctor-history-search"/>
+
+                                <ComboBox
+                                        fx:id="cmbFecha"
+                                        prefWidth="180"
+                                        prefHeight="42"
+                                        styleClass="doctor-history-combo"/>
+
+                                <ComboBox
+                                        fx:id="cmbOrden"
+                                        prefWidth="170"
+                                        prefHeight="42"
+                                        styleClass="doctor-history-combo"/>
+
+                                <Button
+                                        text="Limpiar filtros"
+                                        prefHeight="42"
+                                        styleClass="doctor-history-clear-button"
+                                        onAction="#limpiarFiltros"/>
+
+                            </HBox>
+
+                        </VBox>
+
+                        <!-- RESULTADOS -->
+
+                        <HBox
+                                alignment="CENTER_LEFT"
+                                spacing="12">
+
+                            <VBox spacing="3">
+
+                                <Label
+                                        text="Atenciones realizadas"
+                                        styleClass="doctor-history-section-title"/>
+
+                                <Label
+                                        text="Registro de consultas finalizadas por el profesional."
+                                        styleClass="doctor-history-section-description"/>
+
+                            </VBox>
+
+                            <Region HBox.hgrow="ALWAYS"/>
+
+                            <HBox
+                                    spacing="7"
+                                    alignment="CENTER"
+                                    styleClass="doctor-history-results-badge">
+
+                                <Label
+                                        text="Mostrando"
+                                        styleClass="doctor-history-results-text"/>
+
+                                <Label
+                                        fx:id="lblCantidadResultados"
+                                        text="0"
+                                        styleClass="doctor-history-results-number"/>
+
+                                <Label
+                                        text="atenciones"
+                                        styleClass="doctor-history-results-text"/>
+
+                            </HBox>
+
+                        </HBox>
+
+                        <!-- TARJETAS GENERADAS DESDE JAVA -->
+
+                        <VBox
+                                fx:id="contenedorAtenciones"
+                                spacing="14"
+                                maxWidth="Infinity"/>
+
+                    </VBox>
+
+                </content>
+
+            </ScrollPane>
+
+        </VBox>
+
+    </center>
+
+</BorderPane>

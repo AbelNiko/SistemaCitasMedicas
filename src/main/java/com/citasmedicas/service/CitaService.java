@@ -823,4 +823,54 @@ public List<Cita> listarHistorialPaciente(
             )
             .toList();
 }
+/**
+ * Obtiene el historial de atenciones realizadas
+ * por un médico.
+ *
+ * El historial incluye únicamente citas que hayan
+ * finalizado correctamente con estado ATENDIDA.
+ *
+ * @param idMedico identificador del médico.
+ * @return lista de atenciones realizadas por el médico.
+ * @throws SQLException si ocurre un error de acceso a datos.
+ */
+public List<Cita> listarHistorialMedico(
+        int idMedico
+) throws SQLException {
+
+    if (idMedico <= 0) {
+
+        throw new IllegalArgumentException(
+                "El médico no es válido."
+        );
+    }
+
+    return listarPorMedico(
+            idMedico
+    )
+            .stream()
+            .filter(
+                    cita ->
+                            "ATENDIDA".equalsIgnoreCase(
+                                    cita.getEstado()
+                            )
+            )
+            .sorted(
+                    java.util.Comparator
+                            .comparing(
+                                    Cita::getFechaCita,
+                                    java.util.Comparator.nullsLast(
+                                            java.util.Comparator.naturalOrder()
+                                    )
+                            )
+                            .thenComparing(
+                                    Cita::getHoraInicio,
+                                    java.util.Comparator.nullsLast(
+                                            java.util.Comparator.naturalOrder()
+                                    )
+                            )
+                            .reversed()
+            )
+            .toList();
+}
 }

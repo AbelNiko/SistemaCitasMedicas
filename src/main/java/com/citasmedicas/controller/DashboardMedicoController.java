@@ -1492,6 +1492,73 @@ private void cargarAgenda() {
     }
 
     /**
+ * Abre el historial de atenciones
+ * del médico autenticado.
+ */
+@FXML
+private void abrirHistorial() {
+
+    if (usuarioActual == null) {
+
+        mostrarMensaje(
+                "No existe una sesión médica activa."
+        );
+
+        return;
+    }
+
+    try {
+
+        FXMLLoader loader =
+                new FXMLLoader(
+                        getClass().getResource(
+                                "/fxml/historial-atenciones-medico.fxml"
+                        )
+                );
+
+        Parent root =
+                loader.load();
+
+        HistorialAtencionesMedicoController controlador =
+                loader.getController();
+
+        controlador.setUsuario(
+                usuarioActual
+        );
+
+        Stage stage =
+                (Stage) lblNombreMedico
+                        .getScene()
+                        .getWindow();
+
+        stage.setScene(
+                new Scene(root)
+        );
+
+        stage.setTitle(
+                "MediAppoint - Historial de atenciones"
+        );
+
+        stage.setMinWidth(1050);
+        stage.setMinHeight(680);
+        stage.centerOnScreen();
+
+    } catch (Exception excepcion) {
+
+        mostrarMensaje(
+                "No fue posible abrir el historial de atenciones."
+        );
+
+        System.err.println(
+                "Error al abrir historial médico: "
+                        + excepcion.getMessage()
+        );
+
+        excepcion.printStackTrace();
+    }
+}
+
+    /**
      * Abre el perfil profesional del médico autenticado.
      */
     @FXML

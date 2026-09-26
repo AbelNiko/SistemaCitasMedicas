@@ -60,6 +60,13 @@
                     onAction="#abrirAgenda"/>
 
             <Button
+                text="●   Historial de atenciones"
+                maxWidth="Infinity"
+                prefHeight="42"
+                styleClass="doctor-sidebar-button"
+                onAction="#abrirHistorial"/>
+
+            <Button
                     text="●   Mi perfil"
                     maxWidth="Infinity"
                     prefHeight="42"

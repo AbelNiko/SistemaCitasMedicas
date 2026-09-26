@@ -3568,3 +3568,273 @@
     -fx-text-fill: #739792;
     -fx-font-size: 9px;
 }
+
+/* ================================================================
+          HISTORIAL DE ATENCIONES - PORTAL MÉDICO 3.0
+   ================================================================ */
+
+.doctor-history-hero {
+    -fx-background-color:
+        linear-gradient(
+            to right,
+            #0B2022,
+            #0C292A
+        );
+    -fx-background-radius: 14;
+    -fx-border-color: #1C4C4C;
+    -fx-border-radius: 14;
+    -fx-border-width: 1;
+}
+
+.doctor-history-hero-icon {
+    -fx-background-color: #123D3D;
+    -fx-background-radius: 50;
+    -fx-border-color: #23635F;
+    -fx-border-radius: 50;
+    -fx-border-width: 1;
+
+    -fx-min-width: 52;
+    -fx-min-height: 52;
+    -fx-max-width: 52;
+    -fx-max-height: 52;
+}
+
+.doctor-history-hero-icon-text {
+    -fx-text-fill: #58DDC9;
+    -fx-font-size: 19px;
+    -fx-font-weight: bold;
+}
+
+.doctor-history-eyebrow {
+    -fx-text-fill: #4ACDBD;
+    -fx-font-size: 9px;
+    -fx-font-weight: bold;
+}
+
+.doctor-history-hero-title {
+    -fx-text-fill: #F3FBFA;
+    -fx-font-size: 21px;
+    -fx-font-weight: bold;
+}
+
+.doctor-history-hero-description {
+    -fx-text-fill: #81A6A2;
+    -fx-font-size: 11px;
+}
+
+.doctor-history-counter {
+    -fx-background-color: rgba(25, 124, 111, 0.14);
+    -fx-background-radius: 11;
+    -fx-border-color: rgba(68, 196, 177, 0.25);
+    -fx-border-radius: 11;
+    -fx-border-width: 1;
+    -fx-padding: 11 19;
+    -fx-min-width: 120;
+}
+
+.doctor-history-counter-value {
+    -fx-text-fill: #5DE0D0;
+    -fx-font-size: 26px;
+    -fx-font-weight: bold;
+}
+
+.doctor-history-counter-label {
+    -fx-text-fill: #6F9994;
+    -fx-font-size: 9px;
+    -fx-font-weight: bold;
+}
+
+/* FILTROS */
+
+.doctor-history-filter-panel {
+    -fx-background-color: #0A1E20;
+    -fx-background-radius: 13;
+    -fx-border-color: #173B3D;
+    -fx-border-radius: 13;
+    -fx-border-width: 1;
+}
+
+.doctor-history-filter-title {
+    -fx-text-fill: #F1F8F7;
+    -fx-font-size: 15px;
+    -fx-font-weight: bold;
+}
+
+.doctor-history-filter-description {
+    -fx-text-fill: #71928E;
+    -fx-font-size: 10px;
+}
+
+.doctor-history-filter-badge {
+    -fx-background-color: #113536;
+    -fx-background-radius: 20;
+    -fx-text-fill: #58CFC1;
+    -fx-font-size: 9px;
+    -fx-font-weight: bold;
+    -fx-padding: 6 11;
+}
+
+.doctor-history-search {
+    -fx-background-color: #0E292B;
+    -fx-background-radius: 8;
+    -fx-border-color: #214A4C;
+    -fx-border-radius: 8;
+    -fx-border-width: 1;
+
+    -fx-text-fill: #E5F0EE;
+    -fx-prompt-text-fill: #668985;
+
+    -fx-font-size: 11px;
+    -fx-padding: 0 12;
+}
+
+.doctor-history-search:focused {
+    -fx-border-color: #24B8A7;
+}
+
+.doctor-history-combo {
+    -fx-background-color: #0E292B;
+    -fx-background-radius: 8;
+    -fx-border-color: #214A4C;
+    -fx-border-radius: 8;
+    -fx-border-width: 1;
+}
+
+.doctor-history-combo > .list-cell {
+    -fx-background-color: transparent;
+    -fx-text-fill: #DCE9E7;
+    -fx-font-size: 11px;
+}
+
+.doctor-history-clear-button {
+    -fx-background-color: transparent;
+    -fx-border-color: #31595B;
+    -fx-border-radius: 8;
+    -fx-background-radius: 8;
+
+    -fx-text-fill: #B2CECA;
+    -fx-font-size: 11px;
+    -fx-font-weight: bold;
+
+    -fx-padding: 0 15;
+    -fx-cursor: hand;
+}
+
+.doctor-history-clear-button:hover {
+    -fx-background-color: #123133;
+    -fx-text-fill: #FFFFFF;
+}
+
+/* RESULTADOS */
+
+.doctor-history-section-title {
+    -fx-text-fill: #F3FAF9;
+    -fx-font-size: 18px;
+    -fx-font-weight: bold;
+}
+
+.doctor-history-section-description {
+    -fx-text-fill: #71938F;
+    -fx-font-size: 10px;
+}
+
+.doctor-history-results-badge {
+    -fx-background-color: #0D282A;
+    -fx-background-radius: 20;
+    -fx-border-color: #1D484A;
+    -fx-border-radius: 20;
+    -fx-border-width: 1;
+    -fx-padding: 7 13;
+}
+
+.doctor-history-results-text {
+    -fx-text-fill: #769994;
+    -fx-font-size: 10px;
+}
+
+.doctor-history-results-number {
+    -fx-text-fill: #5DE0D0;
+    -fx-font-size: 13px;
+    -fx-font-weight: bold;
+}
+
+/* TARJETAS */
+
+.doctor-history-card {
+    -fx-background-color: #0A1E20;
+    -fx-background-radius: 13;
+    -fx-border-color: #173B3D;
+    -fx-border-radius: 13;
+    -fx-border-width: 1;
+}
+
+.doctor-history-card:hover {
+    -fx-border-color: #28605E;
+}
+
+.doctor-history-date {
+    -fx-text-fill: #51D0C1;
+    -fx-font-size: 11px;
+    -fx-font-weight: bold;
+}
+
+.doctor-history-time {
+    -fx-text-fill: #F4FBFA;
+    -fx-font-size: 15px;
+    -fx-font-weight: bold;
+}
+
+.doctor-history-status {
+    -fx-background-color: rgba(68, 190, 137, 0.14);
+    -fx-background-radius: 20;
+    -fx-border-color: rgba(68, 190, 137, 0.25);
+    -fx-border-radius: 20;
+
+    -fx-text-fill: #65DA9D;
+    -fx-font-size: 9px;
+    -fx-font-weight: bold;
+
+    -fx-padding: 5 10;
+}
+
+.doctor-history-label {
+    -fx-text-fill: #668B87;
+    -fx-font-size: 9px;
+    -fx-font-weight: bold;
+}
+
+.doctor-history-patient {
+    -fx-text-fill: #F4FBFA;
+    -fx-font-size: 18px;
+    -fx-font-weight: bold;
+}
+
+.doctor-history-specialty {
+    -fx-text-fill: #55D5C6;
+    -fx-font-size: 12px;
+    -fx-font-weight: bold;
+}
+
+.doctor-history-value {
+    -fx-text-fill: #CBDDDA;
+    -fx-font-size: 12px;
+}
+
+.doctor-history-observation {
+    -fx-background-color: #0E292B;
+    -fx-background-radius: 9;
+    -fx-border-color: #1E4A4C;
+    -fx-border-radius: 9;
+    -fx-border-width: 1;
+}
+
+.doctor-history-observation-title {
+    -fx-text-fill: #58CDBF;
+    -fx-font-size: 9px;
+    -fx-font-weight: bold;
+}
+
+.doctor-history-observation-text {
+    -fx-text-fill: #D8E7E5;
+    -fx-font-size: 12px;
+}

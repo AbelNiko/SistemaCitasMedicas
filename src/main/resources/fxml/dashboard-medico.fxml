@@ -21,6 +21,10 @@
         styleClass="doctor-root"
         stylesheets="@../css/mediappoint.css">
 
+    <!-- =====================================================
+                         MENÚ LATERAL
+         ===================================================== -->
+
     <left>
 
         <VBox
@@ -29,16 +33,20 @@
                 styleClass="doctor-sidebar">
 
             <padding>
-                <Insets top="30" right="18" bottom="24" left="18"/>
+                <Insets top="28" right="18" bottom="24" left="18"/>
             </padding>
 
-            <Label
-                    text="MediAppoint"
-                    styleClass="doctor-brand"/>
+            <VBox spacing="2">
 
-            <Label
-                    text="PORTAL MÉDICO"
-                    styleClass="doctor-portal-label"/>
+                <Label
+                        text="MediAppoint"
+                        styleClass="doctor-brand"/>
+
+                <Label
+                        text="PORTAL MÉDICO"
+                        styleClass="doctor-portal-label"/>
+
+            </VBox>
 
             <Separator styleClass="doctor-separator"/>
 
@@ -47,25 +55,52 @@
                     styleClass="doctor-menu-label"/>
 
             <Button
-                    text="●   Mi agenda"
-                    maxWidth="Infinity"
-                    prefHeight="42"
-                    styleClass="doctor-sidebar-button-active"
-                    onAction="#actualizarAgenda"/>
+                text="●   Mi agenda"
+                maxWidth="Infinity"
+                prefHeight="42"
+                styleClass="doctor-sidebar-button-active"
+                onAction="#actualizarAgenda"/>
+
+        <Button
+                text="●   Mi perfil"
+                maxWidth="Infinity"
+                prefHeight="42"
+                styleClass="doctor-sidebar-button"
+                onAction="#abrirPerfil"/>
+
+            <VBox
+                    spacing="7"
+                    styleClass="doctor-sidebar-info">
+
+                <Label
+                        text="JORNADA MÉDICA"
+                        styleClass="doctor-sidebar-info-title"/>
+
+                <Label
+                        text="Consulta, confirma y registra la atención de tus pacientes desde una sola agenda."
+                        wrapText="true"
+                        styleClass="doctor-sidebar-info-text"/>
+
+            </VBox>
 
             <Region VBox.vgrow="ALWAYS"/>
 
             <VBox
-                    spacing="3"
+                    spacing="5"
                     styleClass="doctor-sidebar-profile">
 
                 <padding>
-                    <Insets top="12" right="12" bottom="12" left="12"/>
+                    <Insets top="13" right="13" bottom="13" left="13"/>
                 </padding>
+
+                <Label
+                        text="MÉDICO AUTENTICADO"
+                        styleClass="doctor-sidebar-role"/>
 
                 <Label
                         fx:id="lblNombreMedico"
                         text="Médico"
+                        wrapText="true"
                         styleClass="doctor-sidebar-name"/>
 
                 <HBox spacing="5">
@@ -77,7 +112,7 @@
                     <Label
                             fx:id="lblCedulaProfesional"
                             text="-"
-                            styleClass="doctor-sidebar-detail"/>
+                            styleClass="doctor-sidebar-detail-value"/>
 
                 </HBox>
 
@@ -86,7 +121,7 @@
             <Button
                     text="Cerrar sesión"
                     maxWidth="Infinity"
-                    prefHeight="38"
+                    prefHeight="39"
                     styleClass="doctor-logout-button"
                     onAction="#cerrarSesion"/>
 
@@ -94,251 +129,373 @@
 
     </left>
 
+    <!-- =====================================================
+                         CONTENIDO PRINCIPAL
+         ===================================================== -->
+
     <center>
 
-        <VBox
-                spacing="20"
-                styleClass="doctor-content">
+        <VBox styleClass="doctor-main-area">
 
-            <padding>
-                <Insets top="30" right="36" bottom="30" left="36"/>
-            </padding>
-
-            <!-- ENCABEZADO -->
+            <!-- CABECERA -->
 
             <HBox
                     alignment="CENTER_LEFT"
-                    spacing="16">
+                    spacing="16"
+                    styleClass="doctor-top-header">
 
-                <VBox spacing="4">
+                <padding>
+                    <Insets top="19" right="34" bottom="19" left="34"/>
+                </padding>
+
+                <VBox spacing="3">
 
                     <Label
                             text="Agenda médica"
                             styleClass="doctor-page-title"/>
 
                     <Label
-                            text="Organiza y consulta las citas asignadas a tus pacientes."
+                            text="Gestiona tus consultas y pacientes asignados"
                             styleClass="doctor-page-subtitle"/>
 
                 </VBox>
 
                 <Region HBox.hgrow="ALWAYS"/>
 
-                <Button
-                        text="↻  Actualizar agenda"
-                        styleClass="doctor-primary-button"
-                        onAction="#actualizarAgenda"/>
-
-            </HBox>
-
-            <!-- RESUMEN -->
-
-            <HBox spacing="14">
-
                 <VBox
-                        spacing="4"
-                        HBox.hgrow="ALWAYS"
-                        styleClass="doctor-stat-card doctor-stat-total">
-
-                    <padding>
-                        <Insets top="16" right="18" bottom="16" left="18"/>
-                    </padding>
+                        spacing="2"
+                        alignment="CENTER_RIGHT">
 
                     <Label
-                            text="TOTAL DE CITAS"
-                            styleClass="doctor-stat-label"/>
+                            text="PORTAL PROFESIONAL"
+                            styleClass="doctor-header-context-label"/>
 
                     <Label
-                            fx:id="lblTotalCitas"
-                            text="0"
-                            styleClass="doctor-stat-value"/>
-
-                    <Label
-                            text="Agenda registrada"
-                            styleClass="doctor-stat-description"/>
-
-                </VBox>
-
-                <VBox
-                        spacing="4"
-                        HBox.hgrow="ALWAYS"
-                        styleClass="doctor-stat-card doctor-stat-programmed">
-
-                    <padding>
-                        <Insets top="16" right="18" bottom="16" left="18"/>
-                    </padding>
-
-                    <Label
-                            text="PROGRAMADAS"
-                            styleClass="doctor-stat-label"/>
-
-                    <Label
-                            fx:id="lblProgramadas"
-                            text="0"
-                            styleClass="doctor-stat-value"/>
-
-                    <Label
-                            text="Pendientes de atención"
-                            styleClass="doctor-stat-description"/>
-
-                </VBox>
-
-                <VBox
-                        spacing="4"
-                        HBox.hgrow="ALWAYS"
-                        styleClass="doctor-stat-card doctor-stat-cancelled">
-
-                    <padding>
-                        <Insets top="16" right="18" bottom="16" left="18"/>
-                    </padding>
-
-                    <Label
-                            text="CANCELADAS"
-                            styleClass="doctor-stat-label"/>
-
-                    <Label
-                            fx:id="lblCanceladas"
-                            text="0"
-                            styleClass="doctor-stat-value"/>
-
-                    <Label
-                            text="Citas no vigentes"
-                            styleClass="doctor-stat-description"/>
+                            text="Gestión clínica"
+                            styleClass="doctor-header-context-value"/>
 
                 </VBox>
 
             </HBox>
 
-            <!-- FILTROS -->
-
-            <VBox
-                    spacing="12"
-                    styleClass="doctor-filter-panel">
-
-                <padding>
-                    <Insets top="16" right="18" bottom="16" left="18"/>
-                </padding>
-
-                <HBox alignment="CENTER_LEFT">
-
-                    <VBox spacing="2">
-
-                        <Label
-                                text="Buscar en la agenda"
-                                styleClass="doctor-section-title"/>
-
-                        <Label
-                                text="Localiza rápidamente una cita por paciente o información médica."
-                                styleClass="doctor-section-description"/>
-
-                    </VBox>
-
-                    <Region HBox.hgrow="ALWAYS"/>
-
-                    <Label
-                            text="Filtros"
-                            styleClass="doctor-filter-indicator"/>
-
-                </HBox>
-
-                <HBox
-                        spacing="10"
-                        alignment="CENTER_LEFT">
-
-                    <TextField
-                            fx:id="txtBuscar"
-                            promptText="Buscar paciente, especialidad, establecimiento o motivo..."
-                            HBox.hgrow="ALWAYS"
-                            prefHeight="40"
-                            styleClass="doctor-search-field"/>
-
-                    <ComboBox
-                            fx:id="cmbEstado"
-                            prefWidth="160"
-                            prefHeight="40"
-                            styleClass="doctor-filter-combo"/>
-
-                    <ComboBox
-                            fx:id="cmbFecha"
-                            prefWidth="140"
-                            prefHeight="40"
-                            styleClass="doctor-filter-combo"/>
-
-                    <Button
-                            text="Limpiar"
-                            prefHeight="40"
-                            styleClass="doctor-secondary-button"
-                            onAction="#limpiarFiltros"/>
-
-                </HBox>
-
-            </VBox>
-
-            <!-- TÍTULO AGENDA -->
-
-            <HBox
-                    alignment="CENTER_LEFT"
-                    spacing="8">
-
-                <VBox spacing="2">
-
-                    <Label
-                            text="Citas"
-                            styleClass="doctor-section-title"/>
-
-                    <Label
-                            text="Información de pacientes y consultas asignadas."
-                            styleClass="doctor-section-description"/>
-
-                </VBox>
-
-                <Region HBox.hgrow="ALWAYS"/>
-
-                <HBox
-                        spacing="5"
-                        alignment="CENTER">
-
-                    <Label
-                            text="Mostrando"
-                            styleClass="doctor-count-text"/>
-
-                    <Label
-                            fx:id="lblCantidadCitas"
-                            text="0"
-                            styleClass="doctor-count-badge"/>
-
-                    <Label
-                            text="citas"
-                            styleClass="doctor-count-text"/>
-
-                </HBox>
-
-            </HBox>
-
-            <Label
-                    fx:id="lblMensaje"
-                    text=""
-                    visible="false"
-                    managed="false"
-                    wrapText="true"
-                    styleClass="doctor-message"/>
-
-            <!-- LISTA DE CITAS -->
+            <!-- ÁREA DESPLAZABLE -->
 
             <ScrollPane
                     fitToWidth="true"
                     VBox.vgrow="ALWAYS"
-                    styleClass="doctor-appointments-scroll">
+                    styleClass="doctor-main-scroll">
 
                 <content>
 
                     <VBox
-                            fx:id="contenedorCitas"
-                            spacing="12">
+                            spacing="20"
+                            styleClass="doctor-content">
 
                         <padding>
-                            <Insets top="2" right="8" bottom="18" left="2"/>
+                            <Insets top="26" right="34" bottom="30" left="34"/>
                         </padding>
+
+                        <!-- HERO -->
+
+                        <HBox
+                                alignment="CENTER_LEFT"
+                                spacing="22"
+                                styleClass="doctor-hero">
+
+                            <padding>
+                                <Insets top="22" right="24" bottom="22" left="24"/>
+                            </padding>
+
+                            <VBox
+                                    alignment="CENTER"
+                                    styleClass="doctor-hero-icon">
+
+                                <Label
+                                        text="+"
+                                        styleClass="doctor-hero-icon-text"/>
+
+                            </VBox>
+
+                            <VBox
+                                    spacing="6"
+                                    HBox.hgrow="ALWAYS">
+
+                                <Label
+                                        text="AGENDA DEL PROFESIONAL"
+                                        styleClass="doctor-hero-eyebrow"/>
+
+                                <Label
+                                        text="Gestión de citas médicas"
+                                        styleClass="doctor-hero-title"/>
+
+                                <Label
+                                        text="Consulta tu agenda, revisa la información de tus pacientes y administra cada etapa de la atención."
+                                        wrapText="true"
+                                        styleClass="doctor-hero-description"/>
+
+                            </VBox>
+
+                            <Button
+                                    text="↻  Actualizar agenda"
+                                    prefHeight="42"
+                                    styleClass="doctor-primary-button"
+                                    onAction="#actualizarAgenda"/>
+
+                        </HBox>
+
+                        <!-- RESUMEN -->
+
+                        <VBox spacing="10">
+
+                            <VBox spacing="2">
+
+                                <Label
+                                        text="Resumen de la agenda"
+                                        styleClass="doctor-section-title"/>
+
+                                <Label
+                                        text="Estado general de las citas actualmente asignadas."
+                                        styleClass="doctor-section-description"/>
+
+                            </VBox>
+
+                            <HBox spacing="14">
+
+                                <VBox
+                                        spacing="5"
+                                        HBox.hgrow="ALWAYS"
+                                        styleClass="doctor-stat-card doctor-stat-total">
+
+                                    <padding>
+                                        <Insets top="17" right="19" bottom="17" left="19"/>
+                                    </padding>
+
+                                    <HBox alignment="CENTER_LEFT">
+
+                                        <Label
+                                                text="TOTAL DE CITAS"
+                                                styleClass="doctor-stat-label"/>
+
+                                        <Region HBox.hgrow="ALWAYS"/>
+
+                                        <Label
+                                                text="●"
+                                                styleClass="doctor-stat-dot-total"/>
+
+                                    </HBox>
+
+                                    <Label
+                                            fx:id="lblTotalCitas"
+                                            text="0"
+                                            styleClass="doctor-stat-value"/>
+
+                                    <Label
+                                            text="Citas registradas en tu agenda"
+                                            styleClass="doctor-stat-description"/>
+
+                                </VBox>
+
+                                <VBox
+                                        spacing="5"
+                                        HBox.hgrow="ALWAYS"
+                                        styleClass="doctor-stat-card doctor-stat-programmed">
+
+                                    <padding>
+                                        <Insets top="17" right="19" bottom="17" left="19"/>
+                                    </padding>
+
+                                    <HBox alignment="CENTER_LEFT">
+
+                                        <Label
+                                                text="PROGRAMADAS"
+                                                styleClass="doctor-stat-label"/>
+
+                                        <Region HBox.hgrow="ALWAYS"/>
+
+                                        <Label
+                                                text="●"
+                                                styleClass="doctor-stat-dot-programmed"/>
+
+                                    </HBox>
+
+                                    <Label
+                                            fx:id="lblProgramadas"
+                                            text="0"
+                                            styleClass="doctor-stat-value"/>
+
+                                    <Label
+                                            text="Pendientes dentro del flujo de atención"
+                                            styleClass="doctor-stat-description"/>
+
+                                </VBox>
+
+                                <VBox
+                                        spacing="5"
+                                        HBox.hgrow="ALWAYS"
+                                        styleClass="doctor-stat-card doctor-stat-cancelled">
+
+                                    <padding>
+                                        <Insets top="17" right="19" bottom="17" left="19"/>
+                                    </padding>
+
+                                    <HBox alignment="CENTER_LEFT">
+
+                                        <Label
+                                                text="CANCELADAS"
+                                                styleClass="doctor-stat-label"/>
+
+                                        <Region HBox.hgrow="ALWAYS"/>
+
+                                        <Label
+                                                text="●"
+                                                styleClass="doctor-stat-dot-cancelled"/>
+
+                                    </HBox>
+
+                                    <Label
+                                            fx:id="lblCanceladas"
+                                            text="0"
+                                            styleClass="doctor-stat-value"/>
+
+                                    <Label
+                                            text="Citas que ya no se encuentran vigentes"
+                                            styleClass="doctor-stat-description"/>
+
+                                </VBox>
+
+                            </HBox>
+
+                        </VBox>
+
+                        <!-- BÚSQUEDA Y FILTROS -->
+
+                        <VBox
+                                spacing="14"
+                                styleClass="doctor-filter-panel">
+
+                            <padding>
+                                <Insets top="18" right="20" bottom="18" left="20"/>
+                            </padding>
+
+                            <HBox alignment="CENTER_LEFT">
+
+                                <VBox spacing="3">
+
+                                    <Label
+                                            text="Buscar y filtrar agenda"
+                                            styleClass="doctor-section-title"/>
+
+                                    <Label
+                                            text="Encuentra rápidamente una cita por paciente, especialidad, establecimiento o motivo."
+                                            styleClass="doctor-section-description"/>
+
+                                </VBox>
+
+                                <Region HBox.hgrow="ALWAYS"/>
+
+                                <Label
+                                        text="FILTROS DE AGENDA"
+                                        styleClass="doctor-filter-indicator"/>
+
+                            </HBox>
+
+                            <HBox
+                                    spacing="10"
+                                    alignment="CENTER_LEFT">
+
+                                <TextField
+                                        fx:id="txtBuscar"
+                                        promptText="Buscar paciente, especialidad, establecimiento o motivo..."
+                                        HBox.hgrow="ALWAYS"
+                                        prefHeight="42"
+                                        styleClass="doctor-search-field"/>
+
+                                <ComboBox
+                                        fx:id="cmbEstado"
+                                        prefWidth="165"
+                                        prefHeight="42"
+                                        styleClass="doctor-filter-combo"/>
+
+                                <ComboBox
+                                        fx:id="cmbFecha"
+                                        prefWidth="145"
+                                        prefHeight="42"
+                                        styleClass="doctor-filter-combo"/>
+
+                                <Button
+                                        text="Limpiar filtros"
+                                        prefHeight="42"
+                                        styleClass="doctor-secondary-button"
+                                        onAction="#limpiarFiltros"/>
+
+                            </HBox>
+
+                        </VBox>
+
+                        <!-- CABECERA DE RESULTADOS -->
+
+                        <HBox
+                                alignment="CENTER_LEFT"
+                                spacing="10">
+
+                            <VBox spacing="3">
+
+                                <Label
+                                        text="Agenda de citas"
+                                        styleClass="doctor-section-title"/>
+
+                                <Label
+                                        text="Pacientes y consultas asignadas a tu agenda médica."
+                                        styleClass="doctor-section-description"/>
+
+                            </VBox>
+
+                            <Region HBox.hgrow="ALWAYS"/>
+
+                            <HBox
+                                    spacing="6"
+                                    alignment="CENTER"
+                                    styleClass="doctor-results-counter">
+
+                                <Label
+                                        text="Mostrando"
+                                        styleClass="doctor-count-text"/>
+
+                                <Label
+                                        fx:id="lblCantidadCitas"
+                                        text="0"
+                                        styleClass="doctor-count-badge"/>
+
+                                <Label
+                                        text="citas"
+                                        styleClass="doctor-count-text"/>
+
+                            </HBox>
+
+                        </HBox>
+
+                        <!-- MENSAJES -->
+
+                        <Label
+                                fx:id="lblMensaje"
+                                text=""
+                                visible="false"
+                                managed="false"
+                                wrapText="true"
+                                styleClass="doctor-message"/>
+
+                        <!-- CITAS -->
+
+                        <VBox
+                                fx:id="contenedorCitas"
+                                spacing="12"
+                                styleClass="doctor-appointments-container">
+
+                            <padding>
+                                <Insets top="2" right="2" bottom="18" left="2"/>
+                            </padding>
+
+                        </VBox>
 
                     </VBox>
 

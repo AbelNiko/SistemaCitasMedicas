@@ -1,83 +1,88 @@
 package com.citasmedicas.util;
 
+import java.io.IOException;
+import java.io.InputStream;
+
+import java.nio.file.Files;
+import java.nio.file.Path;
+
 import java.sql.Connection;
 import java.sql.DriverManager;
 import java.sql.SQLException;
+
 import java.util.Locale;
+import java.util.Properties;
 
 /**
  * ================================================================
  *             SISTEMA DE GESTIÓN DE CITAS MÉDICAS
  * ================================================================
  *
- * Clase responsable de administrar la conexión con MySQL.
+ * Administra la conexión con MySQL.
  *
- * Las credenciales no se almacenan directamente en el código.
- * Se obtienen mediante variables de entorno.
+ * La configuración puede obtenerse desde:
  *
- * Variables obligatorias:
+ * 1. Archivo externo definido mediante:
+ *    -Dmediappoint.config=ruta/database.properties
+ *
+ * 2. Variables de entorno:
  *
  * DB_HOST
  * DB_PORT
  * DB_NAME
  * DB_USER
  * DB_PASSWORD
- *
- * Variable opcional:
- *
  * DB_SSL_MODE
  *
- * Valores admitidos:
- * DISABLED
- * PREFERRED
- * REQUIRED
- * VERIFY_CA
- * VERIFY_IDENTITY
+ * Esto permite utilizar variables de entorno durante el
+ * desarrollo y un archivo externo en la versión ejecutable.
  *
- * Para la base local puede utilizarse DISABLED.
- * Para Aiven se utiliza REQUIRED.
+ * Las credenciales no se almacenan directamente en el
+ * código fuente.
  *
  * @author Equipo de Ingeniería de Software II
- * @version 1.1
+ * @version 1.2
  */
 public final class ConexionBD {
 
     /* ============================================================
-                         VARIABLES DE ENTORNO
+                       CONFIGURACIÓN EXTERNA
+       ============================================================ */
+
+    private static final Properties CONFIGURACION =
+            cargarConfiguracionExterna();
+
+    /* ============================================================
+                          DATOS DE CONEXIÓN
        ============================================================ */
 
     private static final String HOST =
-            obtenerVariable(
+            obtenerValorObligatorio(
                     "DB_HOST"
             );
 
     private static final String PUERTO =
-            obtenerVariable(
+            obtenerValorObligatorio(
                     "DB_PORT"
             );
 
     private static final String BASE_DATOS =
-            obtenerVariable(
+            obtenerValorObligatorio(
                     "DB_NAME"
             );
 
     private static final String USUARIO =
-            obtenerVariable(
+            obtenerValorObligatorio(
                     "DB_USER"
             );
 
     private static final String PASSWORD =
-            obtenerVariable(
+            obtenerValorObligatorio(
                     "DB_PASSWORD"
             );
 
-    /*
-     * DISABLED se mantiene como valor predeterminado
-     * para conservar compatibilidad con el servidor
-     * MySQL local utilizado durante el desarrollo.
-     */
     private static final String SSL_MODE =
-            obtenerVariableOpcional(
+            obtenerValorOpcional(
                     "DB_SSL_MODE",
                     "DISABLED"
             )
@@ -100,11 +105,11 @@ public final class ConexionBD {
     }
 
     /* ============================================================
-                             CONEXIÓN
+                        OBTENCIÓN DE CONEXIÓN
        ============================================================ */
 
     /**
-     * Establece una conexión con MySQL.
+     * Obtiene una conexión activa con MySQL.
      *
      * @return conexión activa.
      * @throws SQLException si ocurre un error.
@@ -120,14 +125,11 @@ public final class ConexionBD {
     }
 
     /* ============================================================
-                         CONSTRUCCIÓN DE URL
+                      CONSTRUCCIÓN DE LA URL
        ============================================================ */
 
     /**
-     * Construye la URL JDBC utilizando la configuración
-     * definida mediante variables de entorno.
-     *
-     * @return URL JDBC preparada.
+     * Construye la URL JDBC de conexión.
      */
     private static String construirUrl() {
 
@@ -151,27 +153,179 @@ public final class ConexionBD {
 
                 + "&characterEncoding=UTF-8"
 
-                /*
-                 * Máximo de 10 segundos para establecer
-                 * una conexión con el servidor.
-                 */
                 + "&connectTimeout=10000"
 
-                /*
-                 * Máximo de 20 segundos esperando una
-                 * respuesta de MySQL.
-                 */
                 + "&socketTimeout=20000";
     }
 
     /* ============================================================
-                           VALIDACIONES
+                     ARCHIVO DE CONFIGURACIÓN
        ============================================================ */
 
     /**
-     * Comprueba que el modo SSL sea válido.
+     * Carga el archivo externo indicado mediante
+     * la propiedad mediappoint.config.
      *
-     * @param sslMode modo configurado.
+     * Si no se define la propiedad, se utilizarán
+     * las variables de entorno.
+     */
+    private static Properties cargarConfiguracionExterna() {
+
+        Properties propiedades =
+                new Properties();
+
+        String rutaConfiguracion =
+                System.getProperty(
+                        "mediappoint.config"
+                );
+
+        if (
+                rutaConfiguracion == null
+                        || rutaConfiguracion.isBlank()
+        ) {
+
+            return propiedades;
+        }
+
+        Path archivo =
+                Path.of(
+                        rutaConfiguracion.trim()
+                )
+                        .toAbsolutePath()
+                        .normalize();
+
+        if (!Files.isRegularFile(archivo)) {
+
+            throw new IllegalStateException(
+                    "No se encontró el archivo de configuración: "
+                            + archivo
+            );
+        }
+
+        try (
+                InputStream entrada =
+                        Files.newInputStream(
+                                archivo
+                        )
+        ) {
+
+            propiedades.load(
+                    entrada
+            );
+
+            return propiedades;
+
+        } catch (IOException e) {
+
+            throw new IllegalStateException(
+                    "No fue posible leer la configuración "
+                            + "de la base de datos.",
+                    e
+            );
+        }
+    }
+
+    /* ============================================================
+                         OBTENCIÓN DE VALORES
+       ============================================================ */
+
+    /**
+     * Obtiene un valor obligatorio.
+     *
+     * Se consulta primero el archivo externo.
+     * Si no existe allí, se consulta la variable
+     * de entorno correspondiente.
+     */
+    private static String obtenerValorObligatorio(
+            String nombre
+    ) {
+
+        String valor =
+                obtenerValor(
+                        nombre
+                );
+
+        if (
+                valor == null
+                        || valor.isBlank()
+        ) {
+
+            throw new IllegalStateException(
+                    "La configuración "
+                            + nombre
+                            + " no está definida."
+            );
+        }
+
+        /*
+         * En contraseñas no eliminamos espacios
+         * automáticamente porque forman parte
+         * potencial del valor.
+         */
+        if ("DB_PASSWORD".equals(nombre)) {
+
+            return valor;
+        }
+
+        return valor.trim();
+    }
+
+    /**
+     * Obtiene un valor opcional.
+     */
+    private static String obtenerValorOpcional(
+            String nombre,
+            String valorPredeterminado
+    ) {
+
+        String valor =
+                obtenerValor(
+                        nombre
+                );
+
+        if (
+                valor == null
+                        || valor.isBlank()
+        ) {
+
+            return valorPredeterminado;
+        }
+
+        return valor;
+    }
+
+    /**
+     * Busca primero en el archivo externo y posteriormente
+     * en las variables de entorno.
+     */
+    private static String obtenerValor(
+            String nombre
+    ) {
+
+        String valorArchivo =
+                CONFIGURACION.getProperty(
+                        nombre
+                );
+
+        if (
+                valorArchivo != null
+                        && !valorArchivo.isBlank()
+        ) {
+
+            return valorArchivo;
+        }
+
+        return System.getenv(
+                nombre
+        );
+    }
+
+    /* ============================================================
+                         VALIDACIÓN SSL
+       ============================================================ */
+
+    /**
+     * Valida el modo SSL admitido por MySQL Connector/J.
      */
     private static void validarSslMode(
             String sslMode
@@ -192,72 +346,9 @@ public final class ConexionBD {
         if (!valido) {
 
             throw new IllegalStateException(
-                    "El valor configurado en DB_SSL_MODE "
-                            + "no es válido: "
+                    "El modo SSL configurado no es válido: "
                             + sslMode
             );
         }
-    }
-
-    /* ============================================================
-                       VARIABLES DE ENTORNO
-       ============================================================ */
-
-    /**
-     * Obtiene una variable obligatoria.
-     *
-     * @param nombre nombre de la variable.
-     * @return valor configurado.
-     */
-    private static String obtenerVariable(
-            String nombre
-    ) {
-
-        String valor =
-                System.getenv(
-                        nombre
-                );
-
-        if (
-                valor == null
-                        || valor.isBlank()
-        ) {
-
-            throw new IllegalStateException(
-                    "La variable de entorno "
-                            + nombre
-                            + " no está configurada."
-            );
-        }
-
-        return valor.trim();
-    }
-
-    /**
-     * Obtiene una variable opcional.
-     *
-     * @param nombre nombre de la variable.
-     * @param valorPredeterminado valor usado si no existe.
-     * @return valor configurado.
-     */
-    private static String obtenerVariableOpcional(
-            String nombre,
-            String valorPredeterminado
-    ) {
-
-        String valor =
-                System.getenv(
-                        nombre
-                );
-
-        if (
-                valor == null
-                        || valor.isBlank()
-        ) {
-
-            return valorPredeterminado;
-        }
-
-        return valor.trim();
     }
 }

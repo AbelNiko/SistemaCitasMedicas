@@ -363,4 +363,123 @@ public Medico buscarPorIdUsuario(
 
         return medico;
     }
+    /**
+ * Obtiene las especialidades activas asignadas a un médico.
+ *
+ * @param idMedico identificador del médico.
+ * @return lista con los nombres de las especialidades.
+ * @throws SQLException si ocurre un error de acceso a datos.
+ */
+public List<String> listarEspecialidadesPorMedico(
+        int idMedico
+) throws SQLException {
+
+    if (idMedico <= 0) {
+        throw new IllegalArgumentException(
+                "El médico no es válido."
+        );
+    }
+
+    List<String> especialidades =
+            new ArrayList<>();
+
+    String sql = """
+            SELECT e.nombre
+            FROM medico_especialidad me
+            INNER JOIN especialidades e
+                ON me.id_especialidad = e.id_especialidad
+            WHERE me.id_medico = ?
+              AND e.estado = TRUE
+            ORDER BY e.nombre
+            """;
+
+    try (
+            Connection conexion =
+                    ConexionBD.obtenerConexion();
+
+            PreparedStatement sentencia =
+                    conexion.prepareStatement(sql)
+    ) {
+
+        sentencia.setInt(
+                1,
+                idMedico
+        );
+
+        try (
+                ResultSet resultado =
+                        sentencia.executeQuery()
+        ) {
+
+            while (resultado.next()) {
+                especialidades.add(
+                        resultado.getString("nombre")
+                );
+            }
+        }
+    }
+
+    return especialidades;
+}
+
+/**
+ * Obtiene los establecimientos activos asignados a un médico.
+ *
+ * @param idMedico identificador del médico.
+ * @return lista con los nombres de los establecimientos.
+ * @throws SQLException si ocurre un error de acceso a datos.
+ */
+public List<String> listarEstablecimientosPorMedico(
+        int idMedico
+) throws SQLException {
+
+    if (idMedico <= 0) {
+        throw new IllegalArgumentException(
+                "El médico no es válido."
+        );
+    }
+
+    List<String> establecimientos =
+            new ArrayList<>();
+
+    String sql = """
+            SELECT est.nombre
+            FROM medico_establecimiento me
+            INNER JOIN establecimientos est
+                ON me.id_establecimiento =
+                   est.id_establecimiento
+            WHERE me.id_medico = ?
+              AND me.estado = TRUE
+              AND est.estado = TRUE
+            ORDER BY est.nombre
+            """;
+
+    try (
+            Connection conexion =
+                    ConexionBD.obtenerConexion();
+
+            PreparedStatement sentencia =
+                    conexion.prepareStatement(sql)
+    ) {
+
+        sentencia.setInt(
+                1,
+                idMedico
+        );
+
+        try (
+                ResultSet resultado =
+                        sentencia.executeQuery()
+        ) {
+
+            while (resultado.next()) {
+                establecimientos.add(
+                        resultado.getString("nombre")
+                );
+            }
+        }
+    }
+
+    return establecimientos;
+}
 }

@@ -1,0 +1,684 @@
+<?xml version="1.0" encoding="UTF-8"?>
+
+<?import javafx.geometry.Insets?>
+<?import javafx.scene.control.Button?>
+<?import javafx.scene.control.Label?>
+<?import javafx.scene.control.ScrollPane?>
+<?import javafx.scene.control.Separator?>
+<?import javafx.scene.layout.BorderPane?>
+<?import javafx.scene.layout.HBox?>
+<?import javafx.scene.layout.Region?>
+<?import javafx.scene.layout.VBox?>
+
+<BorderPane
+        xmlns="http://javafx.com/javafx"
+        xmlns:fx="http://javafx.com/fxml"
+        fx:controller="com.citasmedicas.controller.PerfilMedicoController"
+        prefWidth="1280"
+        prefHeight="780"
+        styleClass="doctor-root"
+        stylesheets="@../css/mediappoint.css">
+
+    <!-- =====================================================
+                         MENÚ LATERAL
+         ===================================================== -->
+
+    <left>
+
+        <VBox
+                prefWidth="235"
+                spacing="12"
+                styleClass="doctor-sidebar">
+
+            <padding>
+                <Insets top="28" right="18" bottom="24" left="18"/>
+            </padding>
+
+            <VBox spacing="2">
+
+                <Label
+                        text="MediAppoint"
+                        styleClass="doctor-brand"/>
+
+                <Label
+                        text="PORTAL MÉDICO"
+                        styleClass="doctor-portal-label"/>
+
+            </VBox>
+
+            <Separator styleClass="doctor-separator"/>
+
+            <Label
+                    text="GESTIÓN CLÍNICA"
+                    styleClass="doctor-menu-label"/>
+
+            <Button
+                    text="●   Mi agenda"
+                    maxWidth="Infinity"
+                    prefHeight="42"
+                    styleClass="doctor-sidebar-button"
+                    onAction="#abrirAgenda"/>
+
+            <Button
+                    text="●   Mi perfil"
+                    maxWidth="Infinity"
+                    prefHeight="42"
+                    styleClass="doctor-sidebar-button-active"
+                    onAction="#abrirPerfil"/>
+
+            <VBox
+                    spacing="7"
+                    styleClass="doctor-sidebar-info">
+
+                <Label
+                        text="PERFIL PROFESIONAL"
+                        styleClass="doctor-sidebar-info-title"/>
+
+                <Label
+                        text="Consulta tus datos personales, profesionales y asignaciones dentro de MediAppoint."
+                        wrapText="true"
+                        styleClass="doctor-sidebar-info-text"/>
+
+            </VBox>
+
+            <Region VBox.vgrow="ALWAYS"/>
+
+            <VBox
+                    spacing="5"
+                    styleClass="doctor-sidebar-profile">
+
+                <padding>
+                    <Insets top="13" right="13" bottom="13" left="13"/>
+                </padding>
+
+                <Label
+                        text="MÉDICO AUTENTICADO"
+                        styleClass="doctor-sidebar-role"/>
+
+                <Label
+                        fx:id="lblNombreMedico"
+                        text="Médico"
+                        wrapText="true"
+                        styleClass="doctor-sidebar-name"/>
+
+                <Label
+                        text="Sesión profesional activa"
+                        styleClass="doctor-sidebar-detail"/>
+
+            </VBox>
+
+            <Button
+                    text="Cerrar sesión"
+                    maxWidth="Infinity"
+                    prefHeight="39"
+                    styleClass="doctor-logout-button"
+                    onAction="#cerrarSesion"/>
+
+        </VBox>
+
+    </left>
+
+    <!-- =====================================================
+                         CONTENIDO PRINCIPAL
+         ===================================================== -->
+
+    <center>
+
+        <VBox styleClass="doctor-main-area">
+
+            <!-- CABECERA -->
+
+            <HBox
+                    alignment="CENTER_LEFT"
+                    spacing="16"
+                    styleClass="doctor-top-header">
+
+                <padding>
+                    <Insets top="19" right="34" bottom="19" left="34"/>
+                </padding>
+
+                <VBox spacing="3">
+
+                    <Label
+                            text="Mi perfil"
+                            styleClass="doctor-page-title"/>
+
+                    <Label
+                            text="Información personal, profesional y administrativa"
+                            styleClass="doctor-page-subtitle"/>
+
+                </VBox>
+
+                <Region HBox.hgrow="ALWAYS"/>
+
+                <VBox
+                        spacing="2"
+                        alignment="CENTER_RIGHT">
+
+                    <Label
+                            text="PORTAL PROFESIONAL"
+                            styleClass="doctor-header-context-label"/>
+
+                    <Label
+                            text="Perfil médico"
+                            styleClass="doctor-header-context-value"/>
+
+                </VBox>
+
+            </HBox>
+
+            <!-- CONTENIDO -->
+
+            <ScrollPane
+                    fitToWidth="true"
+                    VBox.vgrow="ALWAYS"
+                    styleClass="doctor-main-scroll">
+
+                <content>
+
+                    <VBox
+                            spacing="18"
+                            styleClass="doctor-content">
+
+                        <padding>
+                            <Insets top="24" right="34" bottom="30" left="34"/>
+                        </padding>
+
+                        <!-- =================================================
+                                             HERO PROFESIONAL
+                             ================================================= -->
+
+                        <HBox
+                                spacing="20"
+                                alignment="CENTER_LEFT"
+                                styleClass="doctor-profile2-hero">
+
+                            <padding>
+                                <Insets top="24" right="26" bottom="24" left="26"/>
+                            </padding>
+
+                            <VBox
+                                    alignment="CENTER"
+                                    styleClass="doctor-profile2-avatar">
+
+                                <Label
+                                        fx:id="lblIniciales"
+                                        text="MD"
+                                        styleClass="doctor-profile2-avatar-text"/>
+
+                            </VBox>
+
+                            <VBox
+                                    spacing="5"
+                                    HBox.hgrow="ALWAYS">
+
+                                <Label
+                                        text="PERFIL PROFESIONAL"
+                                        styleClass="doctor-profile2-eyebrow"/>
+
+                                <Label
+                                        fx:id="lblNombreHero"
+                                        text="Médico"
+                                        wrapText="true"
+                                        styleClass="doctor-profile2-name"/>
+
+                                <Label
+                                        text="Profesional registrado en MediAppoint"
+                                        styleClass="doctor-profile2-description"/>
+
+                                <HBox
+                                        spacing="7"
+                                        alignment="CENTER_LEFT">
+
+                                    <Label
+                                            text="✓"
+                                            styleClass="doctor-profile2-verified-icon"/>
+
+                                    <Label
+                                            text="Información profesional verificada"
+                                            styleClass="doctor-profile2-verified-text"/>
+
+                                </HBox>
+
+                            </VBox>
+
+                            <VBox
+                                    spacing="5"
+                                    alignment="CENTER_RIGHT"
+                                    styleClass="doctor-profile2-status-box">
+
+                                <Label
+                                        text="ESTADO PROFESIONAL"
+                                        styleClass="doctor-profile2-status-label"/>
+
+                                <Label
+                                        fx:id="lblEstado"
+                                        text="ACTIVO"
+                                        styleClass="doctor-profile2-status"/>
+
+                                <Label
+                                        text="Cuenta habilitada"
+                                        styleClass="doctor-profile2-status-detail"/>
+
+                            </VBox>
+
+                        </HBox>
+
+                        <!-- MENSAJES -->
+
+                        <Label
+                                fx:id="lblMensaje"
+                                text=""
+                                visible="false"
+                                managed="false"
+                                wrapText="true"
+                                styleClass="doctor-message"/>
+
+                        <!-- =================================================
+                                              CONTENIDO
+                             ================================================= -->
+
+                        <HBox
+                                spacing="18"
+                                alignment="TOP_LEFT">
+
+                            <!-- =================================================
+                                               COLUMNA IZQUIERDA
+                                 ================================================= -->
+
+                            <VBox
+                                    spacing="18"
+                                    minWidth="0"
+                                    maxWidth="Infinity"
+                                    HBox.hgrow="ALWAYS">
+
+                                <!-- INFORMACIÓN PERSONAL -->
+
+                                <VBox
+                                        spacing="17"
+                                        maxWidth="Infinity"
+                                        styleClass="doctor-profile2-card">
+
+                                    <padding>
+                                        <Insets top="21" right="22" bottom="22" left="22"/>
+                                    </padding>
+
+                                    <HBox
+                                            spacing="12"
+                                            alignment="CENTER_LEFT">
+
+                                        <Label
+                                                text="01"
+                                                styleClass="doctor-profile2-number"/>
+
+                                        <VBox spacing="2">
+
+                                            <Label
+                                                    text="Información personal"
+                                                    styleClass="doctor-profile2-section-title"/>
+
+                                            <Label
+                                                    text="Datos principales de la cuenta de usuario."
+                                                    styleClass="doctor-profile2-section-subtitle"/>
+
+                                        </VBox>
+
+                                    </HBox>
+
+                                    <Separator styleClass="doctor-profile2-separator"/>
+
+                                    <HBox spacing="20">
+
+                                        <VBox
+                                                spacing="5"
+                                                HBox.hgrow="ALWAYS">
+
+                                            <Label
+                                                    text="NOMBRE COMPLETO"
+                                                    styleClass="doctor-profile2-field-label"/>
+
+                                            <Label
+                                                    fx:id="lblNombreCompleto"
+                                                    text="No especificado"
+                                                    wrapText="true"
+                                                    styleClass="doctor-profile2-field-value"/>
+
+                                        </VBox>
+
+                                        <VBox
+                                                spacing="5"
+                                                HBox.hgrow="ALWAYS">
+
+                                            <Label
+                                                    text="CÉDULA"
+                                                    styleClass="doctor-profile2-field-label"/>
+
+                                            <Label
+                                                    fx:id="lblCedula"
+                                                    text="No especificado"
+                                                    styleClass="doctor-profile2-field-value"/>
+
+                                        </VBox>
+
+                                    </HBox>
+
+                                    <HBox spacing="20">
+
+                                        <VBox
+                                                spacing="5"
+                                                HBox.hgrow="ALWAYS">
+
+                                            <Label
+                                                    text="CORREO ELECTRÓNICO"
+                                                    styleClass="doctor-profile2-field-label"/>
+
+                                            <Label
+                                                    fx:id="lblCorreo"
+                                                    text="No especificado"
+                                                    wrapText="true"
+                                                    styleClass="doctor-profile2-field-value"/>
+
+                                        </VBox>
+
+                                        <VBox
+                                                spacing="5"
+                                                HBox.hgrow="ALWAYS">
+
+                                            <Label
+                                                    text="TELÉFONO"
+                                                    styleClass="doctor-profile2-field-label"/>
+
+                                            <Label
+                                                    fx:id="lblTelefono"
+                                                    text="No especificado"
+                                                    styleClass="doctor-profile2-field-value"/>
+
+                                        </VBox>
+
+                                    </HBox>
+
+                                </VBox>
+
+                                <!-- REGISTRO PROFESIONAL -->
+
+                                <VBox
+                                        spacing="17"
+                                        maxWidth="Infinity"
+                                        styleClass="doctor-profile2-card">
+
+                                    <padding>
+                                        <Insets top="21" right="22" bottom="22" left="22"/>
+                                    </padding>
+
+                                    <HBox
+                                            spacing="12"
+                                            alignment="CENTER_LEFT">
+
+                                        <Label
+                                                text="02"
+                                                styleClass="doctor-profile2-number"/>
+
+                                        <VBox spacing="2">
+
+                                            <Label
+                                                    text="Registro profesional"
+                                                    styleClass="doctor-profile2-section-title"/>
+
+                                            <Label
+                                                    text="Identificación y fecha de incorporación."
+                                                    styleClass="doctor-profile2-section-subtitle"/>
+
+                                        </VBox>
+
+                                    </HBox>
+
+                                    <Separator styleClass="doctor-profile2-separator"/>
+
+                                    <HBox spacing="20">
+
+                                        <VBox
+                                                spacing="5"
+                                                HBox.hgrow="ALWAYS">
+
+                                            <Label
+                                                    text="CÉDULA PROFESIONAL"
+                                                    styleClass="doctor-profile2-field-label"/>
+
+                                            <Label
+                                                    fx:id="lblCedulaProfesional"
+                                                    text="No especificado"
+                                                    styleClass="doctor-profile2-professional-id"/>
+
+                                        </VBox>
+
+                                        <VBox
+                                                spacing="5"
+                                                HBox.hgrow="ALWAYS">
+
+                                            <Label
+                                                    text="FECHA DE REGISTRO"
+                                                    styleClass="doctor-profile2-field-label"/>
+
+                                            <Label
+                                                    fx:id="lblFechaRegistro"
+                                                    text="No especificado"
+                                                    wrapText="true"
+                                                    styleClass="doctor-profile2-field-value"/>
+
+                                        </VBox>
+
+                                    </HBox>
+
+                                </VBox>
+
+                            </VBox>
+
+                            <!-- =================================================
+                                               COLUMNA DERECHA
+                                 ================================================= -->
+
+                            <VBox
+                                    spacing="18"
+                                    minWidth="0"
+                                    maxWidth="Infinity"
+                                    HBox.hgrow="ALWAYS">
+
+                                <!-- ASIGNACIONES -->
+
+                                <VBox
+                                        spacing="17"
+                                        maxWidth="Infinity"
+                                        styleClass="doctor-profile2-card">
+
+                                    <padding>
+                                        <Insets top="21" right="22" bottom="22" left="22"/>
+                                    </padding>
+
+                                    <HBox
+                                            spacing="12"
+                                            alignment="CENTER_LEFT">
+
+                                        <Label
+                                                text="03"
+                                                styleClass="doctor-profile2-number"/>
+
+                                        <VBox spacing="2">
+
+                                            <Label
+                                                    text="Asignaciones profesionales"
+                                                    styleClass="doctor-profile2-section-title"/>
+
+                                            <Label
+                                                    text="Áreas y unidades donde se encuentra habilitado."
+                                                    wrapText="true"
+                                                    styleClass="doctor-profile2-section-subtitle"/>
+
+                                        </VBox>
+
+                                    </HBox>
+
+                                    <Separator styleClass="doctor-profile2-separator"/>
+
+                                    <VBox spacing="7">
+
+                                        <Label
+                                                text="ESPECIALIDADES"
+                                                styleClass="doctor-profile2-field-label"/>
+
+                                        <HBox styleClass="doctor-profile2-assignment-box">
+
+                                            <padding>
+                                                <Insets top="11" right="13" bottom="11" left="13"/>
+                                            </padding>
+
+                                            <Label
+                                                    text="✚"
+                                                    styleClass="doctor-profile2-assignment-icon"/>
+
+                                            <Label
+                                                    fx:id="lblEspecialidades"
+                                                    text="Sin especialidades asignadas"
+                                                    wrapText="true"
+                                                    HBox.hgrow="ALWAYS"
+                                                    styleClass="doctor-profile2-assignment-text"/>
+
+                                        </HBox>
+
+                                    </VBox>
+
+                                    <VBox spacing="7">
+
+                                        <Label
+                                                text="ESTABLECIMIENTOS"
+                                                styleClass="doctor-profile2-field-label"/>
+
+                                        <HBox styleClass="doctor-profile2-assignment-box">
+
+                                            <padding>
+                                                <Insets top="11" right="13" bottom="11" left="13"/>
+                                            </padding>
+
+                                            <Label
+                                                    text="⌂"
+                                                    styleClass="doctor-profile2-assignment-icon"/>
+
+                                            <Label
+                                                    fx:id="lblEstablecimientos"
+                                                    text="Sin establecimientos asignados"
+                                                    wrapText="true"
+                                                    HBox.hgrow="ALWAYS"
+                                                    styleClass="doctor-profile2-assignment-text"/>
+
+                                        </HBox>
+
+                                    </VBox>
+
+                                </VBox>
+
+                                <!-- INFORMACIÓN ADMINISTRATIVA -->
+
+                                <VBox
+                                        spacing="17"
+                                        maxWidth="Infinity"
+                                        styleClass="doctor-profile2-card">
+
+                                    <padding>
+                                        <Insets top="21" right="22" bottom="22" left="22"/>
+                                    </padding>
+
+                                    <HBox
+                                            spacing="12"
+                                            alignment="CENTER_LEFT">
+
+                                        <Label
+                                                text="04"
+                                                styleClass="doctor-profile2-number"/>
+
+                                        <VBox spacing="2">
+
+                                            <Label
+                                                    text="Información administrativa"
+                                                    styleClass="doctor-profile2-section-title"/>
+
+                                            <Label
+                                                    text="Información complementaria del perfil."
+                                                    styleClass="doctor-profile2-section-subtitle"/>
+
+                                        </VBox>
+
+                                    </HBox>
+
+                                    <Separator styleClass="doctor-profile2-separator"/>
+
+                                    <Label
+                                            text="OBSERVACIÓN"
+                                            styleClass="doctor-profile2-field-label"/>
+
+                                    <VBox
+                                            spacing="6"
+                                            styleClass="doctor-profile2-observation-box">
+
+                                        <padding>
+                                            <Insets top="13" right="14" bottom="13" left="14"/>
+                                        </padding>
+
+                                        <Label
+                                                text="NOTA ADMINISTRATIVA"
+                                                styleClass="doctor-profile2-observation-title"/>
+
+                                        <Label
+                                                fx:id="lblObservacion"
+                                                text="No especificado"
+                                                wrapText="true"
+                                                maxWidth="Infinity"
+                                                styleClass="doctor-profile2-observation-text"/>
+
+                                    </VBox>
+
+                                </VBox>
+
+                            </VBox>
+
+                        </HBox>
+
+                        <!-- AVISO FINAL -->
+
+                        <HBox
+                                spacing="13"
+                                alignment="CENTER_LEFT"
+                                styleClass="doctor-profile2-notice">
+
+                            <padding>
+                                <Insets top="14" right="17" bottom="14" left="17"/>
+                            </padding>
+
+                            <Label
+                                    text="i"
+                                    styleClass="doctor-profile2-notice-icon"/>
+
+                            <VBox spacing="2">
+
+                                <Label
+                                        text="Información profesional protegida"
+                                        styleClass="doctor-profile2-notice-title"/>
+
+                                <Label
+                                        text="La información de esta pantalla se presenta en modo de consulta. Las modificaciones administrativas deben ser realizadas por personal autorizado."
+                                        wrapText="true"
+                                        styleClass="doctor-profile2-notice-text"/>
+
+                            </VBox>
+
+                        </HBox>
+
+                    </VBox>
+
+                </content>
+
+            </ScrollPane>
+
+        </VBox>
+
+    </center>
+
+</BorderPane>

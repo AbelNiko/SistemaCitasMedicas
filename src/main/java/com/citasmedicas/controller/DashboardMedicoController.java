@@ -8,9 +8,13 @@ import com.citasmedicas.service.CitaService;
 import com.citasmedicas.util.SesionUtil;
 
 import javafx.fxml.FXML;
+import javafx.fxml.FXMLLoader;
+import javafx.concurrent.Task;
 import javafx.geometry.Insets;
 import javafx.geometry.Pos;
 import javafx.scene.Node;
+import javafx.scene.Parent;
+import javafx.scene.Scene;
 import javafx.scene.control.Button;
 import javafx.scene.control.ButtonBar;
 import javafx.scene.control.ButtonType;
@@ -49,10 +53,11 @@ import java.util.Locale;
  * - marcar citas confirmadas como atendidas;
  * - registrar la no asistencia del paciente;
  * - actualizar la agenda;
+ * - consultar el perfil profesional;
  * - cerrar la sesión.
  *
  * @author Equipo de Ingeniería de Software II
- * @version 1.4
+ * @version 1.5
  */
 public class DashboardMedicoController {
 
@@ -195,79 +200,168 @@ public class DashboardMedicoController {
     }
 
     /**
-     * Obtiene el perfil médico asociado al usuario.
-     */
-    private void cargarPerfilMedico() {
+ * Obtiene el perfil médico en segundo plano
+ * para no bloquear la interfaz JavaFX.
+ */
+private void cargarPerfilMedico() {
 
-        try {
+    if (
+            usuarioActual == null
+                    || usuarioActual.getIdUsuario() == null
+    ) {
 
-            medicoActual =
-                    medicoDAO.buscarPorIdUsuario(
+        mostrarMensaje(
+                "No existe una sesión médica válida."
+        );
+
+        return;
+    }
+
+    mostrarMensaje(
+            "Cargando información médica..."
+    );
+
+    Task<Medico> tarea =
+            new Task<>() {
+
+                @Override
+                protected Medico call()
+                        throws Exception {
+
+                    return medicoDAO.buscarPorIdUsuario(
                             usuarioActual.getIdUsuario()
                     );
+                }
+            };
 
-            if (medicoActual == null) {
+    tarea.setOnSucceeded(
+            evento -> {
 
-                mostrarMensaje(
-                        "No se encontró un perfil médico asociado a este usuario."
-                );
+                medicoActual =
+                        tarea.getValue();
 
-                return;
-            }
+                if (medicoActual == null) {
 
-            lblCedulaProfesional.setText(
-                    medicoActual.getCedulaProfesional()
-            );
-
-            cargarAgenda();
-
-        } catch (SQLException e) {
-
-            mostrarMensaje(
-                    "No fue posible cargar el perfil médico."
-            );
-
-            System.err.println(
-                    "Error al cargar perfil médico: "
-                            + e.getMessage()
-            );
-        }
-    }
-
-    /**
-     * Recupera desde MySQL las citas asignadas al médico.
-     */
-    @FXML
-    private void cargarAgenda() {
-
-        if (medicoActual == null) {
-            return;
-        }
-
-        try {
-
-            citasMedico =
-                    new ArrayList<>(
-                            citaService.listarPorMedico(
-                                    medicoActual.getIdMedico()
-                            )
+                    mostrarMensaje(
+                            "No se encontró un perfil médico asociado a este usuario."
                     );
 
-            actualizarResumen();
-            aplicarFiltros();
+                    return;
+                }
 
-        } catch (SQLException e) {
+                lblCedulaProfesional.setText(
+                        medicoActual.getCedulaProfesional()
+                );
 
-            mostrarMensaje(
-                    "No fue posible cargar la agenda médica."
-            );
+                cargarAgenda();
+            }
+    );
 
-            System.err.println(
-                    "Error al cargar agenda médica: "
-                            + e.getMessage()
-            );
-        }
+    tarea.setOnFailed(
+            evento -> {
+
+                Throwable error =
+                        tarea.getException();
+
+                mostrarMensaje(
+                        "No fue posible cargar el perfil médico."
+                );
+
+                if (error != null) {
+
+                    System.err.println(
+                            "Error al cargar perfil médico: "
+                                    + error.getMessage()
+                    );
+
+                    error.printStackTrace();
+                }
+            }
+    );
+
+    ejecutarTarea(
+            tarea,
+            "cargar-perfil-medico"
+    );
+}
+
+    /**
+ * Recupera desde MySQL las citas asignadas
+ * al médico sin bloquear la interfaz.
+ */
+@FXML
+private void cargarAgenda() {
+
+    if (medicoActual == null) {
+        return;
     }
+
+    mostrarMensaje(
+            "Actualizando agenda..."
+    );
+
+    int idMedico =
+            medicoActual.getIdMedico();
+
+    Task<List<Cita>> tarea =
+            new Task<>() {
+
+                @Override
+                protected List<Cita> call()
+                        throws Exception {
+
+                    return citaService.listarPorMedico(
+                            idMedico
+                    );
+                }
+            };
+
+    tarea.setOnSucceeded(
+            evento -> {
+
+                List<Cita> resultado =
+                        tarea.getValue();
+
+                citasMedico =
+                        resultado == null
+                                ? new ArrayList<>()
+                                : new ArrayList<>(
+                                        resultado
+                                );
+
+                actualizarResumen();
+
+                aplicarFiltros();
+            }
+    );
+
+    tarea.setOnFailed(
+            evento -> {
+
+                Throwable error =
+                        tarea.getException();
+
+                mostrarMensaje(
+                        "No fue posible cargar la agenda médica."
+                );
+
+                if (error != null) {
+
+                    System.err.println(
+                            "Error al cargar agenda médica: "
+                                    + error.getMessage()
+                    );
+
+                    error.printStackTrace();
+                }
+            }
+    );
+
+    ejecutarTarea(
+            tarea,
+            "cargar-agenda-medico"
+    );
+}
 
     /**
      * Actualiza las tarjetas estadísticas de la agenda.
@@ -1398,6 +1492,72 @@ public class DashboardMedicoController {
     }
 
     /**
+     * Abre el perfil profesional del médico autenticado.
+     */
+    @FXML
+    private void abrirPerfil() {
+
+        if (usuarioActual == null) {
+
+            mostrarMensaje(
+                    "No existe una sesión médica activa."
+            );
+
+            return;
+        }
+
+        try {
+
+            FXMLLoader loader =
+                    new FXMLLoader(
+                            getClass().getResource(
+                                    "/fxml/perfil-medico.fxml"
+                            )
+                    );
+
+            Parent root =
+                    loader.load();
+
+            PerfilMedicoController controlador =
+                    loader.getController();
+
+            controlador.setUsuario(
+                    usuarioActual
+            );
+
+            Stage stage =
+                    (Stage) lblNombreMedico
+                            .getScene()
+                            .getWindow();
+
+            stage.setScene(
+                    new Scene(root)
+            );
+
+            stage.setTitle(
+                    "MediAppoint - Mi perfil"
+            );
+
+            stage.setMinWidth(1050);
+            stage.setMinHeight(680);
+            stage.centerOnScreen();
+
+        } catch (Exception e) {
+
+            mostrarMensaje(
+                    "No fue posible abrir el perfil médico."
+            );
+
+            System.err.println(
+                    "Error al abrir perfil médico: "
+                            + e.getMessage()
+            );
+
+            e.printStackTrace();
+        }
+    }
+
+    /**
      * Cierra la sesión actual.
      */
     @FXML
@@ -1426,6 +1586,35 @@ public class DashboardMedicoController {
             );
         }
     }
+
+
+    /**
+ * Ejecuta una tarea JavaFX en un hilo secundario.
+ *
+ * Las consultas a MySQL no deben ejecutarse en
+ * el JavaFX Application Thread porque bloquearían
+ * la interfaz gráfica.
+ *
+ * @param tarea tarea que será ejecutada.
+ * @param nombreHilo nombre descriptivo del hilo.
+ */
+private void ejecutarTarea(
+        Task<?> tarea,
+        String nombreHilo
+) {
+
+    Thread hilo =
+            new Thread(
+                    tarea,
+                    nombreHilo
+            );
+
+    hilo.setDaemon(
+            true
+    );
+
+    hilo.start();
+}
 
     /**
      * Muestra mensajes en pantalla.

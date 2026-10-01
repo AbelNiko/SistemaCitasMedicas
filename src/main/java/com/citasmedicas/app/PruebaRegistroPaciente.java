@@ -1,9 +1,12 @@
 package com.citasmedicas.app;
 
 import com.citasmedicas.model.Paciente;
+import com.citasmedicas.model.PreguntaSeguridad;
 import com.citasmedicas.model.Usuario;
+
 import com.citasmedicas.service.AutenticacionService;
 import com.citasmedicas.service.RegistroPacienteService;
+
 import com.mysql.cj.jdbc.AbandonedConnectionCleanupThread;
 
 import java.time.LocalDate;
@@ -19,11 +22,13 @@ import java.time.LocalDate;
  * Se verifican los siguientes escenarios:
  *
  * 1. Registro correcto de un nuevo paciente.
- * 2. Autenticación utilizando la cuenta recién creada.
- * 3. Rechazo de un correo electrónico duplicado.
+ * 2. Registro de pregunta de seguridad.
+ * 3. Protección de la respuesta mediante BCrypt.
+ * 4. Autenticación utilizando la cuenta recién creada.
+ * 5. Rechazo de un correo electrónico duplicado.
  *
  * @author Equipo de Ingeniería de Software II
- * @version 1.0
+ * @version 1.1
  */
 public class PruebaRegistroPaciente {
 
@@ -32,6 +37,18 @@ public class PruebaRegistroPaciente {
 
     private static final String PASSWORD_PRUEBA =
             "Paciente123*";
+
+    /*
+     * ============================================================
+     * SEGURIDAD DE LA CUENTA DE PRUEBA
+     * ============================================================
+     */
+
+    private static final PreguntaSeguridad PREGUNTA_SEGURIDAD_PRUEBA =
+            PreguntaSeguridad.COMIDA_FAVORITA;
+
+    private static final String RESPUESTA_SEGURIDAD_PRUEBA =
+            "ceviche";
 
     public static void main(String[] args) {
 
@@ -84,7 +101,18 @@ public class PruebaRegistroPaciente {
                             "0999999999",
                             PASSWORD_PRUEBA,
                             PASSWORD_PRUEBA,
-                            LocalDate.of(1998, 5, 20),
+
+                            /*
+                             * Seguridad.
+                             */
+                            PREGUNTA_SEGURIDAD_PRUEBA,
+                            RESPUESTA_SEGURIDAD_PRUEBA,
+
+                            LocalDate.of(
+                                    1998,
+                                    5,
+                                    20
+                            ),
                             "Guayaquil",
                             "Femenino",
                             "Carlos Gómez",
@@ -100,51 +128,71 @@ public class PruebaRegistroPaciente {
 
             System.out.println(
                     "ID usuario: "
-                    + usuario.getIdUsuario()
+                            + usuario.getIdUsuario()
             );
 
             System.out.println(
                     "Nombre: "
-                    + usuario.getNombreCompleto()
+                            + usuario.getNombreCompleto()
             );
 
             System.out.println(
                     "Correo: "
-                    + usuario.getCorreo()
+                            + usuario.getCorreo()
             );
 
             System.out.println(
                     "Rol: "
-                    + usuario.getRol().getNombre()
+                            + usuario
+                                    .getRol()
+                                    .getNombre()
             );
 
             System.out.println(
                     "Contraseña almacenada mediante BCrypt: "
-                    + (
-                            usuario.getPasswordHash() != null
-                            && usuario.getPasswordHash()
-                                    .startsWith("$2")
-                    )
+                            + (
+                                    usuario.getPasswordHash()
+                                            != null
+                                    && usuario
+                                            .getPasswordHash()
+                                            .startsWith("$2")
+                            )
+            );
+
+            System.out.println(
+                    "Pregunta de seguridad: "
+                            + usuario.getPreguntaSeguridad()
+            );
+
+            System.out.println(
+                    "Respuesta protegida mediante BCrypt: "
+                            + (
+                                    usuario.getRespuestaSeguridadHash()
+                                            != null
+                                    && usuario
+                                            .getRespuestaSeguridadHash()
+                                            .startsWith("$2")
+                            )
             );
 
         } catch (IllegalArgumentException e) {
 
             System.err.println(
                     "Validación: "
-                    + e.getMessage()
+                            + e.getMessage()
             );
 
         } catch (Exception e) {
 
             System.err.println(
                     "Error durante el registro: "
-                    + e.getMessage()
+                            + e.getMessage()
             );
         }
     }
 
     /**
-     * Comprueba que la cuenta recién registrada
+     * Comprueba que la cuenta registrada
      * pueda iniciar sesión.
      */
     private static void probarAutenticacion() {
@@ -180,18 +228,26 @@ public class PruebaRegistroPaciente {
 
                 System.out.println(
                         "Bienvenido, "
-                        + usuario.getNombreCompleto()
+                                + usuario.getNombreCompleto()
                 );
 
                 System.out.println(
                         "Rol: "
-                        + usuario.getRol().getNombre()
+                                + usuario
+                                        .getRol()
+                                        .getNombre()
+                );
+
+                System.out.println(
+                        "Pregunta de seguridad configurada: "
+                                + usuario
+                                        .tienePreguntaSeguridadConfigurada()
                 );
 
             } else {
 
                 System.err.println(
-                        "Error: la nueva cuenta no pudo autenticarse."
+                        "Error: la cuenta no pudo autenticarse."
                 );
             }
 
@@ -199,7 +255,7 @@ public class PruebaRegistroPaciente {
 
             System.err.println(
                     "Error durante la autenticación: "
-                    + e.getMessage()
+                            + e.getMessage()
             );
         }
     }
@@ -235,7 +291,18 @@ public class PruebaRegistroPaciente {
                     "0977777777",
                     "OtraClave123*",
                     "OtraClave123*",
-                    LocalDate.of(2000, 1, 15),
+
+                    /*
+                     * Seguridad.
+                     */
+                    PreguntaSeguridad.MATERIA_FAVORITA,
+                    "matematicas",
+
+                    LocalDate.of(
+                            2000,
+                            1,
+                            15
+                    ),
                     "Guayaquil",
                     "Masculino",
                     null,
@@ -250,14 +317,14 @@ public class PruebaRegistroPaciente {
 
             System.out.println(
                     "Validación correcta: "
-                    + e.getMessage()
+                            + e.getMessage()
             );
 
         } catch (Exception e) {
 
             System.err.println(
                     "Error inesperado: "
-                    + e.getMessage()
+                            + e.getMessage()
             );
         }
     }

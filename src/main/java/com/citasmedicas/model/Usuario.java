@@ -4,39 +4,100 @@ import java.time.LocalDateTime;
 
 /**
  * ================================================================
- *                    MODELO - USUARIO
+ *                       MODELO - USUARIO
  * ================================================================
  *
- * Representa a un usuario registrado dentro del sistema
- * de gestión y agendamiento de citas médicas.
+ * Representa a un usuario registrado dentro del Sistema
+ * de Gestión y Agendamiento de Citas Médicas.
  *
- * Esta clase corresponde a la tabla "usuarios"
- * de la base de datos.
+ * Contiene los datos generales de identificación, autenticación,
+ * contacto y seguridad de la cuenta.
  *
- * Cada usuario posee un rol que determina los permisos
- * y funcionalidades disponibles dentro de la aplicación.
- *
- * La contraseña nunca se almacena como texto plano.
- * Únicamente se maneja mediante su hash.
+ * La contraseña y la respuesta de seguridad nunca deben
+ * almacenarse en texto plano.
  *
  * @author Equipo de Ingeniería de Software II
- * @version 1.0
+ * @version 1.1
  */
 public class Usuario {
 
+    /*
+     * ============================================================
+     * IDENTIFICACIÓN
+     * ============================================================
+     */
+
     private Integer idUsuario;
+
     private Rol rol;
 
     private String nombres;
+
     private String apellidos;
+
     private String cedula;
+
     private String correo;
+
+    /*
+     * ============================================================
+     * AUTENTICACIÓN
+     * ============================================================
+     */
+
     private String passwordHash;
+
+    /*
+     * ============================================================
+     * CONTACTO
+     * ============================================================
+     */
+
     private String telefono;
+
+    /*
+     * ============================================================
+     * SEGURIDAD Y RECUPERACIÓN
+     * ============================================================
+     */
+
+    /**
+     * Código de la pregunta de seguridad.
+     *
+     * Ejemplo:
+     * COMIDA_FAVORITA
+     */
+    private String preguntaSeguridad;
+
+    /**
+     * Hash BCrypt de la respuesta de seguridad.
+     *
+     * La respuesta original nunca se almacena.
+     */
+    private String respuestaSeguridadHash;
+
+    /**
+     * Cantidad de intentos fallidos consecutivos
+     * durante una recuperación de contraseña.
+     */
+    private int intentosRecuperacion;
+
+    /**
+     * Fecha y hora hasta la cual la recuperación
+     * permanece temporalmente bloqueada.
+     */
+    private LocalDateTime bloqueadoRecuperacionHasta;
+
+    /*
+     * ============================================================
+     * ESTADO Y AUDITORÍA
+     * ============================================================
+     */
 
     private boolean estado;
 
     private LocalDateTime fechaCreacion;
+
     private LocalDateTime fechaActualizacion;
 
     /**
@@ -46,19 +107,8 @@ public class Usuario {
     }
 
     /**
-     * Constructor principal.
-     *
-     * @param idUsuario identificador del usuario.
-     * @param rol rol asignado.
-     * @param nombres nombres del usuario.
-     * @param apellidos apellidos del usuario.
-     * @param cedula número de cédula.
-     * @param correo correo electrónico.
-     * @param passwordHash contraseña almacenada mediante hash.
-     * @param telefono teléfono del usuario.
-     * @param estado estado activo o inactivo.
-     * @param fechaCreacion fecha de creación.
-     * @param fechaActualizacion fecha de última actualización.
+     * Constructor principal compatible con la estructura
+     * original del proyecto.
      */
     public Usuario(
             Integer idUsuario,
@@ -73,6 +123,7 @@ public class Usuario {
             LocalDateTime fechaCreacion,
             LocalDateTime fechaActualizacion
     ) {
+
         this.idUsuario = idUsuario;
         this.rol = rol;
         this.nombres = nombres;
@@ -81,90 +132,265 @@ public class Usuario {
         this.correo = correo;
         this.passwordHash = passwordHash;
         this.telefono = telefono;
+
+        this.preguntaSeguridad = null;
+        this.respuestaSeguridadHash = null;
+        this.intentosRecuperacion = 0;
+        this.bloqueadoRecuperacionHasta = null;
+
         this.estado = estado;
         this.fechaCreacion = fechaCreacion;
         this.fechaActualizacion = fechaActualizacion;
     }
 
+    /*
+     * ============================================================
+     * ID USUARIO
+     * ============================================================
+     */
+
     public Integer getIdUsuario() {
         return idUsuario;
     }
 
-    public void setIdUsuario(Integer idUsuario) {
+    public void setIdUsuario(
+            Integer idUsuario
+    ) {
+
         this.idUsuario = idUsuario;
     }
+
+    /*
+     * ============================================================
+     * ROL
+     * ============================================================
+     */
 
     public Rol getRol() {
         return rol;
     }
 
-    public void setRol(Rol rol) {
+    public void setRol(
+            Rol rol
+    ) {
+
         this.rol = rol;
     }
+
+    /*
+     * ============================================================
+     * NOMBRES
+     * ============================================================
+     */
 
     public String getNombres() {
         return nombres;
     }
 
-    public void setNombres(String nombres) {
+    public void setNombres(
+            String nombres
+    ) {
+
         this.nombres = nombres;
     }
+
+    /*
+     * ============================================================
+     * APELLIDOS
+     * ============================================================
+     */
 
     public String getApellidos() {
         return apellidos;
     }
 
-    public void setApellidos(String apellidos) {
+    public void setApellidos(
+            String apellidos
+    ) {
+
         this.apellidos = apellidos;
     }
+
+    /*
+     * ============================================================
+     * CÉDULA
+     * ============================================================
+     */
 
     public String getCedula() {
         return cedula;
     }
 
-    public void setCedula(String cedula) {
+    public void setCedula(
+            String cedula
+    ) {
+
         this.cedula = cedula;
     }
+
+    /*
+     * ============================================================
+     * CORREO
+     * ============================================================
+     */
 
     public String getCorreo() {
         return correo;
     }
 
-    public void setCorreo(String correo) {
+    public void setCorreo(
+            String correo
+    ) {
+
         this.correo = correo;
     }
+
+    /*
+     * ============================================================
+     * CONTRASEÑA
+     * ============================================================
+     */
 
     public String getPasswordHash() {
         return passwordHash;
     }
 
-    public void setPasswordHash(String passwordHash) {
+    public void setPasswordHash(
+            String passwordHash
+    ) {
+
         this.passwordHash = passwordHash;
     }
+
+    /*
+     * ============================================================
+     * TELÉFONO
+     * ============================================================
+     */
 
     public String getTelefono() {
         return telefono;
     }
 
-    public void setTelefono(String telefono) {
+    public void setTelefono(
+            String telefono
+    ) {
+
         this.telefono = telefono;
     }
+
+    /*
+     * ============================================================
+     * PREGUNTA DE SEGURIDAD
+     * ============================================================
+     */
+
+    public String getPreguntaSeguridad() {
+        return preguntaSeguridad;
+    }
+
+    public void setPreguntaSeguridad(
+            String preguntaSeguridad
+    ) {
+
+        this.preguntaSeguridad =
+                preguntaSeguridad;
+    }
+
+    /*
+     * ============================================================
+     * RESPUESTA DE SEGURIDAD
+     * ============================================================
+     */
+
+    public String getRespuestaSeguridadHash() {
+        return respuestaSeguridadHash;
+    }
+
+    public void setRespuestaSeguridadHash(
+            String respuestaSeguridadHash
+    ) {
+
+        this.respuestaSeguridadHash =
+                respuestaSeguridadHash;
+    }
+
+    /*
+     * ============================================================
+     * INTENTOS DE RECUPERACIÓN
+     * ============================================================
+     */
+
+    public int getIntentosRecuperacion() {
+        return intentosRecuperacion;
+    }
+
+    public void setIntentosRecuperacion(
+            int intentosRecuperacion
+    ) {
+
+        this.intentosRecuperacion =
+                intentosRecuperacion;
+    }
+
+    /*
+     * ============================================================
+     * BLOQUEO DE RECUPERACIÓN
+     * ============================================================
+     */
+
+    public LocalDateTime getBloqueadoRecuperacionHasta() {
+        return bloqueadoRecuperacionHasta;
+    }
+
+    public void setBloqueadoRecuperacionHasta(
+            LocalDateTime bloqueadoRecuperacionHasta
+    ) {
+
+        this.bloqueadoRecuperacionHasta =
+                bloqueadoRecuperacionHasta;
+    }
+
+    /*
+     * ============================================================
+     * ESTADO
+     * ============================================================
+     */
 
     public boolean isEstado() {
         return estado;
     }
 
-    public void setEstado(boolean estado) {
+    public void setEstado(
+            boolean estado
+    ) {
+
         this.estado = estado;
     }
+
+    /*
+     * ============================================================
+     * FECHA DE CREACIÓN
+     * ============================================================
+     */
 
     public LocalDateTime getFechaCreacion() {
         return fechaCreacion;
     }
 
-    public void setFechaCreacion(LocalDateTime fechaCreacion) {
-        this.fechaCreacion = fechaCreacion;
+    public void setFechaCreacion(
+            LocalDateTime fechaCreacion
+    ) {
+
+        this.fechaCreacion =
+                fechaCreacion;
     }
+
+    /*
+     * ============================================================
+     * FECHA DE ACTUALIZACIÓN
+     * ============================================================
+     */
 
     public LocalDateTime getFechaActualizacion() {
         return fechaActualizacion;
@@ -173,20 +399,66 @@ public class Usuario {
     public void setFechaActualizacion(
             LocalDateTime fechaActualizacion
     ) {
-        this.fechaActualizacion = fechaActualizacion;
+
+        this.fechaActualizacion =
+                fechaActualizacion;
+    }
+
+    /*
+     * ============================================================
+     * MÉTODOS AUXILIARES
+     * ============================================================
+     */
+
+    /**
+     * Devuelve nombres y apellidos del usuario.
+     */
+    public String getNombreCompleto() {
+
+        String nombresSeguros =
+                nombres == null
+                        ? ""
+                        : nombres.trim();
+
+        String apellidosSeguros =
+                apellidos == null
+                        ? ""
+                        : apellidos.trim();
+
+        return (
+                nombresSeguros
+                        + " "
+                        + apellidosSeguros
+        ).trim();
     }
 
     /**
-     * Devuelve el nombre completo del usuario.
-     *
-     * @return nombres y apellidos del usuario.
+     * Determina si el usuario ya configuró correctamente
+     * su pregunta de seguridad.
      */
-    public String getNombreCompleto() {
-        return nombres + " " + apellidos;
+    public boolean tienePreguntaSeguridadConfigurada() {
+
+        return preguntaSeguridad != null
+                && !preguntaSeguridad.isBlank()
+                && respuestaSeguridadHash != null
+                && !respuestaSeguridadHash.isBlank();
+    }
+
+    /**
+     * Determina si existe actualmente un bloqueo temporal
+     * para recuperar la contraseña.
+     */
+    public boolean estaRecuperacionBloqueada() {
+
+        return bloqueadoRecuperacionHasta != null
+                && bloqueadoRecuperacionHasta.isAfter(
+                        LocalDateTime.now()
+                );
     }
 
     @Override
     public String toString() {
+
         return getNombreCompleto();
     }
 }

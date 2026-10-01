@@ -4066,3 +4066,85 @@
     -fx-text-fill: #E7F1F8;
     -fx-font-size: 12px;
 }
+
+/* ================================================================
+                  RECUPERACIÓN DE CONTRASEÑA
+   ================================================================ */
+
+.recovery-root {
+    -fx-background-color: #071525;
+}
+
+.recovery-title {
+    -fx-text-fill: #FFFFFF;
+    -fx-font-size: 22px;
+    -fx-font-weight: bold;
+}
+
+.recovery-description {
+    -fx-text-fill: #91A4B8;
+    -fx-font-size: 12px;
+}
+
+.recovery-step-title {
+    -fx-text-fill: #67D1FF;
+    -fx-font-size: 14px;
+    -fx-font-weight: bold;
+}
+
+.recovery-question-card {
+    -fx-background-color: #0B2034;
+    -fx-background-radius: 10;
+
+    -fx-border-color: #1B4F70;
+    -fx-border-radius: 10;
+    -fx-border-width: 1;
+}
+
+.recovery-small-label {
+    -fx-text-fill: #71899D;
+    -fx-font-size: 9px;
+    -fx-font-weight: bold;
+}
+
+.recovery-question {
+    -fx-text-fill: #FFFFFF;
+    -fx-font-size: 13px;
+    -fx-font-weight: bold;
+}
+
+.recovery-warning {
+    -fx-text-fill: #FFC269;
+    -fx-font-size: 10px;
+}
+
+/* ================================================================
+               RECUPERACIÓN DESDE EL LOGIN
+   ================================================================ */
+
+.forgot-password-button {
+    -fx-background-color: transparent;
+
+    -fx-border-color: transparent;
+
+    -fx-text-fill: #4DBEFF;
+
+    -fx-font-size: 11px;
+    -fx-font-weight: bold;
+
+    -fx-alignment: CENTER_RIGHT;
+
+    -fx-cursor: hand;
+
+    -fx-padding: 2 0 2 0;
+}
+
+.forgot-password-button:hover {
+    -fx-text-fill: #80D4FF;
+
+    -fx-underline: true;
+}
+
+.forgot-password-button:pressed {
+    -fx-text-fill: #2A9CE0;
+}

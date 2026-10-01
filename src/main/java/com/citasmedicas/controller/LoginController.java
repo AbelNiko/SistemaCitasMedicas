@@ -10,6 +10,7 @@ import javafx.scene.control.Label;
 import javafx.scene.control.PasswordField;
 import javafx.scene.control.TextField;
 import javafx.stage.Stage;
+import javafx.stage.Modality;
 
 import java.io.IOException;
 
@@ -337,6 +338,84 @@ private void abrirRegistro() {
         System.err.println(
                 "Error al cargar registro.fxml: "
                 + e.getMessage()
+        );
+
+        e.printStackTrace();
+    }
+}
+/**
+ * Abre la recuperación de contraseña
+ * en una ventana modal independiente.
+ */
+@FXML
+private void abrirRecuperacionPassword() {
+
+    try {
+
+        FXMLLoader loader =
+                new FXMLLoader(
+                        getClass().getResource(
+                                "/fxml/recuperacion-password.fxml"
+                        )
+                );
+
+        Scene scene =
+                new Scene(
+                        loader.load()
+                );
+
+        Stage ventanaRecuperacion =
+                new Stage();
+
+        ventanaRecuperacion.setTitle(
+                "MediAppoint - Recuperar contraseña"
+        );
+
+        ventanaRecuperacion.setScene(
+                scene
+        );
+
+        ventanaRecuperacion.setResizable(
+                false
+        );
+
+        /*
+         * La recuperación pertenece a la
+         * ventana actual del login.
+         */
+        ventanaRecuperacion.initOwner(
+                txtCorreo
+                        .getScene()
+                        .getWindow()
+        );
+
+        ventanaRecuperacion.initModality(
+                Modality.WINDOW_MODAL
+        );
+
+        ventanaRecuperacion.centerOnScreen();
+
+        ventanaRecuperacion.showAndWait();
+
+        /*
+         * Limpiamos la contraseña del login
+         * después de cerrar la recuperación.
+         */
+        txtPassword.clear();
+
+        lblMensaje.setText(
+                ""
+        );
+
+    } catch (IOException e) {
+
+        lblMensaje.setText(
+                "No fue posible abrir la recuperación de contraseña."
+        );
+
+        System.err.println(
+                "Error cargando recuperacion-password.fxml: "
+                        + e.getMessage()
         );
 
         e.printStackTrace();

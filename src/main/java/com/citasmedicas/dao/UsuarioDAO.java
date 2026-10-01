@@ -673,4 +673,151 @@ public boolean actualizarSeguridadCuenta(
         return sentencia.executeUpdate() > 0;
     }
 }
+/**
+ * Actualiza el número de intentos fallidos de recuperación
+ * y, si corresponde, la fecha de bloqueo temporal.
+ *
+ * @param idUsuario identificador del usuario.
+ * @param intentos cantidad de intentos fallidos.
+ * @param bloqueadoHasta fecha hasta la cual se bloquea
+ *                      la recuperación. Puede ser null.
+ * @return true si se actualizó correctamente.
+ * @throws SQLException si ocurre un error de base de datos.
+ */
+public boolean actualizarIntentosRecuperacion(
+        int idUsuario,
+        int intentos,
+        java.time.LocalDateTime bloqueadoHasta
+) throws SQLException {
+
+    String sql = """
+            UPDATE usuarios
+            SET
+                intentos_recuperacion = ?,
+                bloqueado_recuperacion_hasta = ?
+            WHERE id_usuario = ?
+              AND estado = TRUE
+            """;
+
+    try (
+            Connection conexion =
+                    ConexionBD.obtenerConexion();
+
+            PreparedStatement sentencia =
+                    conexion.prepareStatement(sql)
+    ) {
+
+        sentencia.setInt(
+                1,
+                intentos
+        );
+
+        if (bloqueadoHasta == null) {
+
+            sentencia.setNull(
+                    2,
+                    Types.TIMESTAMP
+            );
+
+        } else {
+
+            sentencia.setTimestamp(
+                    2,
+                    Timestamp.valueOf(
+                            bloqueadoHasta
+                    )
+            );
+        }
+
+        sentencia.setInt(
+                3,
+                idUsuario
+        );
+
+        return sentencia.executeUpdate() > 0;
+    }
+}
+
+/**
+ * Reinicia los controles de recuperación
+ * después de una verificación correcta.
+ *
+ * @param idUsuario identificador del usuario.
+ * @return true si se realizó la actualización.
+ * @throws SQLException si ocurre un error.
+ */
+public boolean reiniciarRecuperacion(
+        int idUsuario
+) throws SQLException {
+
+    String sql = """
+            UPDATE usuarios
+            SET
+                intentos_recuperacion = 0,
+                bloqueado_recuperacion_hasta = NULL
+            WHERE id_usuario = ?
+            """;
+
+    try (
+            Connection conexion =
+                    ConexionBD.obtenerConexion();
+
+            PreparedStatement sentencia =
+                    conexion.prepareStatement(sql)
+    ) {
+
+        sentencia.setInt(
+                1,
+                idUsuario
+        );
+
+        return sentencia.executeUpdate() > 0;
+    }
+}
+
+/**
+ * Restablece la contraseña del usuario y elimina
+ * cualquier bloqueo de recuperación existente.
+ *
+ * @param idUsuario identificador del usuario.
+ * @param passwordHash nuevo hash BCrypt.
+ * @return true si se actualizó correctamente.
+ * @throws SQLException si ocurre un error.
+ */
+public boolean restablecerPassword(
+        int idUsuario,
+        String passwordHash
+) throws SQLException {
+
+    String sql = """
+            UPDATE usuarios
+            SET
+                password_hash = ?,
+                intentos_recuperacion = 0,
+                bloqueado_recuperacion_hasta = NULL
+            WHERE id_usuario = ?
+              AND estado = TRUE
+            """;
+
+    try (
+            Connection conexion =
+                    ConexionBD.obtenerConexion();
+
+            PreparedStatement sentencia =
+                    conexion.prepareStatement(sql)
+    ) {
+
+        sentencia.setString(
+                1,
+                passwordHash
+        );
+
+        sentencia.setInt(
+                2,
+                idUsuario
+        );
+
+        return sentencia.executeUpdate() > 0;
+    }
+}
 }

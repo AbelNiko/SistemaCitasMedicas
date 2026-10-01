@@ -100,6 +100,7 @@
                         styleClass="auth-field"
                         prefHeight="42"/>
 
+
             </VBox>
 
             <!-- Mensajes -->
@@ -121,8 +122,9 @@
                     styleClass="primary-button"/>
 
             <Button
-                    text="¿Olvidaste tu contraseña?"
-                    styleClass="link-button"/>
+        text="¿Olvidaste tu contraseña?"
+        onAction="#abrirRecuperacionPassword"
+        styleClass="forgot-password-button"/>
 
             <Separator/>
 

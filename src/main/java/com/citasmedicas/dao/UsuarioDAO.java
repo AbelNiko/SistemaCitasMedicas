@@ -1,43 +1,51 @@
 package com.citasmedicas.dao;
 
-
 import com.citasmedicas.model.Rol;
 import com.citasmedicas.model.Usuario;
 import com.citasmedicas.util.ConexionBD;
-import java.sql.Statement;
+
 import java.sql.Connection;
 import java.sql.PreparedStatement;
 import java.sql.ResultSet;
 import java.sql.SQLException;
+import java.sql.Statement;
+import java.sql.Timestamp;
+import java.sql.Types;
 
 /**
  * ================================================================
- *                     DAO - USUARIO
+ *                       DAO - USUARIO
  * ================================================================
  *
- * Clase encargada de realizar operaciones de acceso a datos
- * relacionadas con la tabla "usuarios".
+ * Gestiona las operaciones de acceso a datos relacionadas
+ * con la tabla usuarios.
  *
- * Permite consultar información de usuarios junto con el rol
- * asociado a cada registro.
+ * Permite:
+ *
+ * - Buscar usuarios por correo.
+ * - Buscar usuarios por cédula.
+ * - Registrar nuevos usuarios.
+ * - Construir objetos Usuario desde MySQL.
+ * - Actualizar datos personales.
+ *
+ * Incluye los campos utilizados para la seguridad y
+ * recuperación de contraseña.
  *
  * @author Equipo de Ingeniería de Software II
- * @version 1.0
+ * @version 1.1
  */
 public class UsuarioDAO {
 
     /**
      * Busca un usuario mediante su correo electrónico.
      *
-     * Este método será utilizado posteriormente para el proceso
-     * de autenticación del sistema.
-     *
-     * @param correo correo electrónico del usuario.
-     * @return usuario encontrado o null si no existe.
-     * @throws SQLException si ocurre un error de acceso a datos.
+     * @param correo correo electrónico.
+     * @return usuario encontrado o null.
+     * @throws SQLException si ocurre un error.
      */
-    public Usuario buscarPorCorreo(String correo)
-            throws SQLException {
+    public Usuario buscarPorCorreo(
+            String correo
+    ) throws SQLException {
 
         String sql = """
                 SELECT
@@ -48,6 +56,10 @@ public class UsuarioDAO {
                     u.correo,
                     u.password_hash,
                     u.telefono,
+                    u.pregunta_seguridad,
+                    u.respuesta_seguridad_hash,
+                    u.intentos_recuperacion,
+                    u.bloqueado_recuperacion_hasta,
                     u.estado AS usuario_estado,
                     u.fecha_creacion AS usuario_fecha_creacion,
                     u.fecha_actualizacion,
@@ -82,7 +94,10 @@ public class UsuarioDAO {
             ) {
 
                 if (resultado.next()) {
-                    return construirUsuario(resultado);
+
+                    return construirUsuario(
+                            resultado
+                    );
                 }
             }
         }
@@ -94,11 +109,12 @@ public class UsuarioDAO {
      * Busca un usuario mediante su número de cédula.
      *
      * @param cedula número de cédula.
-     * @return usuario encontrado o null si no existe.
-     * @throws SQLException si ocurre un error de acceso a datos.
+     * @return usuario encontrado o null.
+     * @throws SQLException si ocurre un error.
      */
-    public Usuario buscarPorCedula(String cedula)
-            throws SQLException {
+    public Usuario buscarPorCedula(
+            String cedula
+    ) throws SQLException {
 
         String sql = """
                 SELECT
@@ -109,6 +125,10 @@ public class UsuarioDAO {
                     u.correo,
                     u.password_hash,
                     u.telefono,
+                    u.pregunta_seguridad,
+                    u.respuesta_seguridad_hash,
+                    u.intentos_recuperacion,
+                    u.bloqueado_recuperacion_hasta,
                     u.estado AS usuario_estado,
                     u.fecha_creacion AS usuario_fecha_creacion,
                     u.fecha_actualizacion,
@@ -143,7 +163,10 @@ public class UsuarioDAO {
             ) {
 
                 if (resultado.next()) {
-                    return construirUsuario(resultado);
+
+                    return construirUsuario(
+                            resultado
+                    );
                 }
             }
         }
@@ -152,226 +175,476 @@ public class UsuarioDAO {
     }
 
     /**
- * Inserta un nuevo usuario utilizando una conexión existente.
- *
- * La conexión se recibe como parámetro para permitir que el
- * registro del usuario y del paciente se realice dentro de
- * una misma transacción.
- *
- * @param conexion conexión activa con MySQL.
- * @param usuario usuario que será registrado.
- * @return identificador generado para el usuario.
- * @throws SQLException si ocurre un error de acceso a datos.
- */
-public int insertar(
-        Connection conexion,
-        Usuario usuario
-) throws SQLException {
+     * Inserta un nuevo usuario utilizando una conexión
+     * existente.
+     *
+     * La conexión se recibe como parámetro para permitir
+     * registrar Usuario y Paciente dentro de una misma
+     * transacción.
+     *
+     * @param conexion conexión activa.
+     * @param usuario usuario a registrar.
+     * @return identificador generado.
+     * @throws SQLException si ocurre un error.
+     */
+    public int insertar(
+            Connection conexion,
+            Usuario usuario
+    ) throws SQLException {
 
-    String sql = """
-            INSERT INTO usuarios (
-                id_rol,
-                nombres,
-                apellidos,
-                cedula,
-                correo,
-                password_hash,
-                telefono,
-                estado
-            )
-            VALUES (?, ?, ?, ?, ?, ?, ?, ?)
-            """;
-
-    try (
-            PreparedStatement sentencia =
-                    conexion.prepareStatement(
-                            sql,
-                            Statement.RETURN_GENERATED_KEYS
-                    )
-    ) {
-
-        sentencia.setInt(
-                1,
-                usuario.getRol().getIdRol()
-        );
-
-        sentencia.setString(
-                2,
-                usuario.getNombres()
-        );
-
-        sentencia.setString(
-                3,
-                usuario.getApellidos()
-        );
-
-        sentencia.setString(
-                4,
-                usuario.getCedula()
-        );
-
-        sentencia.setString(
-                5,
-                usuario.getCorreo()
-        );
-
-        sentencia.setString(
-                6,
-                usuario.getPasswordHash()
-        );
-
-        sentencia.setString(
-                7,
-                usuario.getTelefono()
-        );
-
-        sentencia.setBoolean(
-                8,
-                usuario.isEstado()
-        );
-
-        int filasAfectadas =
-                sentencia.executeUpdate();
-
-        if (filasAfectadas == 0) {
-            throw new SQLException(
-                    "No fue posible registrar el usuario."
-            );
-        }
+        String sql = """
+                INSERT INTO usuarios (
+                    id_rol,
+                    nombres,
+                    apellidos,
+                    cedula,
+                    correo,
+                    password_hash,
+                    telefono,
+                    pregunta_seguridad,
+                    respuesta_seguridad_hash,
+                    estado
+                )
+                VALUES (?, ?, ?, ?, ?, ?, ?, ?, ?, ?)
+                """;
 
         try (
-                ResultSet claves =
-                        sentencia.getGeneratedKeys()
+                PreparedStatement sentencia =
+                        conexion.prepareStatement(
+                                sql,
+                                Statement.RETURN_GENERATED_KEYS
+                        )
         ) {
 
-            if (claves.next()) {
+            sentencia.setInt(
+                    1,
+                    usuario.getRol().getIdRol()
+            );
 
-                int idUsuario =
-                        claves.getInt(1);
+            sentencia.setString(
+                    2,
+                    usuario.getNombres()
+            );
 
-                usuario.setIdUsuario(
-                        idUsuario
+            sentencia.setString(
+                    3,
+                    usuario.getApellidos()
+            );
+
+            sentencia.setString(
+                    4,
+                    usuario.getCedula()
+            );
+
+            sentencia.setString(
+                    5,
+                    usuario.getCorreo()
+            );
+
+            sentencia.setString(
+                    6,
+                    usuario.getPasswordHash()
+            );
+
+            if (
+                    usuario.getTelefono() == null
+                            || usuario.getTelefono().isBlank()
+            ) {
+
+                sentencia.setNull(
+                        7,
+                        Types.VARCHAR
                 );
 
-                return idUsuario;
-            }
-        }
+            } else {
 
-        throw new SQLException(
-                "No fue posible obtener el identificador del usuario."
-        );
+                sentencia.setString(
+                        7,
+                        usuario.getTelefono()
+                );
+            }
+
+            /*
+             * ====================================================
+             * SEGURIDAD DE LA CUENTA
+             * ====================================================
+             */
+
+            if (
+                    usuario.getPreguntaSeguridad() == null
+                            || usuario.getPreguntaSeguridad().isBlank()
+            ) {
+
+                sentencia.setNull(
+                        8,
+                        Types.VARCHAR
+                );
+
+            } else {
+
+                sentencia.setString(
+                        8,
+                        usuario.getPreguntaSeguridad()
+                );
+            }
+
+            if (
+                    usuario.getRespuestaSeguridadHash() == null
+                            || usuario.getRespuestaSeguridadHash().isBlank()
+            ) {
+
+                sentencia.setNull(
+                        9,
+                        Types.VARCHAR
+                );
+
+            } else {
+
+                sentencia.setString(
+                        9,
+                        usuario.getRespuestaSeguridadHash()
+                );
+            }
+
+            sentencia.setBoolean(
+                    10,
+                    usuario.isEstado()
+            );
+
+            int filasAfectadas =
+                    sentencia.executeUpdate();
+
+            if (filasAfectadas == 0) {
+
+                throw new SQLException(
+                        "No fue posible registrar el usuario."
+                );
+            }
+
+            try (
+                    ResultSet claves =
+                            sentencia.getGeneratedKeys()
+            ) {
+
+                if (claves.next()) {
+
+                    int idUsuario =
+                            claves.getInt(1);
+
+                    usuario.setIdUsuario(
+                            idUsuario
+                    );
+
+                    return idUsuario;
+                }
+            }
+
+            throw new SQLException(
+                    "No fue posible obtener el identificador del usuario."
+            );
+        }
     }
-}
 
     /**
-     * Construye un objeto Usuario a partir de un resultado SQL.
-     *
-     * @param resultado resultado obtenido desde MySQL.
-     * @return usuario construido.
-     * @throws SQLException si ocurre un error al leer los datos.
+     * Construye un objeto Usuario a partir
+     * de un resultado obtenido desde MySQL.
      */
     private Usuario construirUsuario(
             ResultSet resultado
     ) throws SQLException {
 
-        Rol rol = new Rol();
+        /*
+         * ========================================================
+         * ROL
+         * ========================================================
+         */
+
+        Rol rol =
+                new Rol();
 
         rol.setIdRol(
-                resultado.getInt("id_rol")
+                resultado.getInt(
+                        "id_rol"
+                )
         );
 
         rol.setNombre(
-                resultado.getString("rol_nombre")
+                resultado.getString(
+                        "rol_nombre"
+                )
         );
 
         rol.setDescripcion(
-                resultado.getString("rol_descripcion")
+                resultado.getString(
+                        "rol_descripcion"
+                )
         );
 
         rol.setEstado(
-                resultado.getBoolean("rol_estado")
+                resultado.getBoolean(
+                        "rol_estado"
+                )
         );
 
-        rol.setFechaCreacion(
-                resultado
-                        .getTimestamp("rol_fecha_creacion")
-                        .toLocalDateTime()
-        );
+        Timestamp fechaRol =
+                resultado.getTimestamp(
+                        "rol_fecha_creacion"
+                );
 
-        Usuario usuario = new Usuario();
+        if (fechaRol != null) {
+
+            rol.setFechaCreacion(
+                    fechaRol.toLocalDateTime()
+            );
+        }
+
+        /*
+         * ========================================================
+         * USUARIO
+         * ========================================================
+         */
+
+        Usuario usuario =
+                new Usuario();
 
         usuario.setIdUsuario(
-                resultado.getInt("id_usuario")
+                resultado.getInt(
+                        "id_usuario"
+                )
         );
 
-        usuario.setRol(rol);
+        usuario.setRol(
+                rol
+        );
 
         usuario.setNombres(
-                resultado.getString("nombres")
+                resultado.getString(
+                        "nombres"
+                )
         );
 
         usuario.setApellidos(
-                resultado.getString("apellidos")
+                resultado.getString(
+                        "apellidos"
+                )
         );
 
         usuario.setCedula(
-                resultado.getString("cedula")
+                resultado.getString(
+                        "cedula"
+                )
         );
 
         usuario.setCorreo(
-                resultado.getString("correo")
+                resultado.getString(
+                        "correo"
+                )
         );
 
         usuario.setPasswordHash(
-                resultado.getString("password_hash")
+                resultado.getString(
+                        "password_hash"
+                )
         );
 
         usuario.setTelefono(
-                resultado.getString("telefono")
+                resultado.getString(
+                        "telefono"
+                )
         );
+
+        /*
+         * ========================================================
+         * SEGURIDAD Y RECUPERACIÓN
+         * ========================================================
+         */
+
+        usuario.setPreguntaSeguridad(
+                resultado.getString(
+                        "pregunta_seguridad"
+                )
+        );
+
+        usuario.setRespuestaSeguridadHash(
+                resultado.getString(
+                        "respuesta_seguridad_hash"
+                )
+        );
+
+        usuario.setIntentosRecuperacion(
+                resultado.getInt(
+                        "intentos_recuperacion"
+                )
+        );
+
+        Timestamp bloqueo =
+                resultado.getTimestamp(
+                        "bloqueado_recuperacion_hasta"
+                );
+
+        if (bloqueo != null) {
+
+            usuario.setBloqueadoRecuperacionHasta(
+                    bloqueo.toLocalDateTime()
+            );
+
+        } else {
+
+            usuario.setBloqueadoRecuperacionHasta(
+                    null
+            );
+        }
+
+        /*
+         * ========================================================
+         * ESTADO Y AUDITORÍA
+         * ========================================================
+         */
 
         usuario.setEstado(
-                resultado.getBoolean("usuario_estado")
+                resultado.getBoolean(
+                        "usuario_estado"
+                )
         );
 
-        usuario.setFechaCreacion(
-                resultado
-                        .getTimestamp("usuario_fecha_creacion")
-                        .toLocalDateTime()
-        );
+        Timestamp fechaCreacion =
+                resultado.getTimestamp(
+                        "usuario_fecha_creacion"
+                );
 
-        usuario.setFechaActualizacion(
-                resultado
-                        .getTimestamp("fecha_actualizacion")
-                        .toLocalDateTime()
-        );
+        if (fechaCreacion != null) {
+
+            usuario.setFechaCreacion(
+                    fechaCreacion.toLocalDateTime()
+            );
+        }
+
+        Timestamp fechaActualizacion =
+                resultado.getTimestamp(
+                        "fecha_actualizacion"
+                );
+
+        if (fechaActualizacion != null) {
+
+            usuario.setFechaActualizacion(
+                    fechaActualizacion.toLocalDateTime()
+            );
+        }
 
         return usuario;
     }
+
     /**
- * Actualiza los datos personales editables
+     * Actualiza los datos personales editables
+     * de un usuario.
+     *
+     * No modifica:
+     *
+     * - cédula;
+     * - contraseña;
+     * - pregunta de seguridad;
+     * - rol;
+     * - estado.
+     *
+     * @return true si el usuario fue actualizado.
+     */
+    public boolean actualizarPerfil(
+            int idUsuario,
+            String nombres,
+            String apellidos,
+            String correo,
+            String telefono
+    ) throws SQLException {
+
+        String sql = """
+                UPDATE usuarios
+                SET
+                    nombres = ?,
+                    apellidos = ?,
+                    correo = ?,
+                    telefono = ?
+                WHERE id_usuario = ?
+                """;
+
+        try (
+                Connection conexion =
+                        ConexionBD.obtenerConexion();
+
+                PreparedStatement sentencia =
+                        conexion.prepareStatement(
+                                sql
+                        )
+        ) {
+
+            sentencia.setString(
+                    1,
+                    nombres
+            );
+
+            sentencia.setString(
+                    2,
+                    apellidos
+            );
+
+            sentencia.setString(
+                    3,
+                    correo
+            );
+
+            if (
+                    telefono == null
+                            || telefono.isBlank()
+            ) {
+
+                sentencia.setNull(
+                        4,
+                        Types.VARCHAR
+                );
+
+            } else {
+
+                sentencia.setString(
+                        4,
+                        telefono
+                );
+            }
+
+            sentencia.setInt(
+                    5,
+                    idUsuario
+            );
+
+            return sentencia.executeUpdate() > 0;
+        }
+    }
+    /**
+ * Configura o actualiza la pregunta de seguridad
  * de un usuario.
  *
- * No modifica cédula, contraseña, rol ni estado.
+ * Al actualizar la configuración se reinician los
+ * intentos y cualquier bloqueo previo de recuperación.
  *
- * @return true si el usuario fue actualizado.
+ * @param idUsuario identificador del usuario.
+ * @param preguntaSeguridad código de la pregunta.
+ * @param respuestaSeguridadHash hash BCrypt de la respuesta.
+ * @return true si se realizó la actualización.
+ * @throws SQLException si ocurre un error.
  */
-public boolean actualizarPerfil(
+public boolean actualizarSeguridadCuenta(
         int idUsuario,
-        String nombres,
-        String apellidos,
-        String correo,
-        String telefono
+        String preguntaSeguridad,
+        String respuestaSeguridadHash
 ) throws SQLException {
 
     String sql = """
             UPDATE usuarios
             SET
-                nombres = ?,
-                apellidos = ?,
-                correo = ?,
-                telefono = ?
+                pregunta_seguridad = ?,
+                respuesta_seguridad_hash = ?,
+                intentos_recuperacion = 0,
+                bloqueado_recuperacion_hasta = NULL
             WHERE id_usuario = ?
+              AND estado = TRUE
             """;
 
     try (
@@ -384,39 +657,163 @@ public boolean actualizarPerfil(
 
         sentencia.setString(
                 1,
-                nombres
+                preguntaSeguridad
         );
 
         sentencia.setString(
                 2,
-                apellidos
+                respuestaSeguridadHash
         );
 
-        sentencia.setString(
+        sentencia.setInt(
                 3,
-                correo
+                idUsuario
         );
 
-        if (
-                telefono == null
-                || telefono.isBlank()
-        ) {
+        return sentencia.executeUpdate() > 0;
+    }
+}
+/**
+ * Actualiza el número de intentos fallidos de recuperación
+ * y, si corresponde, la fecha de bloqueo temporal.
+ *
+ * @param idUsuario identificador del usuario.
+ * @param intentos cantidad de intentos fallidos.
+ * @param bloqueadoHasta fecha hasta la cual se bloquea
+ *                      la recuperación. Puede ser null.
+ * @return true si se actualizó correctamente.
+ * @throws SQLException si ocurre un error de base de datos.
+ */
+public boolean actualizarIntentosRecuperacion(
+        int idUsuario,
+        int intentos,
+        java.time.LocalDateTime bloqueadoHasta
+) throws SQLException {
+
+    String sql = """
+            UPDATE usuarios
+            SET
+                intentos_recuperacion = ?,
+                bloqueado_recuperacion_hasta = ?
+            WHERE id_usuario = ?
+              AND estado = TRUE
+            """;
+
+    try (
+            Connection conexion =
+                    ConexionBD.obtenerConexion();
+
+            PreparedStatement sentencia =
+                    conexion.prepareStatement(sql)
+    ) {
+
+        sentencia.setInt(
+                1,
+                intentos
+        );
+
+        if (bloqueadoHasta == null) {
 
             sentencia.setNull(
-                    4,
-                    java.sql.Types.VARCHAR
+                    2,
+                    Types.TIMESTAMP
             );
 
         } else {
 
-            sentencia.setString(
-                    4,
-                    telefono
+            sentencia.setTimestamp(
+                    2,
+                    Timestamp.valueOf(
+                            bloqueadoHasta
+                    )
             );
         }
 
         sentencia.setInt(
-                5,
+                3,
+                idUsuario
+        );
+
+        return sentencia.executeUpdate() > 0;
+    }
+}
+
+/**
+ * Reinicia los controles de recuperación
+ * después de una verificación correcta.
+ *
+ * @param idUsuario identificador del usuario.
+ * @return true si se realizó la actualización.
+ * @throws SQLException si ocurre un error.
+ */
+public boolean reiniciarRecuperacion(
+        int idUsuario
+) throws SQLException {
+
+    String sql = """
+            UPDATE usuarios
+            SET
+                intentos_recuperacion = 0,
+                bloqueado_recuperacion_hasta = NULL
+            WHERE id_usuario = ?
+            """;
+
+    try (
+            Connection conexion =
+                    ConexionBD.obtenerConexion();
+
+            PreparedStatement sentencia =
+                    conexion.prepareStatement(sql)
+    ) {
+
+        sentencia.setInt(
+                1,
+                idUsuario
+        );
+
+        return sentencia.executeUpdate() > 0;
+    }
+}
+
+/**
+ * Restablece la contraseña del usuario y elimina
+ * cualquier bloqueo de recuperación existente.
+ *
+ * @param idUsuario identificador del usuario.
+ * @param passwordHash nuevo hash BCrypt.
+ * @return true si se actualizó correctamente.
+ * @throws SQLException si ocurre un error.
+ */
+public boolean restablecerPassword(
+        int idUsuario,
+        String passwordHash
+) throws SQLException {
+
+    String sql = """
+            UPDATE usuarios
+            SET
+                password_hash = ?,
+                intentos_recuperacion = 0,
+                bloqueado_recuperacion_hasta = NULL
+            WHERE id_usuario = ?
+              AND estado = TRUE
+            """;
+
+    try (
+            Connection conexion =
+                    ConexionBD.obtenerConexion();
+
+            PreparedStatement sentencia =
+                    conexion.prepareStatement(sql)
+    ) {
+
+        sentencia.setString(
+                1,
+                passwordHash
+        );
+
+        sentencia.setInt(
+                2,
                 idUsuario
         );
 

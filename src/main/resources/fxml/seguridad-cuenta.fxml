@@ -1,0 +1,153 @@
+<?xml version="1.0" encoding="UTF-8"?>
+
+<?import javafx.geometry.Insets?>
+<?import javafx.scene.control.Button?>
+<?import javafx.scene.control.ComboBox?>
+<?import javafx.scene.control.Label?>
+<?import javafx.scene.control.PasswordField?>
+<?import javafx.scene.control.Separator?>
+<?import javafx.scene.control.TextField?>
+<?import javafx.scene.layout.VBox?>
+
+<VBox
+        xmlns="http://javafx.com/javafx/21"
+        xmlns:fx="http://javafx.com/fxml/1"
+        fx:controller="com.citasmedicas.controller.SeguridadCuentaController"
+        stylesheets="@../css/mediappoint.css"
+        styleClass="security-account-root"
+        spacing="18"
+        prefWidth="520"
+        prefHeight="620">
+
+    <padding>
+        <Insets
+                top="30"
+                right="34"
+                bottom="30"
+                left="34"/>
+    </padding>
+
+    <VBox spacing="5">
+
+        <Label
+                text="Seguridad de la cuenta"
+                styleClass="security-account-title"/>
+
+        <Label
+                text="Configura la verificación que utilizaremos si necesitas recuperar el acceso a MediAppoint."
+                wrapText="true"
+                styleClass="security-account-description"/>
+
+    </VBox>
+
+    <Separator/>
+
+    <VBox
+            spacing="6"
+            styleClass="security-status-card">
+
+        <padding>
+            <Insets
+                    top="13"
+                    right="15"
+                    bottom="13"
+                    left="15"/>
+        </padding>
+
+        <Label
+                text="ESTADO"
+                styleClass="security-small-label"/>
+
+        <Label
+                fx:id="lblEstadoSeguridad"
+                text="SEGURIDAD NO CONFIGURADA"
+                styleClass="security-status-label"/>
+
+        <Label
+                text="Pregunta actual"
+                styleClass="security-small-label"/>
+
+        <Label
+                fx:id="lblPreguntaActual"
+                text="Aún no has configurado una pregunta."
+                wrapText="true"
+                styleClass="security-current-question"/>
+
+    </VBox>
+
+    <VBox spacing="6">
+
+        <Label
+                text="Pregunta de seguridad"
+                styleClass="field-label"/>
+
+        <ComboBox
+                fx:id="cmbPreguntaSeguridad"
+                promptText="Selecciona una pregunta"
+                maxWidth="Infinity"
+                prefHeight="42"
+                styleClass="auth-combo"/>
+
+    </VBox>
+
+    <VBox spacing="6">
+
+        <Label
+                text="Respuesta de seguridad"
+                styleClass="field-label"/>
+
+        <TextField
+                fx:id="txtRespuestaSeguridad"
+                promptText="Ej.: guayaquil"
+                prefHeight="42"
+                styleClass="auth-field"/>
+
+        <Label
+                text="Por favor, ingrese la respuesta sin mayúsculas ni tildes."
+                wrapText="true"
+                styleClass="muted-text"/>
+
+    </VBox>
+
+    <VBox spacing="6">
+
+        <Label
+                text="Confirma tu contraseña actual"
+                styleClass="field-label"/>
+
+        <PasswordField
+                fx:id="txtPasswordActual"
+                promptText="Contraseña actual"
+                prefHeight="42"
+                styleClass="auth-field"/>
+
+        <Label
+                text="Solicitamos tu contraseña para confirmar que eres el propietario de la cuenta."
+                wrapText="true"
+                styleClass="muted-text"/>
+
+    </VBox>
+
+    <Label
+            fx:id="lblMensaje"
+            text=""
+            wrapText="true"
+            maxWidth="Infinity"
+            styleClass="error-message"/>
+
+    <Button
+            fx:id="btnGuardarSeguridad"
+            text="CONFIGURAR SEGURIDAD"
+            onAction="#guardarSeguridad"
+            maxWidth="Infinity"
+            prefHeight="44"
+            styleClass="primary-button"/>
+
+    <Button
+            text="CERRAR"
+            onAction="#cerrarVentana"
+            maxWidth="Infinity"
+            prefHeight="42"
+            styleClass="secondary-button"/>
+
+</VBox>

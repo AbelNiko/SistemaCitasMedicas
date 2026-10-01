@@ -198,7 +198,16 @@ CREATE TABLE IF NOT EXISTS usuarios (
 
     telefono VARCHAR(20),
 
-    estado BOOLEAN NOT NULL DEFAULT TRUE,
+pregunta_seguridad VARCHAR(50),
+
+respuesta_seguridad_hash VARCHAR(255),
+
+intentos_recuperacion TINYINT UNSIGNED
+    NOT NULL DEFAULT 0,
+
+bloqueado_recuperacion_hasta DATETIME,
+
+estado BOOLEAN NOT NULL DEFAULT TRUE,
 
     fecha_creacion TIMESTAMP NOT NULL DEFAULT CURRENT_TIMESTAMP,
 

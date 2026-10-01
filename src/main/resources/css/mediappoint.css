@@ -3838,3 +3838,313 @@
     -fx-text-fill: #D8E7E5;
     -fx-font-size: 12px;
 }
+
+/* ================================================================
+        CALENDARIO MEDIAPPOINT - DATEPICKER
+   ================================================================ */
+
+/*
+ * Ventana emergente completa.
+ */
+.date-picker-popup {
+    -fx-background-color: #0B1D31;
+    -fx-border-color: #27455F;
+    -fx-border-width: 1;
+    -fx-background-radius: 8;
+    -fx-border-radius: 8;
+}
+
+/*
+ * Cabecera donde se muestran MES y AÑO.
+ */
+.date-picker-popup .month-year-pane {
+    -fx-background-color: #10263C;
+    -fx-padding: 8 6 8 6;
+}
+
+/*
+ * Texto del mes y año.
+ */
+.date-picker-popup .month-year-pane .label,
+.date-picker-popup .spinner .label {
+    -fx-text-fill: #FFFFFF;
+    -fx-font-size: 13px;
+    -fx-font-weight: bold;
+}
+
+/*
+ * Botones para cambiar mes y año.
+ */
+.date-picker-popup .spinner .button {
+    -fx-background-color: #173A59;
+    -fx-background-radius: 6;
+    -fx-cursor: hand;
+}
+
+.date-picker-popup .spinner .button:hover {
+    -fx-background-color: #20547A;
+}
+
+/*
+ * Flechas de navegación.
+ */
+.date-picker-popup .spinner .button .left-arrow,
+.date-picker-popup .spinner .button .right-arrow {
+    -fx-background-color: #16C7FF;
+}
+
+/*
+ * Fondo del calendario.
+ */
+.date-picker-popup .calendar-grid {
+    -fx-background-color: #0B1D31;
+}
+
+/*
+ * Nombres de los días:
+ * Lun, Mar, Mié...
+ */
+.date-picker-popup .day-name-cell {
+    -fx-text-fill: #73BFE7;
+    -fx-font-weight: bold;
+    -fx-background-color: #0B1D31;
+}
+
+/*
+ * Días normales.
+ */
+.date-picker-popup .day-cell {
+    -fx-background-color: #0B1D31;
+    -fx-text-fill: #E7F1F8;
+    -fx-border-color: #173A59;
+    -fx-border-width: 0.3;
+}
+
+/*
+ * Día sobre el que pasa el mouse.
+ */
+.date-picker-popup .day-cell:hover {
+    -fx-background-color: #173A59;
+    -fx-text-fill: #FFFFFF;
+}
+
+/*
+ * Días pertenecientes al mes anterior o siguiente.
+ */
+.date-picker-popup .previous-month,
+.date-picker-popup .next-month {
+    -fx-text-fill: #536E82;
+}
+
+/*
+ * Día actual.
+ */
+.date-picker-popup .today {
+    -fx-background-color: #103A5C;
+    -fx-text-fill: #67D1FF;
+    -fx-font-weight: bold;
+}
+
+/*
+ * Fecha seleccionada.
+ */
+.date-picker-popup .selected {
+    -fx-background-color: #0B84F3;
+    -fx-text-fill: #FFFFFF;
+    -fx-font-weight: bold;
+}
+
+/*
+ * Fechas deshabilitadas.
+ */
+.date-picker-popup .day-cell:disabled {
+    -fx-opacity: 0.30;
+}
+
+/* ================================================================
+                 SEGURIDAD DE LA CUENTA
+   ================================================================ */
+
+.security-account-root {
+    -fx-background-color: #071525;
+}
+
+.security-account-title {
+    -fx-text-fill: #FFFFFF;
+    -fx-font-size: 22px;
+    -fx-font-weight: bold;
+}
+
+.security-account-description {
+    -fx-text-fill: #91A4B8;
+    -fx-font-size: 12px;
+}
+
+.security-status-card {
+    -fx-background-color: #0B2034;
+    -fx-background-radius: 11;
+    -fx-border-color: #183C58;
+    -fx-border-radius: 11;
+    -fx-border-width: 1;
+}
+
+.security-small-label {
+    -fx-text-fill: #71899D;
+    -fx-font-size: 9px;
+    -fx-font-weight: bold;
+}
+
+.security-status-label {
+    -fx-text-fill: #FFC269;
+    -fx-font-size: 12px;
+    -fx-font-weight: bold;
+}
+
+.security-current-question {
+    -fx-text-fill: #E7F1F8;
+    -fx-font-size: 12px;
+}
+
+/* ================================================================
+          SEGURIDAD DE CUENTA - PERFIL DEL PACIENTE
+   ================================================================ */
+
+.profile-security-status-box {
+    -fx-background-color: #0A1B2C;
+
+    -fx-background-radius: 8;
+
+    -fx-border-color: #1B405C;
+    -fx-border-radius: 8;
+    -fx-border-width: 1;
+}
+
+.profile-security-small-label {
+    -fx-text-fill: #71899D;
+    -fx-font-size: 9px;
+    -fx-font-weight: bold;
+}
+
+.profile-security-warning {
+    -fx-text-fill: #FFC269;
+    -fx-font-size: 11px;
+    -fx-font-weight: bold;
+}
+
+.profile-security-success {
+    -fx-text-fill: #45D483;
+    -fx-font-size: 11px;
+    -fx-font-weight: bold;
+}
+
+.profile-security-question {
+    -fx-text-fill: #E7F1F8;
+    -fx-font-size: 11px;
+}
+
+/* ================================================================
+          SEGURIDAD DE CUENTA - PERFIL MÉDICO
+   ================================================================ */
+
+.doctor-security-card {
+    -fx-border-color: #185172;
+}
+
+.doctor-security-warning {
+    -fx-text-fill: #FFC269;
+    -fx-font-size: 12px;
+    -fx-font-weight: bold;
+}
+
+.doctor-security-success {
+    -fx-text-fill: #45D483;
+    -fx-font-size: 12px;
+    -fx-font-weight: bold;
+}
+
+.doctor-security-question {
+    -fx-text-fill: #E7F1F8;
+    -fx-font-size: 12px;
+}
+
+/* ================================================================
+                  RECUPERACIÓN DE CONTRASEÑA
+   ================================================================ */
+
+.recovery-root {
+    -fx-background-color: #071525;
+}
+
+.recovery-title {
+    -fx-text-fill: #FFFFFF;
+    -fx-font-size: 22px;
+    -fx-font-weight: bold;
+}
+
+.recovery-description {
+    -fx-text-fill: #91A4B8;
+    -fx-font-size: 12px;
+}
+
+.recovery-step-title {
+    -fx-text-fill: #67D1FF;
+    -fx-font-size: 14px;
+    -fx-font-weight: bold;
+}
+
+.recovery-question-card {
+    -fx-background-color: #0B2034;
+    -fx-background-radius: 10;
+
+    -fx-border-color: #1B4F70;
+    -fx-border-radius: 10;
+    -fx-border-width: 1;
+}
+
+.recovery-small-label {
+    -fx-text-fill: #71899D;
+    -fx-font-size: 9px;
+    -fx-font-weight: bold;
+}
+
+.recovery-question {
+    -fx-text-fill: #FFFFFF;
+    -fx-font-size: 13px;
+    -fx-font-weight: bold;
+}
+
+.recovery-warning {
+    -fx-text-fill: #FFC269;
+    -fx-font-size: 10px;
+}
+
+/* ================================================================
+               RECUPERACIÓN DESDE EL LOGIN
+   ================================================================ */
+
+.forgot-password-button {
+    -fx-background-color: transparent;
+
+    -fx-border-color: transparent;
+
+    -fx-text-fill: #4DBEFF;
+
+    -fx-font-size: 11px;
+    -fx-font-weight: bold;
+
+    -fx-alignment: CENTER_RIGHT;
+
+    -fx-cursor: hand;
+
+    -fx-padding: 2 0 2 0;
+}
+
+.forgot-password-button:hover {
+    -fx-text-fill: #80D4FF;
+
+    -fx-underline: true;
+}
+
+.forgot-password-button:pressed {
+    -fx-text-fill: #2A9CE0;
+}

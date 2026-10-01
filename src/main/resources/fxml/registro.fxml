@@ -267,6 +267,56 @@
 
                 </VBox>
 
+<!-- =================================================
+              SEGURIDAD DE LA CUENTA
+     ================================================= -->
+
+<Separator/>
+
+<Label
+        text="Seguridad de la cuenta"
+        styleClass="section-title"/>
+
+<Label
+        text="Selecciona una pregunta que puedas recordar. Se utilizará para verificar tu identidad si necesitas recuperar tu contraseña."
+        wrapText="true"
+        styleClass="info-text"/>
+
+<VBox spacing="6">
+
+    <Label
+            text="Pregunta de seguridad"
+            styleClass="field-label"/>
+
+    <ComboBox
+            fx:id="cmbPreguntaSeguridad"
+            promptText="Selecciona una pregunta"
+            prefHeight="40"
+            maxWidth="Infinity"
+            styleClass="auth-combo"/>
+
+</VBox>
+
+<VBox spacing="6">
+
+    <Label
+            text="Respuesta de seguridad"
+            styleClass="field-label"/>
+
+    <TextField
+            fx:id="txtRespuestaSeguridad"
+            promptText="Ej.: matematicas"
+            prefHeight="40"
+            styleClass="auth-field"/>
+
+    <Label
+            text="Por favor, ingrese la respuesta sin mayúsculas ni tildes."
+            wrapText="true"
+            styleClass="muted-text"/>
+
+</VBox>
+
+
                 <!-- =================================================
                               CONTACTO DE EMERGENCIA
                      ================================================= -->
@@ -329,11 +379,12 @@
                 <!-- Crear cuenta -->
 
                 <Button
-                        text="CREAR CUENTA"
-                        onAction="#registrarPaciente"
-                        maxWidth="Infinity"
-                        prefHeight="44"
-                        styleClass="primary-button"/>
+        fx:id="btnCrearCuenta"
+        text="CREAR CUENTA"
+        onAction="#registrarPaciente"
+        maxWidth="Infinity"
+        prefHeight="45"
+        styleClass="primary-button"/>
 
                 <!-- Regresar -->
 

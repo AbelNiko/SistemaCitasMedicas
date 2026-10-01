@@ -3,6 +3,7 @@ package com.citasmedicas.controller;
 import com.citasmedicas.dao.MedicoDAO;
 import com.citasmedicas.model.Medico;
 import com.citasmedicas.model.Usuario;
+import com.citasmedicas.model.PreguntaSeguridad;
 import com.citasmedicas.util.SesionUtil;
 
 import javafx.concurrent.Task;
@@ -11,7 +12,9 @@ import javafx.fxml.FXMLLoader;
 import javafx.scene.Parent;
 import javafx.scene.Scene;
 import javafx.scene.control.Label;
+import javafx.scene.control.Button;
 import javafx.stage.Stage;
+import javafx.stage.Modality;
 
 import java.io.IOException;
 import java.time.format.DateTimeFormatter;
@@ -92,6 +95,21 @@ public class PerfilMedicoController {
     @FXML
     private Label lblMensaje;
 
+    /*
+ * ============================================================
+ * SEGURIDAD DE LA CUENTA
+ * ============================================================
+ */
+
+@FXML
+private Label lblEstadoSeguridadMedico;
+
+@FXML
+private Label lblPreguntaSeguridadMedico;
+
+@FXML
+private Button btnSeguridadMedico;
+
     /* ============================================================
                          DEPENDENCIAS Y ESTADO
        ============================================================ */
@@ -171,6 +189,8 @@ public class PerfilMedicoController {
         }
 
         cargarPerfil();
+
+actualizarEstadoSeguridad();
     }
 
     /* ============================================================
@@ -453,6 +473,107 @@ public class PerfilMedicoController {
                        UTILIDADES DE PRESENTACIÓN
        ============================================================ */
 
+       /**
+ * Actualiza visualmente el estado de seguridad
+ * de la cuenta médica.
+ */
+private void actualizarEstadoSeguridad() {
+
+    if (
+            usuarioActual == null
+                    || lblEstadoSeguridadMedico == null
+                    || lblPreguntaSeguridadMedico == null
+                    || btnSeguridadMedico == null
+    ) {
+
+        return;
+    }
+
+    if (
+            usuarioActual
+                    .tienePreguntaSeguridadConfigurada()
+    ) {
+
+        /*
+         * ====================================================
+         * SEGURIDAD CONFIGURADA
+         * ====================================================
+         */
+
+        lblEstadoSeguridadMedico.setText(
+                "CONFIGURADA"
+        );
+
+        lblEstadoSeguridadMedico
+                .getStyleClass()
+                .removeAll(
+                        "doctor-security-warning",
+                        "doctor-security-success"
+                );
+
+        lblEstadoSeguridadMedico
+                .getStyleClass()
+                .add(
+                        "doctor-security-success"
+                );
+
+        PreguntaSeguridad pregunta =
+                PreguntaSeguridad.desdeCodigo(
+                        usuarioActual.getPreguntaSeguridad()
+                );
+
+        if (pregunta != null) {
+
+            lblPreguntaSeguridadMedico.setText(
+                    pregunta.getTexto()
+            );
+
+        } else {
+
+            lblPreguntaSeguridadMedico.setText(
+                    "Pregunta de seguridad configurada."
+            );
+        }
+
+        btnSeguridadMedico.setText(
+                "CAMBIAR SEGURIDAD"
+        );
+
+    } else {
+
+        /*
+         * ====================================================
+         * SEGURIDAD NO CONFIGURADA
+         * ====================================================
+         */
+
+        lblEstadoSeguridadMedico.setText(
+                "NO CONFIGURADA"
+        );
+
+        lblEstadoSeguridadMedico
+                .getStyleClass()
+                .removeAll(
+                        "doctor-security-warning",
+                        "doctor-security-success"
+                );
+
+        lblEstadoSeguridadMedico
+                .getStyleClass()
+                .add(
+                        "doctor-security-warning"
+                );
+
+        lblPreguntaSeguridadMedico.setText(
+                "Aún no has configurado una pregunta de seguridad."
+        );
+
+        btnSeguridadMedico.setText(
+                "CONFIGURAR SEGURIDAD"
+        );
+    }
+}
+
     /**
      * Convierte una lista de valores en texto
      * legible para la interfaz.
@@ -557,6 +678,99 @@ public class PerfilMedicoController {
     /* ============================================================
                             NAVEGACIÓN
        ============================================================ */
+
+       /**
+ * Abre la configuración de seguridad
+ * de la cuenta médica.
+ */
+@FXML
+private void abrirSeguridadCuenta() {
+
+    if (usuarioActual == null) {
+
+        mostrarMensaje(
+                "No existe una sesión médica activa."
+        );
+
+        return;
+    }
+
+    try {
+
+        FXMLLoader loader =
+                new FXMLLoader(
+                        getClass().getResource(
+                                "/fxml/seguridad-cuenta.fxml"
+                        )
+                );
+
+        Parent root =
+                loader.load();
+
+        SeguridadCuentaController controller =
+                loader.getController();
+
+        controller.setUsuario(
+                usuarioActual
+        );
+
+        Stage ventanaSeguridad =
+                new Stage();
+
+        ventanaSeguridad.setTitle(
+                "MediAppoint - Seguridad de la cuenta"
+        );
+
+        ventanaSeguridad.setScene(
+                new Scene(root)
+        );
+
+        ventanaSeguridad.setResizable(
+                false
+        );
+
+        Stage ventanaActual =
+                obtenerStage();
+
+        if (ventanaActual != null) {
+
+            ventanaSeguridad.initOwner(
+                    ventanaActual
+            );
+
+            ventanaSeguridad.initModality(
+                    Modality.WINDOW_MODAL
+            );
+        }
+
+        ventanaSeguridad.centerOnScreen();
+
+        /*
+         * Esperamos a que el médico termine
+         * de configurar su seguridad.
+         */
+        ventanaSeguridad.showAndWait();
+
+        /*
+         * SeguridadCuentaService modifica el mismo
+         * usuarioActual mantenido en memoria.
+         */
+        actualizarEstadoSeguridad();
+
+    } catch (IOException e) {
+
+        mostrarMensaje(
+                "No fue posible abrir la seguridad de la cuenta."
+        );
+
+        System.err.println(
+                "Error cargando seguridad-cuenta.fxml: "
+                        + e.getMessage()
+        );
+
+        e.printStackTrace();
+    }
+}
 
     /**
      * Abre la agenda principal del médico.

@@ -3960,3 +3960,109 @@
 .date-picker-popup .day-cell:disabled {
     -fx-opacity: 0.30;
 }
+
+/* ================================================================
+                 SEGURIDAD DE LA CUENTA
+   ================================================================ */
+
+.security-account-root {
+    -fx-background-color: #071525;
+}
+
+.security-account-title {
+    -fx-text-fill: #FFFFFF;
+    -fx-font-size: 22px;
+    -fx-font-weight: bold;
+}
+
+.security-account-description {
+    -fx-text-fill: #91A4B8;
+    -fx-font-size: 12px;
+}
+
+.security-status-card {
+    -fx-background-color: #0B2034;
+    -fx-background-radius: 11;
+    -fx-border-color: #183C58;
+    -fx-border-radius: 11;
+    -fx-border-width: 1;
+}
+
+.security-small-label {
+    -fx-text-fill: #71899D;
+    -fx-font-size: 9px;
+    -fx-font-weight: bold;
+}
+
+.security-status-label {
+    -fx-text-fill: #FFC269;
+    -fx-font-size: 12px;
+    -fx-font-weight: bold;
+}
+
+.security-current-question {
+    -fx-text-fill: #E7F1F8;
+    -fx-font-size: 12px;
+}
+
+/* ================================================================
+          SEGURIDAD DE CUENTA - PERFIL DEL PACIENTE
+   ================================================================ */
+
+.profile-security-status-box {
+    -fx-background-color: #0A1B2C;
+
+    -fx-background-radius: 8;
+
+    -fx-border-color: #1B405C;
+    -fx-border-radius: 8;
+    -fx-border-width: 1;
+}
+
+.profile-security-small-label {
+    -fx-text-fill: #71899D;
+    -fx-font-size: 9px;
+    -fx-font-weight: bold;
+}
+
+.profile-security-warning {
+    -fx-text-fill: #FFC269;
+    -fx-font-size: 11px;
+    -fx-font-weight: bold;
+}
+
+.profile-security-success {
+    -fx-text-fill: #45D483;
+    -fx-font-size: 11px;
+    -fx-font-weight: bold;
+}
+
+.profile-security-question {
+    -fx-text-fill: #E7F1F8;
+    -fx-font-size: 11px;
+}
+
+/* ================================================================
+          SEGURIDAD DE CUENTA - PERFIL MÉDICO
+   ================================================================ */
+
+.doctor-security-card {
+    -fx-border-color: #185172;
+}
+
+.doctor-security-warning {
+    -fx-text-fill: #FFC269;
+    -fx-font-size: 12px;
+    -fx-font-weight: bold;
+}
+
+.doctor-security-success {
+    -fx-text-fill: #45D483;
+    -fx-font-size: 12px;
+    -fx-font-weight: bold;
+}
+
+.doctor-security-question {
+    -fx-text-fill: #E7F1F8;
+    -fx-font-size: 12px;
+}

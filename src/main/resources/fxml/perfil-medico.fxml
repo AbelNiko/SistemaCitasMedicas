@@ -648,6 +648,100 @@
 
                         </HBox>
 
+<!-- =====================================================
+               SEGURIDAD DE LA CUENTA
+     ===================================================== -->
+
+<VBox
+        spacing="16"
+        styleClass="doctor-profile-card doctor-security-card">
+
+    <padding>
+        <Insets
+                top="20"
+                right="22"
+                bottom="22"
+                left="22"/>
+    </padding>
+
+    <HBox
+            spacing="12"
+            alignment="CENTER_LEFT">
+
+        <Label
+                text="05"
+                styleClass="doctor-profile-section-number"/>
+
+        <VBox spacing="2">
+
+            <Label
+                    text="Seguridad de la cuenta"
+                    styleClass="doctor-profile-section-title"/>
+
+            <Label
+                    text="Configura la verificación utilizada para recuperar el acceso a tu cuenta profesional."
+                    wrapText="true"
+                    styleClass="doctor-profile-section-description"/>
+
+        </VBox>
+
+    </HBox>
+
+    <Separator styleClass="doctor-profile-separator"/>
+
+    <HBox
+            spacing="18"
+            alignment="CENTER_LEFT">
+
+        <VBox
+                spacing="6"
+                HBox.hgrow="ALWAYS">
+
+            <Label
+                    text="ESTADO DE SEGURIDAD"
+                    styleClass="doctor-profile-field-label"/>
+
+            <Label
+                    fx:id="lblEstadoSeguridadMedico"
+                    text="NO CONFIGURADA"
+                    styleClass="doctor-security-warning"/>
+
+            <Label
+                    text="PREGUNTA ACTUAL"
+                    styleClass="doctor-profile-field-label"/>
+
+            <Label
+                    fx:id="lblPreguntaSeguridadMedico"
+                    text="Aún no has configurado una pregunta de seguridad."
+                    wrapText="true"
+                    maxWidth="Infinity"
+                    styleClass="doctor-security-question"/>
+
+            <Label
+                    text="La respuesta permanece protegida y nunca será mostrada."
+                    wrapText="true"
+                    styleClass="doctor-profile-section-description"/>
+
+        </VBox>
+
+        <VBox
+                alignment="CENTER_RIGHT"
+                minWidth="230">
+
+            <Button
+                    fx:id="btnSeguridadMedico"
+                    text="CONFIGURAR SEGURIDAD"
+                    onAction="#abrirSeguridadCuenta"
+                    prefWidth="220"
+                    prefHeight="42"
+                    styleClass="doctor-primary-button"/>
+
+        </VBox>
+
+    </HBox>
+
+</VBox>
+
                         <!-- AVISO FINAL -->
 
                         <HBox

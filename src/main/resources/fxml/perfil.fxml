@@ -477,7 +477,92 @@
                                 </GridPane>
 
                             </VBox>
+<!-- =====================================
+          SEGURIDAD DE LA CUENTA
+     ===================================== -->
 
+<VBox
+        spacing="15"
+        styleClass="profile-section-card">
+
+    <padding>
+        <Insets
+                top="19"
+                right="20"
+                bottom="20"
+                left="20"/>
+    </padding>
+
+    <HBox
+            spacing="11"
+            alignment="CENTER_LEFT">
+
+        <Label
+                text="03"
+                styleClass="profile-section-number"/>
+
+        <VBox spacing="2">
+
+            <Label
+                    text="Seguridad de la cuenta"
+                    styleClass="profile-section-title"/>
+
+            <Label
+                    text="Protege el acceso y la recuperación de tu cuenta."
+                    wrapText="true"
+                    styleClass="profile-section-description"/>
+
+        </VBox>
+
+    </HBox>
+
+    <VBox
+            spacing="6"
+            styleClass="profile-security-status-box">
+
+        <padding>
+            <Insets
+                    top="11"
+                    right="13"
+                    bottom="11"
+                    left="13"/>
+        </padding>
+
+        <Label
+                text="ESTADO"
+                styleClass="profile-security-small-label"/>
+
+        <Label
+                fx:id="lblEstadoSeguridadPerfil"
+                text="No configurada"
+                styleClass="profile-security-warning"/>
+
+        <Label
+                text="PREGUNTA ACTUAL"
+                styleClass="profile-security-small-label"/>
+
+        <Label
+                fx:id="lblPreguntaSeguridadPerfil"
+                text="Aún no has configurado una pregunta de seguridad."
+                wrapText="true"
+                styleClass="profile-security-question"/>
+
+    </VBox>
+
+    <Label
+            text="La respuesta de seguridad nunca se muestra y se almacena protegida."
+            wrapText="true"
+            styleClass="profile-section-description"/>
+
+    <Button
+            fx:id="btnSeguridadCuenta"
+            text="CONFIGURAR SEGURIDAD"
+            onAction="#abrirSeguridadCuenta"
+            maxWidth="Infinity"
+            prefHeight="42"
+            styleClass="patient-primary-button"/>
+
+</VBox>
                         </VBox>
 
                         <!-- =====================================

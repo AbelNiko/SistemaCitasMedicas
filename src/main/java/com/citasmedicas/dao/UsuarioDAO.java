@@ -617,4 +617,60 @@ public class UsuarioDAO {
             return sentencia.executeUpdate() > 0;
         }
     }
+    /**
+ * Configura o actualiza la pregunta de seguridad
+ * de un usuario.
+ *
+ * Al actualizar la configuración se reinician los
+ * intentos y cualquier bloqueo previo de recuperación.
+ *
+ * @param idUsuario identificador del usuario.
+ * @param preguntaSeguridad código de la pregunta.
+ * @param respuestaSeguridadHash hash BCrypt de la respuesta.
+ * @return true si se realizó la actualización.
+ * @throws SQLException si ocurre un error.
+ */
+public boolean actualizarSeguridadCuenta(
+        int idUsuario,
+        String preguntaSeguridad,
+        String respuestaSeguridadHash
+) throws SQLException {
+
+    String sql = """
+            UPDATE usuarios
+            SET
+                pregunta_seguridad = ?,
+                respuesta_seguridad_hash = ?,
+                intentos_recuperacion = 0,
+                bloqueado_recuperacion_hasta = NULL
+            WHERE id_usuario = ?
+              AND estado = TRUE
+            """;
+
+    try (
+            Connection conexion =
+                    ConexionBD.obtenerConexion();
+
+            PreparedStatement sentencia =
+                    conexion.prepareStatement(sql)
+    ) {
+
+        sentencia.setString(
+                1,
+                preguntaSeguridad
+        );
+
+        sentencia.setString(
+                2,
+                respuestaSeguridadHash
+        );
+
+        sentencia.setInt(
+                3,
+                idUsuario
+        );
+
+        return sentencia.executeUpdate() > 0;
+    }
+}
 }

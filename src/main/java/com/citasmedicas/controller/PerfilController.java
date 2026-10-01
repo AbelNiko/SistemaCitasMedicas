@@ -2,6 +2,7 @@ package com.citasmedicas.controller;
 
 import com.citasmedicas.model.Paciente;
 import com.citasmedicas.model.Usuario;
+import com.citasmedicas.model.PreguntaSeguridad;
 import com.citasmedicas.service.PerfilService;
 import com.citasmedicas.util.SesionUtil;
 
@@ -13,7 +14,9 @@ import javafx.scene.control.DatePicker;
 import javafx.scene.control.Label;
 import javafx.scene.control.TextArea;
 import javafx.scene.control.TextField;
+import javafx.scene.control.Button;
 import javafx.stage.Stage;
+import javafx.stage.Modality;
 
 import java.io.IOException;
 import java.time.LocalDate;
@@ -72,6 +75,21 @@ public class PerfilController {
 
     @FXML
     private TextField txtDireccion;
+
+    /*
+ * ============================================================
+ * SEGURIDAD DE LA CUENTA
+ * ============================================================
+ */
+
+@FXML
+private Label lblEstadoSeguridadPerfil;
+
+@FXML
+private Label lblPreguntaSeguridadPerfil;
+
+@FXML
+private Button btnSeguridadCuenta;
 
     /* ============================================================
                          INFORMACIÓN MÉDICA
@@ -173,8 +191,12 @@ public class PerfilController {
      */
     public void setUsuario(Usuario usuario) {
 
-        this.usuarioActual = usuario;
-        cargarDatos();
+        this.usuarioActual =
+        usuario;
+
+cargarDatos();
+
+actualizarEstadoSeguridad();
     }
 
     /**
@@ -712,9 +734,191 @@ public class PerfilController {
         }
     }
 
+/**
+ * Actualiza la sección visual de seguridad
+ * según la configuración actual del usuario.
+ */
+private void actualizarEstadoSeguridad() {
+
+    if (
+            usuarioActual == null
+                    || lblEstadoSeguridadPerfil == null
+                    || lblPreguntaSeguridadPerfil == null
+    ) {
+
+        return;
+    }
+
+    if (
+            usuarioActual
+                    .tienePreguntaSeguridadConfigurada()
+    ) {
+
+        lblEstadoSeguridadPerfil.setText(
+                "CONFIGURADA"
+        );
+
+        lblEstadoSeguridadPerfil
+                .getStyleClass()
+                .removeAll(
+                        "profile-security-warning",
+                        "profile-security-success"
+                );
+
+        lblEstadoSeguridadPerfil
+                .getStyleClass()
+                .add(
+                        "profile-security-success"
+                );
+
+        PreguntaSeguridad pregunta =
+                PreguntaSeguridad.desdeCodigo(
+                        usuarioActual.getPreguntaSeguridad()
+                );
+
+        if (pregunta != null) {
+
+            lblPreguntaSeguridadPerfil.setText(
+                    pregunta.getTexto()
+            );
+
+        } else {
+
+            lblPreguntaSeguridadPerfil.setText(
+                    "Pregunta de seguridad configurada."
+            );
+        }
+
+        btnSeguridadCuenta.setText(
+                "CAMBIAR SEGURIDAD"
+        );
+
+    } else {
+
+        lblEstadoSeguridadPerfil.setText(
+                "NO CONFIGURADA"
+        );
+
+        lblEstadoSeguridadPerfil
+                .getStyleClass()
+                .removeAll(
+                        "profile-security-warning",
+                        "profile-security-success"
+                );
+
+        lblEstadoSeguridadPerfil
+                .getStyleClass()
+                .add(
+                        "profile-security-warning"
+                );
+
+        lblPreguntaSeguridadPerfil.setText(
+                "Aún no has configurado una pregunta de seguridad."
+        );
+
+        btnSeguridadCuenta.setText(
+                "CONFIGURAR SEGURIDAD"
+        );
+    }
+}
+
     /* ============================================================
                               MENSAJES
        ============================================================ */
+
+/**
+ * Abre la configuración de seguridad
+ * del usuario autenticado.
+ */
+@FXML
+private void abrirSeguridadCuenta() {
+
+    if (usuarioActual == null) {
+
+        mostrarError(
+                "No existe un usuario autenticado."
+        );
+
+        return;
+    }
+
+    try {
+
+        FXMLLoader loader =
+                new FXMLLoader(
+                        getClass().getResource(
+                                "/fxml/seguridad-cuenta.fxml"
+                        )
+                );
+
+        Scene scene =
+                new Scene(
+                        loader.load()
+                );
+
+        SeguridadCuentaController controller =
+                loader.getController();
+
+        controller.setUsuario(
+                usuarioActual
+        );
+
+        Stage ventanaSeguridad =
+                new Stage();
+
+        ventanaSeguridad.setTitle(
+                "MediAppoint - Seguridad de la cuenta"
+        );
+
+        ventanaSeguridad.setScene(
+                scene
+        );
+
+        ventanaSeguridad.setResizable(
+                false
+        );
+
+        /*
+         * La ventana pertenece al perfil actual.
+         */
+        ventanaSeguridad.initOwner(
+                lblNombreUsuario
+                        .getScene()
+                        .getWindow()
+        );
+
+        /*
+         * Impide interactuar con el perfil
+         * mientras esta ventana está abierta.
+         */
+        ventanaSeguridad.initModality(
+                Modality.WINDOW_MODAL
+        );
+
+        ventanaSeguridad.centerOnScreen();
+
+        ventanaSeguridad.showAndWait();
+
+        /*
+         * SeguridadCuentaService actualiza el mismo
+         * objeto usuarioActual en memoria.
+         */
+        actualizarEstadoSeguridad();
+
+    } catch (IOException e) {
+
+        mostrarError(
+                "No fue posible abrir la seguridad de la cuenta."
+        );
+
+        System.err.println(
+                "Error cargando seguridad-cuenta.fxml: "
+                        + e.getMessage()
+        );
+
+        e.printStackTrace();
+    }
+}
 
     private void mostrarMensaje(
             String mensaje

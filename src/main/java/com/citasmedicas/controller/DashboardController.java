@@ -1,5 +1,6 @@
 package com.citasmedicas.controller;
 
+import com.citasmedicas.util.EjecutorTareas;
 import com.citasmedicas.dao.PacienteDAO;
 import com.citasmedicas.model.Cita;
 import com.citasmedicas.model.Paciente;
@@ -9,13 +10,22 @@ import com.citasmedicas.util.SesionUtil;
 
 import javafx.fxml.FXML;
 import javafx.fxml.FXMLLoader;
+import javafx.concurrent.Task;
 import javafx.scene.Scene;
 import javafx.scene.control.Label;
 import javafx.stage.Stage;
 
 import java.io.IOException;
 import java.time.format.DateTimeFormatter;
+import java.time.LocalDate;
+import java.time.LocalTime;
+import java.util.List;
 import java.util.Optional;
+
+
+
+
+
 
 /**
  * ================================================================
@@ -37,6 +47,17 @@ import java.util.Optional;
  * @version 1.1
  */
 public class DashboardController {
+/**
+ * Resultado interno utilizado para transportar
+ * la información calculada desde el hilo de trabajo
+ * hasta JavaFX.
+ */
+private record ResumenDashboard(
+        boolean pacienteEncontrado,
+        long cantidadCitas,
+        Cita proximaCita
+) {
+}
 
     @FXML
     private Label lblBienvenida;
@@ -135,107 +156,345 @@ public class DashboardController {
     }
 
     /**
-     * Consulta MySQL y actualiza las tarjetas
-     * del Dashboard.
+ * Carga el resumen de citas del paciente en segundo plano.
+ *
+ * Se realiza una sola consulta de citas y, posteriormente,
+ * se calcula en memoria:
+ *
+ * - cantidad de citas activas;
+ * - próxima cita disponible.
+ *
+ * De esta forma evitamos bloquear JavaFX y reducimos
+ * consultas innecesarias hacia Aiven.
+ */
+private void cargarResumenCitas() {
+
+    if (usuarioActual == null) {
+        return;
+    }
+
+    /*
+     * Mostramos inmediatamente un estado de carga.
+     * La interfaz continúa respondiendo mientras
+     * MySQL procesa la consulta.
      */
-    private void cargarResumenCitas() {
+    lblProximaCita.setText(
+            "Cargando..."
+    );
 
-        if (usuarioActual == null) {
-            return;
-        }
+    lblDetalleProximaCita.setText(
+            "Consultando tus próximas citas"
+    );
 
-        try {
+    lblCantidadCitas.setText(
+            "..."
+    );
 
-            Paciente paciente =
-                    pacienteDAO.buscarPorIdUsuario(
-                            usuarioActual
-                                    .getIdUsuario()
-                    );
+    int idUsuario =
+            usuarioActual.getIdUsuario();
 
-            if (paciente == null) {
+    Task<ResumenDashboard> tarea =
+            new Task<>() {
 
-                lblProximaCita.setText(
-                        "Sin información"
-                );
+                @Override
+                protected ResumenDashboard call()
+                        throws Exception {
 
-                lblDetalleProximaCita.setText(
-                        "No existe un perfil de paciente."
-                );
+                    /*
+                     * =================================================
+                     * PERFIL DEL PACIENTE
+                     * =================================================
+                     */
 
-                lblCantidadCitas.setText(
-                        "0"
-                );
+                    Paciente paciente =
+                            pacienteDAO.buscarPorIdUsuario(
+                                    idUsuario
+                            );
 
-                return;
-            }
+                    if (paciente == null) {
 
-            long cantidad =
-                    citaService
-                            .contarCitasProgramadas(
+                        return new ResumenDashboard(
+                                false,
+                                0,
+                                null
+                        );
+                    }
+
+                    /*
+                     * =================================================
+                     * UNA SOLA CONSULTA DE CITAS
+                     * =================================================
+                     */
+
+                    List<Cita> citas =
+                            citaService.listarPorPaciente(
                                     paciente.getIdPaciente()
                             );
 
-            lblCantidadCitas.setText(
-                    String.valueOf(cantidad)
-            );
+                    LocalDate hoy =
+                            LocalDate.now();
 
-            Optional<Cita> proxima =
-                    citaService.obtenerProximaCita(
-                            paciente.getIdPaciente()
+                    LocalTime ahora =
+                            LocalTime.now();
+
+                    long cantidadActivas =
+                            0;
+
+                    Cita proximaCita =
+                            null;
+
+                    /*
+                     * CitaDAO ya devuelve las citas ordenadas
+                     * por fecha y hora.
+                     *
+                     * Aprovechamos ese orden para encontrar
+                     * la próxima cita durante el mismo recorrido.
+                     */
+                    for (Cita cita : citas) {
+
+                        if (
+                                cita == null
+                                        || cita.getFechaCita() == null
+                        ) {
+
+                            continue;
+                        }
+
+                        boolean activa =
+                                "PROGRAMADA".equalsIgnoreCase(
+                                        cita.getEstado()
+                                )
+                                        || "CONFIRMADA".equalsIgnoreCase(
+                                                cita.getEstado()
+                                        );
+
+                        if (!activa) {
+                            continue;
+                        }
+
+                        /*
+                         * Conservamos la misma regla que tenía
+                         * contarCitasProgramadas():
+                         *
+                         * hoy o una fecha futura.
+                         */
+                        if (
+                                !cita.getFechaCita()
+                                        .isBefore(hoy)
+                        ) {
+
+                            cantidadActivas++;
+                        }
+
+                        /*
+                         * Si ya encontramos la próxima cita,
+                         * no necesitamos volver a calcularla,
+                         * aunque seguimos recorriendo para contar.
+                         */
+                        if (proximaCita != null) {
+                            continue;
+                        }
+
+                        if (
+                                cita.getFechaCita()
+                                        .isAfter(hoy)
+                        ) {
+
+                            proximaCita =
+                                    cita;
+
+                            continue;
+                        }
+
+                        if (
+                                cita.getFechaCita()
+                                        .isEqual(hoy)
+                                && cita.getHoraInicio() != null
+                                && !cita
+                                        .getHoraInicio()
+                                        .isBefore(ahora)
+                        ) {
+
+                            proximaCita =
+                                    cita;
+                        }
+                    }
+
+                    return new ResumenDashboard(
+                            true,
+                            cantidadActivas,
+                            proximaCita
+                    );
+                }
+            };
+
+    /*
+     * ============================================================
+     * RESULTADO CORRECTO
+     * ============================================================
+     */
+
+    tarea.setOnSucceeded(
+            evento -> {
+
+                ResumenDashboard resumen =
+                        tarea.getValue();
+
+                if (
+                        resumen == null
+                                || !resumen.pacienteEncontrado()
+                ) {
+
+                    lblProximaCita.setText(
+                            "Sin información"
                     );
 
-            if (proxima.isPresent()) {
+                    lblDetalleProximaCita.setText(
+                            "No existe un perfil de paciente."
+                    );
+
+                    lblCantidadCitas.setText(
+                            "0"
+                    );
+
+                    return;
+                }
+
+                lblCantidadCitas.setText(
+                        String.valueOf(
+                                resumen.cantidadCitas()
+                        )
+                );
 
                 Cita cita =
-                        proxima.get();
+                        resumen.proximaCita();
 
-                lblProximaCita.setText(
+                if (cita == null) {
+
+                    lblProximaCita.setText(
+                            "Sin citas próximas"
+                    );
+
+                    lblDetalleProximaCita.setText(
+                            "Agenda una nueva cita médica"
+                    );
+
+                    return;
+                }
+
+                /*
+                 * =================================================
+                 * FECHA Y HORA
+                 * =================================================
+                 */
+
+                String fechaHora =
                         cita.getFechaCita()
-                                .format(formatoFecha)
-                                + " · "
-                                + cita.getHoraInicio()
-                                .format(formatoHora)
-                );
+                                .format(formatoFecha);
 
-                lblDetalleProximaCita.setText(
-                        cita.getNombreEspecialidad()
-                                + " · "
-                                + cita.getNombreMedico()
-                );
+                if (cita.getHoraInicio() != null) {
 
-            } else {
+                    fechaHora +=
+                            " · "
+                                    + cita
+                                            .getHoraInicio()
+                                            .format(
+                                                    formatoHora
+                                            );
+                }
 
                 lblProximaCita.setText(
-                        "Sin citas próximas"
+                        fechaHora
                 );
 
+                /*
+                 * =================================================
+                 * DETALLE
+                 * =================================================
+                 */
+
+                String especialidad =
+                        valorSeguro(
+                                cita.getNombreEspecialidad(),
+                                "Especialidad no disponible"
+                        );
+
+                String medico =
+                        valorSeguro(
+                                cita.getNombreMedico(),
+                                "Médico no disponible"
+                        );
+
                 lblDetalleProximaCita.setText(
-                        "Agenda una nueva cita médica"
+                        especialidad
+                                + " · "
+                                + medico
                 );
             }
+    );
 
-        } catch (Exception e) {
+    /*
+     * ============================================================
+     * ERROR
+     * ============================================================
+     */
 
-            lblProximaCita.setText(
-                    "No disponible"
-            );
+    tarea.setOnFailed(
+            evento -> {
 
-            lblDetalleProximaCita.setText(
-                    "No fue posible consultar tus citas."
-            );
+                lblProximaCita.setText(
+                        "No disponible"
+                );
 
-            lblCantidadCitas.setText(
-                    "-"
-            );
+                lblDetalleProximaCita.setText(
+                        "No fue posible consultar tus citas."
+                );
 
-            System.err.println(
-                    "Error al cargar resumen de citas: "
-                            + e.getMessage()
-            );
+                lblCantidadCitas.setText(
+                        "-"
+                );
 
-            e.printStackTrace();
-        }
+                Throwable error =
+                        tarea.getException();
+
+                if (error != null) {
+
+                    System.err.println(
+                            "Error cargando resumen del Dashboard: "
+                                    + error.getMessage()
+                    );
+                }
+            }
+    );
+
+    /*
+     * Utilizamos el mismo ejecutor compartido
+     * que ya emplea el Login.
+     */
+    EjecutorTareas.ejecutar(
+            tarea
+    );
+}
+
+/**
+ * Evita mostrar valores null o vacíos
+ * dentro del Dashboard.
+ */
+private String valorSeguro(
+        String valor,
+        String predeterminado
+) {
+
+    if (
+            valor == null
+                    || valor.isBlank()
+    ) {
+
+        return predeterminado;
     }
+
+    return valor.trim();
+}
 
     /**
      * Abre la pantalla para agendar una cita.

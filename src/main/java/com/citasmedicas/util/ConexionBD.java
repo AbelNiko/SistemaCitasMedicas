@@ -1,5 +1,8 @@
 package com.citasmedicas.util;
 
+import com.zaxxer.hikari.HikariConfig;
+import com.zaxxer.hikari.HikariDataSource;
+
 import java.io.IOException;
 import java.io.InputStream;
 
@@ -7,7 +10,6 @@ import java.nio.file.Files;
 import java.nio.file.Path;
 
 import java.sql.Connection;
-import java.sql.DriverManager;
 import java.sql.SQLException;
 
 import java.util.Locale;
@@ -18,134 +20,347 @@ import java.util.Properties;
  *             SISTEMA DE GESTIÓN DE CITAS MÉDICAS
  * ================================================================
  *
- * Administra la conexión con MySQL.
+ * Administra las conexiones JDBC utilizadas por MediAppoint.
+ *
+ * La aplicación utiliza HikariCP para mantener un pequeño pool
+ * de conexiones reutilizables hacia MySQL.
+ *
+ * Esto evita abrir una conexión física nueva con Aiven para
+ * cada consulta realizada por los DAO y Services.
  *
  * La configuración puede obtenerse desde:
  *
- * 1. Archivo externo definido mediante:
+ * 1. Archivo externo:
+ *
  *    -Dmediappoint.config=ruta/database.properties
  *
  * 2. Variables de entorno:
  *
- * DB_HOST
- * DB_PORT
- * DB_NAME
- * DB_USER
- * DB_PASSWORD
- * DB_SSL_MODE
+ *    DB_HOST
+ *    DB_PORT
+ *    DB_NAME
+ *    DB_USER
+ *    DB_PASSWORD
+ *    DB_SSL_MODE
  *
- * Esto permite utilizar variables de entorno durante el
- * desarrollo y un archivo externo en la versión ejecutable.
- *
- * Las credenciales no se almacenan directamente en el
- * código fuente.
+ * Las credenciales nunca se almacenan directamente
+ * en el código fuente.
  *
  * @author Equipo de Ingeniería de Software II
- * @version 1.2
+ * @version 2.0
  */
 public final class ConexionBD {
 
-    /* ============================================================
-                       CONFIGURACIÓN EXTERNA
-       ============================================================ */
+    /*
+     * ============================================================
+     * CONFIGURACIÓN DEL POOL
+     * ============================================================
+     *
+     * MediAppoint es una aplicación de escritorio.
+     * No necesita decenas de conexiones simultáneas.
+     *
+     * Un máximo pequeño evita consumo innecesario
+     * de recursos tanto localmente como en Aiven.
+     */
 
-    private static final Properties CONFIGURACION =
-            cargarConfiguracionExterna();
+    private static final int MAXIMO_CONEXIONES =
+            5;
 
-    /* ============================================================
-                          DATOS DE CONEXIÓN
-       ============================================================ */
+    private static final int MINIMO_CONEXIONES_INACTIVAS =
+            1;
 
-    private static final String HOST =
-            obtenerValorObligatorio(
-                    "DB_HOST"
-            );
+    private static final long TIEMPO_ESPERA_CONEXION_MS =
+            10_000L;
 
-    private static final String PUERTO =
-            obtenerValorObligatorio(
-                    "DB_PORT"
-            );
+    private static final long TIEMPO_VALIDACION_MS =
+            5_000L;
 
-    private static final String BASE_DATOS =
-            obtenerValorObligatorio(
-                    "DB_NAME"
-            );
+    private static final long TIEMPO_INACTIVIDAD_MS =
+            120_000L;
 
-    private static final String USUARIO =
-            obtenerValorObligatorio(
-                    "DB_USER"
-            );
+    private static final long VIDA_MAXIMA_CONEXION_MS =
+            600_000L;
 
-    private static final String PASSWORD =
-            obtenerValorObligatorio(
-                    "DB_PASSWORD"
-            );
+    private static final long KEEP_ALIVE_MS =
+            120_000L;
 
-    private static final String SSL_MODE =
-            obtenerValorOpcional(
-                    "DB_SSL_MODE",
-                    "DISABLED"
-            )
-                    .trim()
-                    .toUpperCase(
-                            Locale.ROOT
-                    );
+    /*
+     * ============================================================
+     * ESTADO DEL POOL
+     * ============================================================
+     */
 
-    /* ============================================================
-                              URL JDBC
-       ============================================================ */
+    private static final Object BLOQUEO_POOL =
+            new Object();
 
-    private static final String URL =
-            construirUrl();
+    /*
+     * volatile permite que diferentes hilos vean correctamente
+     * cuándo el pool ya fue creado.
+     */
+    private static volatile HikariDataSource dataSource;
 
     /**
-     * Constructor privado.
+     * La clase es exclusivamente utilitaria.
      */
     private ConexionBD() {
     }
 
-    /* ============================================================
-                        OBTENCIÓN DE CONEXIÓN
-       ============================================================ */
+    /*
+     * ============================================================
+     * OBTENCIÓN DE CONEXIONES
+     * ============================================================
+     */
 
     /**
-     * Obtiene una conexión activa con MySQL.
+     * Obtiene una conexión disponible desde el pool.
      *
-     * @return conexión activa.
-     * @throws SQLException si ocurre un error.
+     * Al utilizar try-with-resources sobre la conexión,
+     * connection.close() no elimina la conexión física:
+     * HikariCP la devuelve al pool para poder reutilizarla.
+     *
+     * @return conexión JDBC disponible.
+     * @throws SQLException si no puede obtenerse una conexión.
      */
     public static Connection obtenerConexion()
             throws SQLException {
 
-        return DriverManager.getConnection(
-                URL,
-                USUARIO,
-                PASSWORD
+        return obtenerDataSource()
+                .getConnection();
+    }
+
+    /**
+     * Inicializa el pool únicamente cuando MediAppoint
+     * realmente necesita acceder a MySQL.
+     *
+     * De esta forma no penalizamos innecesariamente
+     * el arranque de la interfaz gráfica.
+     */
+    private static HikariDataSource obtenerDataSource() {
+
+        HikariDataSource actual =
+                dataSource;
+
+        if (
+                actual != null
+                        && !actual.isClosed()
+        ) {
+
+            return actual;
+        }
+
+        synchronized (BLOQUEO_POOL) {
+
+            actual =
+                    dataSource;
+
+            if (
+                    actual == null
+                            || actual.isClosed()
+            ) {
+
+                dataSource =
+                        crearDataSource();
+
+                actual =
+                        dataSource;
+            }
+        }
+
+        return actual;
+    }
+
+    /*
+     * ============================================================
+     * CREACIÓN DEL POOL
+     * ============================================================
+     */
+
+    /**
+     * Construye y configura HikariCP.
+     */
+    private static HikariDataSource crearDataSource() {
+
+        Properties configuracion =
+                cargarConfiguracionExterna();
+
+        String host =
+                obtenerValorObligatorio(
+                        configuracion,
+                        "DB_HOST"
+                );
+
+        String puerto =
+                obtenerValorObligatorio(
+                        configuracion,
+                        "DB_PORT"
+                );
+
+        String baseDatos =
+                obtenerValorObligatorio(
+                        configuracion,
+                        "DB_NAME"
+                );
+
+        String usuario =
+                obtenerValorObligatorio(
+                        configuracion,
+                        "DB_USER"
+                );
+
+        String password =
+                obtenerValorObligatorio(
+                        configuracion,
+                        "DB_PASSWORD"
+                );
+
+        String sslMode =
+                obtenerValorOpcional(
+                        configuracion,
+                        "DB_SSL_MODE",
+                        "DISABLED"
+                )
+                        .trim()
+                        .toUpperCase(
+                                Locale.ROOT
+                        );
+
+        validarSslMode(
+                sslMode
+        );
+
+        String url =
+                construirUrl(
+                        host,
+                        puerto,
+                        baseDatos,
+                        sslMode
+                );
+
+        HikariConfig hikariConfig =
+                new HikariConfig();
+
+        /*
+         * ========================================================
+         * CONEXIÓN JDBC
+         * ========================================================
+         */
+
+        hikariConfig.setJdbcUrl(
+                url
+        );
+
+        hikariConfig.setUsername(
+                usuario
+        );
+
+        hikariConfig.setPassword(
+                password
+        );
+
+        hikariConfig.setDriverClassName(
+                "com.mysql.cj.jdbc.Driver"
+        );
+
+        /*
+         * ========================================================
+         * TAMAÑO DEL POOL
+         * ========================================================
+         */
+
+        hikariConfig.setMaximumPoolSize(
+                MAXIMO_CONEXIONES
+        );
+
+        hikariConfig.setMinimumIdle(
+                MINIMO_CONEXIONES_INACTIVAS
+        );
+
+        /*
+         * ========================================================
+         * TIEMPOS
+         * ========================================================
+         */
+
+        hikariConfig.setConnectionTimeout(
+                TIEMPO_ESPERA_CONEXION_MS
+        );
+
+        hikariConfig.setValidationTimeout(
+                TIEMPO_VALIDACION_MS
+        );
+
+        hikariConfig.setIdleTimeout(
+                TIEMPO_INACTIVIDAD_MS
+        );
+
+        hikariConfig.setMaxLifetime(
+                VIDA_MAXIMA_CONEXION_MS
+        );
+
+        hikariConfig.setKeepaliveTime(
+                KEEP_ALIVE_MS
+        );
+
+        /*
+         * No obligamos a Hikari a conectarse mientras
+         * se está construyendo el pool.
+         *
+         * Si temporalmente no existe conexión a Internet,
+         * MediAppoint podrá abrir la interfaz y el error
+         * se producirá únicamente al solicitar MySQL.
+         */
+        hikariConfig.setInitializationFailTimeout(
+                -1
+        );
+
+        /*
+         * ========================================================
+         * COMPORTAMIENTO JDBC
+         * ========================================================
+         */
+
+        hikariConfig.setAutoCommit(
+                true
+        );
+
+        hikariConfig.setReadOnly(
+                false
+        );
+
+        hikariConfig.setPoolName(
+                "MediAppointPool"
+        );
+
+        return new HikariDataSource(
+                hikariConfig
         );
     }
 
-    /* ============================================================
-                      CONSTRUCCIÓN DE LA URL
-       ============================================================ */
+    /*
+     * ============================================================
+     * CONSTRUCCIÓN DE URL JDBC
+     * ============================================================
+     */
 
     /**
-     * Construye la URL JDBC de conexión.
+     * Construye la URL utilizada por MySQL Connector/J.
      */
-    private static String construirUrl() {
-
-        validarSslMode(
-                SSL_MODE
-        );
+    private static String construirUrl(
+            String host,
+            String puerto,
+            String baseDatos,
+            String sslMode
+    ) {
 
         return "jdbc:mysql://"
-                + HOST
+                + host
                 + ":"
-                + PUERTO
+                + puerto
                 + "/"
-                + BASE_DATOS
+                + baseDatos
 
                 + "?sslMode="
-                + SSL_MODE
+                + sslMode
 
                 + "&serverTimezone=America/Guayaquil"
 
@@ -158,16 +373,20 @@ public final class ConexionBD {
                 + "&socketTimeout=20000";
     }
 
-    /* ============================================================
-                     ARCHIVO DE CONFIGURACIÓN
-       ============================================================ */
+    /*
+     * ============================================================
+     * ARCHIVO DE CONFIGURACIÓN
+     * ============================================================
+     */
 
     /**
-     * Carga el archivo externo indicado mediante
-     * la propiedad mediappoint.config.
+     * Carga opcionalmente database.properties desde
+     * la ubicación externa especificada mediante:
      *
-     * Si no se define la propiedad, se utilizarán
-     * las variables de entorno.
+     * -Dmediappoint.config=...
+     *
+     * Si no se proporciona archivo, la aplicación
+     * utilizará las variables de entorno.
      */
     private static Properties cargarConfiguracionExterna() {
 
@@ -194,7 +413,11 @@ public final class ConexionBD {
                         .toAbsolutePath()
                         .normalize();
 
-        if (!Files.isRegularFile(archivo)) {
+        if (
+                !Files.isRegularFile(
+                        archivo
+                )
+        ) {
 
             throw new IllegalStateException(
                     "No se encontró el archivo de configuración: "
@@ -225,23 +448,28 @@ public final class ConexionBD {
         }
     }
 
-    /* ============================================================
-                         OBTENCIÓN DE VALORES
-       ============================================================ */
+    /*
+     * ============================================================
+     * OBTENCIÓN DE CONFIGURACIÓN
+     * ============================================================
+     */
 
     /**
-     * Obtiene un valor obligatorio.
+     * Obtiene una configuración obligatoria.
      *
-     * Se consulta primero el archivo externo.
-     * Si no existe allí, se consulta la variable
-     * de entorno correspondiente.
+     * Orden:
+     *
+     * 1. database.properties
+     * 2. variable de entorno
      */
     private static String obtenerValorObligatorio(
+            Properties configuracion,
             String nombre
     ) {
 
         String valor =
                 obtenerValor(
+                        configuracion,
                         nombre
                 );
 
@@ -258,11 +486,14 @@ public final class ConexionBD {
         }
 
         /*
-         * En contraseñas no eliminamos espacios
-         * automáticamente porque forman parte
-         * potencial del valor.
+         * Una contraseña puede contener espacios,
+         * por lo que no usamos trim() sobre ella.
          */
-        if ("DB_PASSWORD".equals(nombre)) {
+        if (
+                "DB_PASSWORD".equals(
+                        nombre
+                )
+        ) {
 
             return valor;
         }
@@ -271,15 +502,17 @@ public final class ConexionBD {
     }
 
     /**
-     * Obtiene un valor opcional.
+     * Obtiene una configuración opcional.
      */
     private static String obtenerValorOpcional(
+            Properties configuracion,
             String nombre,
             String valorPredeterminado
     ) {
 
         String valor =
                 obtenerValor(
+                        configuracion,
                         nombre
                 );
 
@@ -295,15 +528,16 @@ public final class ConexionBD {
     }
 
     /**
-     * Busca primero en el archivo externo y posteriormente
-     * en las variables de entorno.
+     * Busca primero en el archivo externo.
+     * Si no existe allí, consulta el entorno.
      */
     private static String obtenerValor(
+            Properties configuracion,
             String nombre
     ) {
 
         String valorArchivo =
-                CONFIGURACION.getProperty(
+                configuracion.getProperty(
                         nombre
                 );
 
@@ -320,12 +554,15 @@ public final class ConexionBD {
         );
     }
 
-    /* ============================================================
-                         VALIDACIÓN SSL
-       ============================================================ */
+    /*
+     * ============================================================
+     * VALIDACIÓN SSL
+     * ============================================================
+     */
 
     /**
-     * Valida el modo SSL admitido por MySQL Connector/J.
+     * Comprueba que DB_SSL_MODE corresponda a un valor
+     * soportado por MySQL Connector/J.
      */
     private static void validarSslMode(
             String sslMode
@@ -349,6 +586,38 @@ public final class ConexionBD {
                     "El modo SSL configurado no es válido: "
                             + sslMode
             );
+        }
+    }
+
+    /*
+     * ============================================================
+     * CIERRE DEL POOL
+     * ============================================================
+     */
+
+    /**
+     * Libera todas las conexiones del pool al cerrar
+     * MediAppoint.
+     *
+     * Es seguro llamar este método aunque el pool nunca
+     * haya sido inicializado.
+     */
+    public static void cerrarPool() {
+
+        synchronized (BLOQUEO_POOL) {
+
+            if (
+                    dataSource == null
+                            || dataSource.isClosed()
+            ) {
+
+                return;
+            }
+
+            dataSource.close();
+
+            dataSource =
+                    null;
         }
     }
 }

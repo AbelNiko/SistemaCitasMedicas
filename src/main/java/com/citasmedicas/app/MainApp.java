@@ -1,5 +1,7 @@
 package com.citasmedicas.app;
 
+import com.citasmedicas.util.EjecutorTareas;
+import com.citasmedicas.util.ConexionBD;
 import javafx.application.Application;
 import javafx.fxml.FXMLLoader;
 import javafx.scene.Scene;
@@ -50,6 +52,28 @@ public class MainApp extends Application {
 
         stage.show();
     }
+
+    /**
+ * Libera los recursos compartidos cuando
+ * MediAppoint termina.
+ */
+/**
+ * Libera los recursos compartidos cuando
+ * MediAppoint termina.
+ */
+@Override
+public void stop() {
+
+    /*
+     * Primero dejamos de aceptar nuevas tareas.
+     */
+    EjecutorTareas.cerrar();
+
+    /*
+     * Después liberamos las conexiones JDBC.
+     */
+    ConexionBD.cerrarPool();
+}
 
     public static void main(String[] args) {
         launch(args);

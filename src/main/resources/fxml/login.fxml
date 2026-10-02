@@ -115,13 +115,15 @@
             <!-- Login -->
 
             <Button
-                    text="INICIAR SESIÓN"
-                    onAction="#iniciarSesion"
-                    maxWidth="Infinity"
-                    prefHeight="43"
-                    styleClass="primary-button"/>
+        fx:id="btnIniciarSesion"
+        text="INICIAR SESIÓN"
+        onAction="#iniciarSesion"
+        maxWidth="Infinity"
+        prefHeight="43"
+        styleClass="primary-button"/>
 
             <Button
+        fx:id="btnRecuperarPassword"
         text="¿Olvidaste tu contraseña?"
         onAction="#abrirRecuperacionPassword"
         styleClass="forgot-password-button"/>
@@ -139,9 +141,10 @@
                         styleClass="muted-text"/>
 
                 <Button
-                        text="Registrarse"
-                        onAction="#abrirRegistro"
-                        styleClass="link-button"/>
+        fx:id="btnRegistrarse"
+        text="Registrarse"
+        onAction="#abrirRegistro"
+        styleClass="link-button"/>
 
             </HBox>
 

@@ -1,5 +1,6 @@
 package com.citasmedicas.controller;
 
+import com.citasmedicas.util.CampoTextoUtil;
 import com.citasmedicas.model.Paciente;
 import com.citasmedicas.model.PreguntaSeguridad;
 import com.citasmedicas.service.RegistroPacienteService;
@@ -124,12 +125,97 @@ public class RegistroController {
     @FXML
     private void initialize() {
 
-        configurarSexo();
+        configurarValidacionesEntrada();
 
-        configurarPreguntasSeguridad();
+configurarSexo();
 
-        configurarCalendario();
+configurarPreguntasSeguridad();
+
+configurarCalendario();
     }
+
+/**
+ * Configura restricciones de entrada antes de
+ * que la información llegue al Service.
+ */
+private void configurarValidacionesEntrada() {
+
+    /*
+     * Nombres y apellidos:
+     * solamente letras y espacios.
+     */
+    CampoTextoUtil.soloLetrasYEspacios(
+            txtNombres,
+            100
+    );
+
+    CampoTextoUtil.soloLetrasYEspacios(
+            txtApellidos,
+            100
+    );
+
+    /*
+     * Identificación.
+     */
+    CampoTextoUtil.soloDigitos(
+            txtCedula,
+            10
+    );
+
+    /*
+     * Teléfonos.
+     */
+    CampoTextoUtil.soloDigitos(
+            txtTelefono,
+            10
+    );
+
+    CampoTextoUtil.soloDigitos(
+            txtTelefonoEmergencia,
+            10
+    );
+
+    /*
+     * Contacto de emergencia.
+     */
+    CampoTextoUtil.soloLetrasYEspacios(
+            txtContactoEmergencia,
+            150
+    );
+
+    /*
+     * Límites correspondientes a MySQL.
+     */
+    CampoTextoUtil.limitarLongitud(
+            txtCorreo,
+            150
+    );
+
+    CampoTextoUtil.limitarLongitud(
+            txtDireccion,
+            255
+    );
+
+    CampoTextoUtil.limitarLongitud(
+            txtRespuestaSeguridad,
+            100
+    );
+
+    /*
+     * BCrypt no necesita contraseñas ilimitadas.
+     * 64 caracteres ofrecen margen suficiente
+     * y evitan entradas descontroladas.
+     */
+    CampoTextoUtil.limitarLongitud(
+            txtPassword,
+            64
+    );
+
+    CampoTextoUtil.limitarLongitud(
+            txtConfirmarPassword,
+            64
+    );
+}
 
     /**
      * Configura las opciones de sexo.

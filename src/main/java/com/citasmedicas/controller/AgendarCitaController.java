@@ -392,6 +392,31 @@ public class AgendarCitaController {
                                             .getIdEstablecimiento(),
                                     fecha
                             );
+                            /*
+ * Si la cita es para hoy, eliminamos del listado
+ * todas las horas que ya pasaron.
+ */
+if (
+        fecha.isEqual(
+                LocalDate.now()
+        )
+) {
+
+    LocalTime ahora =
+            LocalTime.now();
+
+    horarios =
+            horarios
+                    .stream()
+                    .filter(
+                            hora ->
+                                    hora != null
+                                            && hora.isAfter(
+                                                    ahora
+                                            )
+                    )
+                    .toList();
+}
 
             cmbHorario.getItems().setAll(
                     horarios
@@ -428,38 +453,49 @@ public class AgendarCitaController {
     }
 
     /**
-     * Configura el DatePicker para impedir seleccionar
-     * fechas anteriores al día actual.
+ * Configura el calendario de agendamiento.
+ *
+ * La fecha únicamente puede seleccionarse mediante
+ * el calendario y nunca puede ser anterior al día actual.
+ */
+private void configurarDatePicker() {
+
+    /*
+     * Impide escribir texto manualmente.
      */
-    private void configurarDatePicker() {
+    dpFecha.setEditable(false);
 
-        dpFecha.setDayCellFactory(
-                selector -> new DateCell() {
+    dpFecha.setDayCellFactory(
+            selector -> new DateCell() {
 
-                    @Override
-                    public void updateItem(
-                            LocalDate fecha,
-                            boolean vacio
+                @Override
+                public void updateItem(
+                        LocalDate fecha,
+                        boolean vacio
+                ) {
+
+                    super.updateItem(
+                            fecha,
+                            vacio
+                    );
+
+                    if (
+                            vacio
+                                    || fecha == null
                     ) {
 
-                        super.updateItem(
-                                fecha,
-                                vacio
-                        );
-
-                        if (
-                                fecha != null
-                                && fecha.isBefore(
-                                        LocalDate.now()
-                                )
-                        ) {
-
-                            setDisable(true);
-                        }
+                        return;
                     }
+
+                    setDisable(
+                            fecha.isBefore(
+                                    LocalDate.now()
+                            )
+                    );
                 }
-        );
-    }
+            }
+    );
+}
 
     /**
      * Configura el formato HH:mm utilizado en el

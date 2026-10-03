@@ -354,6 +354,7 @@
 
                                     <DatePicker
                                             fx:id="dpFechaNacimiento"
+                                            editable="false"
                                             maxWidth="Infinity"
                                             prefHeight="40"
                                             styleClass="profile-date-picker"

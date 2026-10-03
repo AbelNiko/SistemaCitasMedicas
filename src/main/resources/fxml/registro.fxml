@@ -160,11 +160,12 @@
                                 styleClass="field-label"/>
 
                         <DatePicker
-                                fx:id="dpFechaNacimiento"
-                                promptText="Selecciona una fecha"
-                                prefHeight="40"
-                                maxWidth="Infinity"
-                                styleClass="auth-date-picker"/>
+        fx:id="dpFechaNacimiento"
+        editable="false"
+        promptText="Selecciona una fecha"
+        prefHeight="40"
+        maxWidth="Infinity"
+        styleClass="auth-date-picker"/>
 
                     </VBox>
 

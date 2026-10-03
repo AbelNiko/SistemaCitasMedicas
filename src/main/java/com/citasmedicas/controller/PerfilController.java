@@ -1,22 +1,24 @@
 package com.citasmedicas.controller;
 
 import com.citasmedicas.model.Paciente;
-import com.citasmedicas.model.Usuario;
 import com.citasmedicas.model.PreguntaSeguridad;
+import com.citasmedicas.model.Usuario;
 import com.citasmedicas.service.PerfilService;
+import com.citasmedicas.util.CampoTextoUtil;
 import com.citasmedicas.util.SesionUtil;
 
 import javafx.fxml.FXML;
 import javafx.fxml.FXMLLoader;
 import javafx.scene.Scene;
+import javafx.scene.control.Button;
 import javafx.scene.control.ComboBox;
+import javafx.scene.control.DateCell;
 import javafx.scene.control.DatePicker;
 import javafx.scene.control.Label;
 import javafx.scene.control.TextArea;
 import javafx.scene.control.TextField;
-import javafx.scene.control.Button;
-import javafx.stage.Stage;
 import javafx.stage.Modality;
+import javafx.stage.Stage;
 
 import java.io.IOException;
 import java.time.LocalDate;
@@ -29,13 +31,16 @@ import java.time.LocalDate;
  * Gestiona la consulta y actualización de la información
  * personal, de contacto y médica básica del paciente autenticado.
  *
+ * También aplica restricciones de entrada para evitar datos
+ * inválidos desde la interfaz gráfica.
+ *
  * @author Equipo de Ingeniería de Software II
- * @version 1.1
+ * @version 1.2
  */
 public class PerfilController {
 
     /* ============================================================
-                           INFORMACIÓN GENERAL
+                         INFORMACIÓN GENERAL
        ============================================================ */
 
     @FXML
@@ -43,6 +48,7 @@ public class PerfilController {
 
     @FXML
     private Label lblMensaje;
+
 
     /* ============================================================
                            DATOS PERSONALES
@@ -63,6 +69,7 @@ public class PerfilController {
     @FXML
     private ComboBox<String> cmbSexo;
 
+
     /* ============================================================
                          DATOS DE CONTACTO
        ============================================================ */
@@ -76,20 +83,20 @@ public class PerfilController {
     @FXML
     private TextField txtDireccion;
 
-    /*
- * ============================================================
- * SEGURIDAD DE LA CUENTA
- * ============================================================
- */
 
-@FXML
-private Label lblEstadoSeguridadPerfil;
+    /* ============================================================
+                       SEGURIDAD DE LA CUENTA
+       ============================================================ */
 
-@FXML
-private Label lblPreguntaSeguridadPerfil;
+    @FXML
+    private Label lblEstadoSeguridadPerfil;
 
-@FXML
-private Button btnSeguridadCuenta;
+    @FXML
+    private Label lblPreguntaSeguridadPerfil;
+
+    @FXML
+    private Button btnSeguridadCuenta;
+
 
     /* ============================================================
                          INFORMACIÓN MÉDICA
@@ -104,6 +111,7 @@ private Button btnSeguridadCuenta;
     @FXML
     private TextArea txtCondicionesMedicas;
 
+
     /* ============================================================
                        CONTACTO DE EMERGENCIA
        ============================================================ */
@@ -114,8 +122,9 @@ private Button btnSeguridadCuenta;
     @FXML
     private TextField txtTelefonoEmergencia;
 
+
     /* ============================================================
-                             ESTADO
+                              ESTADO
        ============================================================ */
 
     private Usuario usuarioActual;
@@ -123,16 +132,40 @@ private Button btnSeguridadCuenta;
 
     private final PerfilService perfilService;
 
-    public PerfilController() {
-        this.perfilService = new PerfilService();
-    }
 
     /**
-     * Configura las opciones disponibles de los controles
-     * cuando JavaFX termina de cargar el FXML.
+     * Constructor principal.
+     */
+    public PerfilController() {
+
+        this.perfilService =
+                new PerfilService();
+    }
+
+
+    /**
+     * Configura los controles cuando JavaFX termina
+     * de cargar el archivo FXML.
      */
     @FXML
     private void initialize() {
+
+        configurarSexo();
+        configurarTiposSangre();
+
+        configurarCamposNoEditables();
+
+        configurarValidacionesEntrada();
+
+        configurarFechaNacimiento();
+    }
+
+
+    /**
+     * Configura las opciones disponibles
+     * para el sexo del paciente.
+     */
+    private void configurarSexo() {
 
         cmbSexo.getItems().setAll(
                 "Masculino",
@@ -140,6 +173,13 @@ private Button btnSeguridadCuenta;
                 "Otro",
                 "Prefiero no indicar"
         );
+    }
+
+
+    /**
+     * Configura los tipos de sangre disponibles.
+     */
+    private void configurarTiposSangre() {
 
         cmbTipoSangre.getItems().setAll(
                 "A+",
@@ -152,52 +192,178 @@ private Button btnSeguridadCuenta;
                 "O-",
                 "No conoce"
         );
+    }
+
+
+    /**
+     * Configura los datos que no pueden modificarse
+     * directamente desde el perfil.
+     */
+    private void configurarCamposNoEditables() {
 
         /*
-         * La cédula identifica al usuario dentro del sistema
-         * y no debe modificarse desde el perfil.
+         * La cédula identifica al usuario dentro
+         * del sistema y no debe modificarse.
          */
         txtCedula.setEditable(false);
         txtCedula.setFocusTraversable(false);
+    }
+
+
+    /**
+     * Configura las restricciones de entrada de texto.
+     *
+     * Se restringen únicamente los campos que necesitan
+     * un formato específico.
+     */
+    private void configurarValidacionesEntrada() {
 
         /*
-         * No permitimos seleccionar fechas futuras.
+         * ========================================================
+         * NOMBRES
+         * ========================================================
+         *
+         * Solo se permiten letras y espacios.
+         *
+         * Ejemplos válidos:
+         * María Fernanda
+         * José Luis
+         * Nicolás
+         *
+         * Ejemplos rechazados:
+         * María666
+         * Pablo123
+         * José@
+         */
+        CampoTextoUtil.soloLetrasYEspacios(
+                txtNombres,
+                100
+        );
+
+
+        /*
+         * ========================================================
+         * APELLIDOS
+         * ========================================================
+         *
+         * Solo letras y espacios.
+         */
+        CampoTextoUtil.soloLetrasYEspacios(
+                txtApellidos,
+                100
+        );
+
+
+        /*
+         * ========================================================
+         * TELÉFONO DEL PACIENTE
+         * ========================================================
+         *
+         * Solo números.
+         */
+        CampoTextoUtil.soloDigitos(
+                txtTelefono,
+                10
+        );
+
+
+        /*
+         * ========================================================
+         * CONTACTO DE EMERGENCIA
+         * ========================================================
+         *
+         * El nombre del contacto solo permite
+         * letras y espacios.
+         */
+        CampoTextoUtil.soloLetrasYEspacios(
+                txtContactoEmergencia,
+                150
+        );
+
+
+        /*
+         * ========================================================
+         * TELÉFONO DE EMERGENCIA
+         * ========================================================
+         *
+         * Solo números.
+         */
+        CampoTextoUtil.soloDigitos(
+                txtTelefonoEmergencia,
+                10
+        );
+    }
+
+
+    /**
+     * Configura la fecha de nacimiento.
+     *
+     * La fecha solamente puede seleccionarse desde
+     * el calendario.
+     *
+     * Además, no permite seleccionar fechas futuras.
+     */
+    private void configurarFechaNacimiento() {
+
+        /*
+         * Impide escribir texto manualmente
+         * dentro del DatePicker.
+         */
+        dpFechaNacimiento.setEditable(false);
+
+
+        /*
+         * Impide seleccionar una fecha futura.
          */
         dpFechaNacimiento.setDayCellFactory(
-                datePicker -> new javafx.scene.control.DateCell() {
+                datePicker -> new DateCell() {
 
                     @Override
                     public void updateItem(
                             LocalDate fecha,
                             boolean empty
                     ) {
-                        super.updateItem(fecha, empty);
 
-                        if (empty || fecha == null) {
+                        super.updateItem(
+                                fecha,
+                                empty
+                        );
+
+                        if (
+                                empty
+                                || fecha == null
+                        ) {
+
                             return;
                         }
 
                         setDisable(
-                                fecha.isAfter(LocalDate.now())
+                                fecha.isAfter(
+                                        LocalDate.now()
+                                )
                         );
                     }
                 }
         );
     }
 
+
     /**
      * Recibe el usuario autenticado y carga
      * la información completa del perfil.
      */
-    public void setUsuario(Usuario usuario) {
+    public void setUsuario(
+            Usuario usuario
+    ) {
 
         this.usuarioActual =
-        usuario;
+                usuario;
 
-cargarDatos();
+        cargarDatos();
 
-actualizarEstadoSeguridad();
+        actualizarEstadoSeguridad();
     }
+
 
     /**
      * Consulta nuevamente la información del paciente
@@ -206,9 +372,11 @@ actualizarEstadoSeguridad();
     private void cargarDatos() {
 
         if (usuarioActual == null) {
+
             mostrarError(
                     "No existe un usuario autenticado."
             );
+
             return;
         }
 
@@ -221,6 +389,7 @@ actualizarEstadoSeguridad();
                             usuarioActual.getIdUsuario()
                     );
 
+
             /*
              * =====================================================
              * USUARIO
@@ -231,11 +400,13 @@ actualizarEstadoSeguridad();
                     usuarioActual.getNombreCompleto()
             );
 
+
             txtNombres.setText(
                     valorSeguro(
                             usuarioActual.getNombres()
                     )
             );
+
 
             txtApellidos.setText(
                     valorSeguro(
@@ -243,11 +414,13 @@ actualizarEstadoSeguridad();
                     )
             );
 
+
             txtCedula.setText(
                     valorSeguro(
                             usuarioActual.getCedula()
                     )
             );
+
 
             txtCorreo.setText(
                     valorSeguro(
@@ -255,11 +428,13 @@ actualizarEstadoSeguridad();
                     )
             );
 
+
             txtTelefono.setText(
                     valorSeguro(
                             usuarioActual.getTelefono()
                     )
             );
+
 
             /*
              * =====================================================
@@ -278,14 +453,17 @@ actualizarEstadoSeguridad();
                 return;
             }
 
+
             dpFechaNacimiento.setValue(
                     pacienteActual.getFechaNacimiento()
             );
+
 
             seleccionarValor(
                     cmbSexo,
                     pacienteActual.getSexo()
             );
+
 
             txtDireccion.setText(
                     valorSeguro(
@@ -293,10 +471,12 @@ actualizarEstadoSeguridad();
                     )
             );
 
+
             seleccionarValor(
                     cmbTipoSangre,
                     pacienteActual.getTipoSangre()
             );
+
 
             txtAlergias.setText(
                     valorSeguro(
@@ -304,11 +484,13 @@ actualizarEstadoSeguridad();
                     )
             );
 
+
             txtCondicionesMedicas.setText(
                     valorSeguro(
                             pacienteActual.getCondicionesMedicas()
                     )
             );
+
 
             txtContactoEmergencia.setText(
                     valorSeguro(
@@ -316,11 +498,13 @@ actualizarEstadoSeguridad();
                     )
             );
 
+
             txtTelefonoEmergencia.setText(
                     valorSeguro(
                             pacienteActual.getTelefonoEmergencia()
                     )
             );
+
 
         } catch (Exception e) {
 
@@ -330,12 +514,13 @@ actualizarEstadoSeguridad();
 
             System.err.println(
                     "Error al cargar perfil: "
-                    + e.getMessage()
+                            + e.getMessage()
             );
 
             e.printStackTrace();
         }
     }
+
 
     /**
      * Descarta los cambios realizados en pantalla
@@ -347,11 +532,13 @@ actualizarEstadoSeguridad();
         cargarDatos();
 
         if (pacienteActual != null) {
+
             mostrarMensaje(
                     "Los cambios fueron descartados."
             );
         }
     }
+
 
     /**
      * Guarda los cambios realizados por el paciente.
@@ -371,57 +558,73 @@ actualizarEstadoSeguridad();
             return;
         }
 
+
         try {
 
             perfilService.actualizarPerfil(
                     usuarioActual,
                     pacienteActual.getIdPaciente(),
+
                     txtNombres.getText(),
                     txtApellidos.getText(),
+
                     txtCorreo.getText(),
                     txtTelefono.getText(),
+
                     dpFechaNacimiento.getValue(),
                     cmbSexo.getValue(),
+
                     txtDireccion.getText(),
+
                     cmbTipoSangre.getValue(),
+
                     txtAlergias.getText(),
                     txtCondicionesMedicas.getText(),
+
                     txtContactoEmergencia.getText(),
                     txtTelefonoEmergencia.getText()
             );
 
+
             /*
-             * Volvemos a consultar MySQL después del UPDATE
-             * para mantener el objeto local sincronizado.
+             * Volvemos a consultar MySQL después
+             * del UPDATE para mantener el objeto
+             * local sincronizado.
              */
             pacienteActual =
                     perfilService.obtenerPaciente(
                             usuarioActual.getIdUsuario()
                     );
 
+
             /*
-             * PerfilService ya sincroniza los datos básicos
-             * del objeto Usuario después del commit.
+             * PerfilService mantiene sincronizados
+             * los datos del objeto Usuario después
+             * de completar la transacción.
              */
             lblNombreUsuario.setText(
                     usuarioActual.getNombreCompleto()
             );
 
+
             /*
-             * Normalizamos nuevamente la representación
-             * visual usando los datos persistidos.
+             * Actualizamos visualmente todos
+             * los controles.
              */
             cargarCamposActualizados();
+
 
             mostrarExito(
                     "Perfil actualizado correctamente."
             );
+
 
         } catch (IllegalArgumentException e) {
 
             mostrarError(
                     e.getMessage()
             );
+
 
         } catch (Exception e) {
 
@@ -431,15 +634,16 @@ actualizarEstadoSeguridad();
 
             System.err.println(
                     "Error al actualizar perfil: "
-                    + e.getMessage()
+                            + e.getMessage()
             );
 
             e.printStackTrace();
         }
     }
 
+
     /**
-     * Refresca los controles después de guardar,
+     * Refresca los controles después de guardar
      * sin eliminar el mensaje de éxito.
      */
     private void cargarCamposActualizados() {
@@ -450,11 +654,13 @@ actualizarEstadoSeguridad();
                 )
         );
 
+
         txtApellidos.setText(
                 valorSeguro(
                         usuarioActual.getApellidos()
                 )
         );
+
 
         txtCedula.setText(
                 valorSeguro(
@@ -462,11 +668,13 @@ actualizarEstadoSeguridad();
                 )
         );
 
+
         txtCorreo.setText(
                 valorSeguro(
                         usuarioActual.getCorreo()
                 )
         );
+
 
         txtTelefono.setText(
                 valorSeguro(
@@ -474,18 +682,23 @@ actualizarEstadoSeguridad();
                 )
         );
 
+
         if (pacienteActual == null) {
+
             return;
         }
+
 
         dpFechaNacimiento.setValue(
                 pacienteActual.getFechaNacimiento()
         );
 
+
         seleccionarValor(
                 cmbSexo,
                 pacienteActual.getSexo()
         );
+
 
         txtDireccion.setText(
                 valorSeguro(
@@ -493,10 +706,12 @@ actualizarEstadoSeguridad();
                 )
         );
 
+
         seleccionarValor(
                 cmbTipoSangre,
                 pacienteActual.getTipoSangre()
         );
+
 
         txtAlergias.setText(
                 valorSeguro(
@@ -504,17 +719,20 @@ actualizarEstadoSeguridad();
                 )
         );
 
+
         txtCondicionesMedicas.setText(
                 valorSeguro(
                         pacienteActual.getCondicionesMedicas()
                 )
         );
 
+
         txtContactoEmergencia.setText(
                 valorSeguro(
                         pacienteActual.getContactoEmergencia()
                 )
         );
+
 
         txtTelefonoEmergencia.setText(
                 valorSeguro(
@@ -523,24 +741,39 @@ actualizarEstadoSeguridad();
         );
     }
 
+
     /**
      * Limpia únicamente los datos propios del paciente.
      */
     private void limpiarDatosPaciente() {
 
-        dpFechaNacimiento.setValue(null);
-        cmbSexo.getSelectionModel().clearSelection();
+        dpFechaNacimiento.setValue(
+                null
+        );
+
+
+        cmbSexo
+                .getSelectionModel()
+                .clearSelection();
+
+
         txtDireccion.clear();
+
 
         cmbTipoSangre
                 .getSelectionModel()
                 .clearSelection();
 
+
         txtAlergias.clear();
+
         txtCondicionesMedicas.clear();
+
         txtContactoEmergencia.clear();
+
         txtTelefonoEmergencia.clear();
     }
+
 
     /**
      * Selecciona un elemento del ComboBox cuando
@@ -551,7 +784,10 @@ actualizarEstadoSeguridad();
             String valor
     ) {
 
-        if (valor == null || valor.isBlank()) {
+        if (
+                valor == null
+                || valor.isBlank()
+        ) {
 
             comboBox
                     .getSelectionModel()
@@ -560,14 +796,17 @@ actualizarEstadoSeguridad();
             return;
         }
 
+
         comboBox.setValue(
                 valor.trim()
         );
     }
 
+
     /* ============================================================
                               NAVEGACIÓN
        ============================================================ */
+
 
     /**
      * Regresa al Dashboard.
@@ -581,6 +820,7 @@ actualizarEstadoSeguridad();
         );
     }
 
+
     /**
      * Abre Agendar cita.
      */
@@ -592,6 +832,7 @@ actualizarEstadoSeguridad();
                 "MediAppoint - Agendar cita"
         );
     }
+
 
     /**
      * Abre Mis citas.
@@ -605,6 +846,7 @@ actualizarEstadoSeguridad();
         );
     }
 
+
     /**
      * Abre el historial de atenciones del paciente.
      */
@@ -617,6 +859,7 @@ actualizarEstadoSeguridad();
         );
     }
 
+
     /**
      * Permanece en Mi perfil y descarta
      * modificaciones no guardadas.
@@ -626,6 +869,7 @@ actualizarEstadoSeguridad();
 
         recargarDatos();
     }
+
 
     /**
      * Gestiona la navegación manteniendo
@@ -645,20 +889,26 @@ actualizarEstadoSeguridad();
             return;
         }
 
+
         try {
 
             FXMLLoader loader =
                     new FXMLLoader(
-                            getClass().getResource(ruta)
+                            getClass().getResource(
+                                    ruta
+                            )
                     );
+
 
             Scene scene =
                     new Scene(
                             loader.load()
                     );
 
+
             Object controller =
                     loader.getController();
+
 
             if (
                     controller
@@ -669,6 +919,7 @@ actualizarEstadoSeguridad();
                         usuarioActual
                 );
 
+
             } else if (
                     controller
                     instanceof AgendarCitaController agendar
@@ -677,6 +928,7 @@ actualizarEstadoSeguridad();
                 agendar.setUsuario(
                         usuarioActual
                 );
+
 
             } else if (
                     controller
@@ -687,6 +939,7 @@ actualizarEstadoSeguridad();
                         usuarioActual
                 );
 
+
             } else if (
                     controller
                     instanceof HistorialPacienteController historial
@@ -695,6 +948,7 @@ actualizarEstadoSeguridad();
                 historial.setUsuario(
                         usuarioActual
                 );
+
 
             } else if (
                     controller
@@ -706,18 +960,33 @@ actualizarEstadoSeguridad();
                 );
             }
 
+
             Stage stage =
                     (Stage) lblNombreUsuario
                             .getScene()
                             .getWindow();
 
-            stage.setScene(scene);
-            stage.setTitle(titulo);
 
-            stage.setMinWidth(1050);
-            stage.setMinHeight(680);
+            stage.setScene(
+                    scene
+            );
+
+            stage.setTitle(
+                    titulo
+            );
+
+
+            stage.setMinWidth(
+                    1050
+            );
+
+            stage.setMinHeight(
+                    680
+            );
+
 
             stage.centerOnScreen();
+
 
         } catch (IOException e) {
 
@@ -727,256 +996,323 @@ actualizarEstadoSeguridad();
 
             System.err.println(
                     "Error al cambiar de pantalla: "
-                    + e.getMessage()
+                            + e.getMessage()
             );
 
             e.printStackTrace();
         }
     }
 
-/**
- * Actualiza la sección visual de seguridad
- * según la configuración actual del usuario.
- */
-private void actualizarEstadoSeguridad() {
 
-    if (
-            usuarioActual == null
-                    || lblEstadoSeguridadPerfil == null
-                    || lblPreguntaSeguridadPerfil == null
-    ) {
+    /* ============================================================
+                       SEGURIDAD DE LA CUENTA
+       ============================================================ */
 
-        return;
-    }
 
-    if (
-            usuarioActual
-                    .tienePreguntaSeguridadConfigurada()
-    ) {
+    /**
+     * Actualiza la sección visual de seguridad
+     * según la configuración actual del usuario.
+     */
+    private void actualizarEstadoSeguridad() {
 
-        lblEstadoSeguridadPerfil.setText(
-                "CONFIGURADA"
-        );
+        if (
+                usuarioActual == null
+                || lblEstadoSeguridadPerfil == null
+                || lblPreguntaSeguridadPerfil == null
+                || btnSeguridadCuenta == null
+        ) {
 
-        lblEstadoSeguridadPerfil
-                .getStyleClass()
-                .removeAll(
-                        "profile-security-warning",
-                        "profile-security-success"
-                );
+            return;
+        }
 
-        lblEstadoSeguridadPerfil
-                .getStyleClass()
-                .add(
-                        "profile-security-success"
-                );
 
-        PreguntaSeguridad pregunta =
-                PreguntaSeguridad.desdeCodigo(
-                        usuarioActual.getPreguntaSeguridad()
-                );
+        if (
+                usuarioActual
+                        .tienePreguntaSeguridadConfigurada()
+        ) {
 
-        if (pregunta != null) {
-
-            lblPreguntaSeguridadPerfil.setText(
-                    pregunta.getTexto()
+            lblEstadoSeguridadPerfil.setText(
+                    "CONFIGURADA"
             );
+
+
+            lblEstadoSeguridadPerfil
+                    .getStyleClass()
+                    .removeAll(
+                            "profile-security-warning",
+                            "profile-security-success"
+                    );
+
+
+            lblEstadoSeguridadPerfil
+                    .getStyleClass()
+                    .add(
+                            "profile-security-success"
+                    );
+
+
+            PreguntaSeguridad pregunta =
+                    PreguntaSeguridad.desdeCodigo(
+                            usuarioActual
+                                    .getPreguntaSeguridad()
+                    );
+
+
+            if (pregunta != null) {
+
+                lblPreguntaSeguridadPerfil.setText(
+                        pregunta.getTexto()
+                );
+
+            } else {
+
+                lblPreguntaSeguridadPerfil.setText(
+                        "Pregunta de seguridad configurada."
+                );
+            }
+
+
+            btnSeguridadCuenta.setText(
+                    "CAMBIAR SEGURIDAD"
+            );
+
 
         } else {
 
+            lblEstadoSeguridadPerfil.setText(
+                    "NO CONFIGURADA"
+            );
+
+
+            lblEstadoSeguridadPerfil
+                    .getStyleClass()
+                    .removeAll(
+                            "profile-security-warning",
+                            "profile-security-success"
+                    );
+
+
+            lblEstadoSeguridadPerfil
+                    .getStyleClass()
+                    .add(
+                            "profile-security-warning"
+                    );
+
+
             lblPreguntaSeguridadPerfil.setText(
-                    "Pregunta de seguridad configurada."
+                    "Aún no has configurado una "
+                            + "pregunta de seguridad."
+            );
+
+
+            btnSeguridadCuenta.setText(
+                    "CONFIGURAR SEGURIDAD"
             );
         }
-
-        btnSeguridadCuenta.setText(
-                "CAMBIAR SEGURIDAD"
-        );
-
-    } else {
-
-        lblEstadoSeguridadPerfil.setText(
-                "NO CONFIGURADA"
-        );
-
-        lblEstadoSeguridadPerfil
-                .getStyleClass()
-                .removeAll(
-                        "profile-security-warning",
-                        "profile-security-success"
-                );
-
-        lblEstadoSeguridadPerfil
-                .getStyleClass()
-                .add(
-                        "profile-security-warning"
-                );
-
-        lblPreguntaSeguridadPerfil.setText(
-                "Aún no has configurado una pregunta de seguridad."
-        );
-
-        btnSeguridadCuenta.setText(
-                "CONFIGURAR SEGURIDAD"
-        );
     }
-}
+
+
+    /**
+     * Abre la configuración de seguridad
+     * del usuario autenticado.
+     */
+    @FXML
+    private void abrirSeguridadCuenta() {
+
+        if (usuarioActual == null) {
+
+            mostrarError(
+                    "No existe un usuario autenticado."
+            );
+
+            return;
+        }
+
+
+        try {
+
+            FXMLLoader loader =
+                    new FXMLLoader(
+                            getClass().getResource(
+                                    "/fxml/seguridad-cuenta.fxml"
+                            )
+                    );
+
+
+            Scene scene =
+                    new Scene(
+                            loader.load()
+                    );
+
+
+            SeguridadCuentaController controller =
+                    loader.getController();
+
+
+            controller.setUsuario(
+                    usuarioActual
+            );
+
+
+            Stage ventanaSeguridad =
+                    new Stage();
+
+
+            ventanaSeguridad.setTitle(
+                    "MediAppoint - Seguridad de la cuenta"
+            );
+
+
+            ventanaSeguridad.setScene(
+                    scene
+            );
+
+
+            ventanaSeguridad.setResizable(
+                    false
+            );
+
+
+            /*
+             * La ventana pertenece al perfil actual.
+             */
+            ventanaSeguridad.initOwner(
+                    lblNombreUsuario
+                            .getScene()
+                            .getWindow()
+            );
+
+
+            /*
+             * Impide interactuar con el perfil
+             * mientras esta ventana está abierta.
+             */
+            ventanaSeguridad.initModality(
+                    Modality.WINDOW_MODAL
+            );
+
+
+            ventanaSeguridad.centerOnScreen();
+
+            ventanaSeguridad.showAndWait();
+
+
+            /*
+             * SeguridadCuentaService actualiza
+             * el mismo usuarioActual en memoria.
+             */
+            actualizarEstadoSeguridad();
+
+
+        } catch (IOException e) {
+
+            mostrarError(
+                    "No fue posible abrir la seguridad "
+                            + "de la cuenta."
+            );
+
+
+            System.err.println(
+                    "Error cargando seguridad-cuenta.fxml: "
+                            + e.getMessage()
+            );
+
+
+            e.printStackTrace();
+        }
+    }
+
 
     /* ============================================================
-                              MENSAJES
+                               MENSAJES
        ============================================================ */
 
-/**
- * Abre la configuración de seguridad
- * del usuario autenticado.
- */
-@FXML
-private void abrirSeguridadCuenta() {
 
-    if (usuarioActual == null) {
-
-        mostrarError(
-                "No existe un usuario autenticado."
-        );
-
-        return;
-    }
-
-    try {
-
-        FXMLLoader loader =
-                new FXMLLoader(
-                        getClass().getResource(
-                                "/fxml/seguridad-cuenta.fxml"
-                        )
-                );
-
-        Scene scene =
-                new Scene(
-                        loader.load()
-                );
-
-        SeguridadCuentaController controller =
-                loader.getController();
-
-        controller.setUsuario(
-                usuarioActual
-        );
-
-        Stage ventanaSeguridad =
-                new Stage();
-
-        ventanaSeguridad.setTitle(
-                "MediAppoint - Seguridad de la cuenta"
-        );
-
-        ventanaSeguridad.setScene(
-                scene
-        );
-
-        ventanaSeguridad.setResizable(
-                false
-        );
-
-        /*
-         * La ventana pertenece al perfil actual.
-         */
-        ventanaSeguridad.initOwner(
-                lblNombreUsuario
-                        .getScene()
-                        .getWindow()
-        );
-
-        /*
-         * Impide interactuar con el perfil
-         * mientras esta ventana está abierta.
-         */
-        ventanaSeguridad.initModality(
-                Modality.WINDOW_MODAL
-        );
-
-        ventanaSeguridad.centerOnScreen();
-
-        ventanaSeguridad.showAndWait();
-
-        /*
-         * SeguridadCuentaService actualiza el mismo
-         * objeto usuarioActual en memoria.
-         */
-        actualizarEstadoSeguridad();
-
-    } catch (IOException e) {
-
-        mostrarError(
-                "No fue posible abrir la seguridad de la cuenta."
-        );
-
-        System.err.println(
-                "Error cargando seguridad-cuenta.fxml: "
-                        + e.getMessage()
-        );
-
-        e.printStackTrace();
-    }
-}
-
+    /**
+     * Muestra un mensaje informativo.
+     */
     private void mostrarMensaje(
             String mensaje
     ) {
 
         if (lblMensaje == null) {
+
             return;
         }
+
 
         lblMensaje.setText(
                 mensaje
         );
+
 
         lblMensaje.setStyle(
                 "-fx-text-fill: #A8BBC9;"
         );
     }
 
+
+    /**
+     * Muestra un mensaje de error.
+     */
     private void mostrarError(
             String mensaje
     ) {
 
         if (lblMensaje == null) {
+
             return;
         }
+
 
         lblMensaje.setText(
                 mensaje
         );
+
 
         lblMensaje.setStyle(
                 "-fx-text-fill: #FF7B7B;"
         );
     }
 
+
+    /**
+     * Muestra un mensaje de éxito.
+     */
     private void mostrarExito(
             String mensaje
     ) {
 
         if (lblMensaje == null) {
+
             return;
         }
+
 
         lblMensaje.setText(
                 mensaje
         );
+
 
         lblMensaje.setStyle(
                 "-fx-text-fill: #45D483;"
         );
     }
 
+
+    /**
+     * Limpia el mensaje mostrado en pantalla.
+     */
     private void limpiarMensaje() {
 
         if (lblMensaje != null) {
-            lblMensaje.setText("");
+
+            lblMensaje.setText(
+                    ""
+            );
         }
     }
+
 
     /**
      * Evita mostrar valores null.
@@ -989,6 +1325,12 @@ private void abrirSeguridadCuenta() {
                 ? ""
                 : valor;
     }
+
+
+    /* ============================================================
+                            CERRAR SESIÓN
+       ============================================================ */
+
 
     /**
      * Cierra la sesión del usuario autenticado.
@@ -1003,18 +1345,24 @@ private void abrirSeguridadCuenta() {
                             .getScene()
                             .getWindow();
 
-            usuarioActual = null;
-            pacienteActual = null;
+
+            usuarioActual =
+                    null;
+
+            pacienteActual =
+                    null;
+
 
             SesionUtil.cerrarSesion(
                     stage
             );
 
+
         } catch (IOException e) {
 
             System.err.println(
                     "Error al cerrar sesión desde Mi perfil: "
-                    + e.getMessage()
+                            + e.getMessage()
             );
 
             e.printStackTrace();

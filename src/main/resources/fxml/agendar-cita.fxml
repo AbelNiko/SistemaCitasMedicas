@@ -387,6 +387,7 @@
 
                             <DatePicker
                                     fx:id="dpFecha"
+                                    editable="false"
                                     maxWidth="Infinity"
                                     prefHeight="42"
                                     disable="true"

@@ -192,52 +192,100 @@ public class CitaService {
     }
 
     /**
-     * Valida los datos básicos de un intervalo.
-     */
-    private void validarHorario(
-            int idMedico,
-            int idEstablecimiento,
-            LocalDate fecha,
-            LocalTime horaInicio,
-            LocalTime horaFin
+ * Valida que la fecha y el horario seleccionados
+ * puedan utilizarse para una cita.
+ */
+private void validarHorario(
+        int idMedico,
+        int idEstablecimiento,
+        LocalDate fecha,
+        LocalTime horaInicio,
+        LocalTime horaFin
+) {
+
+    if (idMedico <= 0) {
+
+        throw new IllegalArgumentException(
+                "El médico seleccionado no es válido."
+        );
+    }
+
+    if (idEstablecimiento <= 0) {
+
+        throw new IllegalArgumentException(
+                "El establecimiento seleccionado no es válido."
+        );
+    }
+
+    if (fecha == null) {
+
+        throw new IllegalArgumentException(
+                "Debe seleccionar una fecha."
+        );
+    }
+
+    LocalDate hoy =
+            LocalDate.now();
+
+    if (
+            fecha.isBefore(
+                    hoy
+            )
     ) {
 
-        if (idMedico <= 0) {
-            throw new IllegalArgumentException(
-                    "El médico seleccionado no es válido."
-            );
-        }
+        throw new IllegalArgumentException(
+                "No se puede agendar una cita "
+                        + "en una fecha anterior."
+        );
+    }
 
-        if (idEstablecimiento <= 0) {
-            throw new IllegalArgumentException(
-                    "El establecimiento seleccionado no es válido."
-            );
-        }
+    if (
+            horaInicio == null
+                    || horaFin == null
+    ) {
 
-        if (fecha == null) {
-            throw new IllegalArgumentException(
-                    "Debe seleccionar una fecha."
-            );
-        }
+        throw new IllegalArgumentException(
+                "Debe seleccionar un horario."
+        );
+    }
 
-        if (fecha.isBefore(LocalDate.now())) {
-            throw new IllegalArgumentException(
-                    "No se puede agendar una cita en una fecha anterior."
-            );
-        }
+    if (
+            !horaInicio.isBefore(
+                    horaFin
+            )
+    ) {
 
-        if (horaInicio == null || horaFin == null) {
-            throw new IllegalArgumentException(
-                    "Debe seleccionar un horario."
-            );
-        }
+        throw new IllegalArgumentException(
+                "El horario seleccionado no es válido."
+        );
+    }
 
-        if (!horaInicio.isBefore(horaFin)) {
+    /*
+     * Si la fecha seleccionada es hoy,
+     * tampoco permitimos una hora que ya pasó.
+     */
+    if (
+            fecha.isEqual(
+                    hoy
+            )
+    ) {
+
+        LocalTime ahora =
+                LocalTime.now();
+
+        if (
+                !horaInicio.isAfter(
+                        ahora
+                )
+        ) {
+
             throw new IllegalArgumentException(
-                    "El horario seleccionado no es válido."
+                    "No se puede agendar una cita "
+                            + "en un horario que ya pasó."
             );
         }
     }
+}
     /**
  * Obtiene todas las citas asociadas a un paciente.
  */

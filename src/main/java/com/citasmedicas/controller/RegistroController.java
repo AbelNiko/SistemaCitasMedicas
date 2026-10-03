@@ -24,7 +24,7 @@ import javafx.scene.control.TextField;
 
 import javafx.stage.Stage;
 
-import javafx.util.StringConverter;
+
 
 import java.io.IOException;
 
@@ -33,7 +33,7 @@ import java.sql.SQLException;
 import java.time.LocalDate;
 
 import java.time.format.DateTimeFormatter;
-import java.time.format.DateTimeParseException;
+
 
 /**
  * ================================================================
@@ -123,16 +123,16 @@ public class RegistroController {
      * Configuración inicial de la pantalla.
      */
     @FXML
-    private void initialize() {
+private void initialize() {
 
-        configurarValidacionesEntrada();
+    configurarValidacionesEntrada();
 
-configurarSexo();
+    configurarSexo();
 
-configurarPreguntasSeguridad();
+    configurarPreguntasSeguridad();
 
-configurarCalendario();
-    }
+    configurarCalendario();
+}
 
 /**
  * Configura restricciones de entrada antes de
@@ -243,119 +243,82 @@ private void configurarValidacionesEntrada() {
     }
 
     /**
-     * Configura el calendario para fecha de nacimiento.
+ * Configura la fecha de nacimiento.
+ *
+ * La fecha únicamente puede seleccionarse desde
+ * el calendario. No se permite escribir manualmente.
+ *
+ * Tampoco se permiten fechas futuras ni fechas
+ * superiores a 120 años de antigüedad.
+ */
+private void configurarCalendario() {
+
+    /*
+     * Bloquea la edición manual del DatePicker.
      */
-    private void configurarCalendario() {
+    dpFechaNacimiento.setEditable(false);
 
-        dpFechaNacimiento.setEditable(
-                true
-        );
+    /*
+     * Refuerzo adicional:
+     * bloqueamos directamente el TextField interno
+     * utilizado por JavaFX.
+     */
+    dpFechaNacimiento
+            .getEditor()
+            .setEditable(false);
 
-        dpFechaNacimiento.setShowWeekNumbers(
-                false
-        );
+    dpFechaNacimiento
+            .getEditor()
+            .setFocusTraversable(false);
 
-        dpFechaNacimiento.setPromptText(
-                "dd/mm/aaaa"
-        );
 
-        /*
-         * Permite visualizar y escribir la fecha
-         * con formato ecuatoriano:
-         *
-         * día / mes / año
-         */
-        dpFechaNacimiento.setConverter(
-                new StringConverter<>() {
+    /*
+     * Configura las fechas permitidas.
+     */
+    dpFechaNacimiento.setDayCellFactory(
+            datePicker -> new DateCell() {
 
-                    @Override
-                    public String toString(
-                            LocalDate fecha
+                @Override
+                public void updateItem(
+                        LocalDate fecha,
+                        boolean empty
+                ) {
+
+                    super.updateItem(
+                            fecha,
+                            empty
+                    );
+
+                    if (
+                            empty
+                            || fecha == null
                     ) {
 
-                        if (fecha == null) {
-                            return "";
-                        }
-
-                        return FORMATO_FECHA.format(
-                                fecha
-                        );
+                        return;
                     }
 
-                    @Override
-                    public LocalDate fromString(
-                            String texto
-                    ) {
+                    LocalDate hoy =
+                            LocalDate.now();
 
-                        if (
-                                texto == null
-                                        || texto.isBlank()
-                        ) {
+                    LocalDate fechaMinima =
+                            hoy.minusYears(120);
 
-                            return null;
-                        }
-
-                        try {
-
-                            return LocalDate.parse(
-                                    texto.trim(),
-                                    FORMATO_FECHA
-                            );
-
-                        } catch (
-                                DateTimeParseException e
-                        ) {
-
-                            return null;
-                        }
-                    }
+                    /*
+                     * No permitimos:
+                     *
+                     * - fechas futuras;
+                     * - fechas de hace más de 120 años.
+                     */
+                    setDisable(
+                            fecha.isAfter(hoy)
+                            || fecha.isBefore(
+                                    fechaMinima
+                            )
+                    );
                 }
-        );
-
-        LocalDate hoy =
-                LocalDate.now();
-
-        LocalDate fechaMinima =
-                hoy.minusYears(
-                        120
-                );
-
-        /*
-         * No permitimos fechas futuras ni fechas
-         * de más de 120 años.
-         */
-        dpFechaNacimiento.setDayCellFactory(
-                picker -> new DateCell() {
-
-                    @Override
-public void updateItem(
-        LocalDate fecha,
-        boolean vacio
-) {
-
-                        super.updateItem(
-                                fecha,
-                                vacio
-                        );
-
-                        if (
-                                vacio
-                                        || fecha == null
-                        ) {
-
-                            return;
-                        }
-
-                        setDisable(
-                                fecha.isAfter(hoy)
-                                        || fecha.isBefore(
-                                                fechaMinima
-                                        )
-                        );
-                    }
-                }
-        );
-    }
+            }
+    );
+}
 
     /**
      * Inicia el proceso de registro.
